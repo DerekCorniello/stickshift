@@ -12,14 +12,16 @@ import type { Layout } from "./configModel";
 import type { AxisMapping } from "./axisMapping";
 import { defaultLeftMapping, defaultRightMapping } from "./axisMapping";
 import { PracticePage } from "./PracticePage";
+import { TypingTestPage } from "./TypingTestPage";
 import { editorReducer, initialEditorState } from "./practiceEditor";
 import { loadSavedConfig, saveConfig } from "./savedConfig";
 import "./app.css";
 
-type PageId = "practice" | "debug" | "config";
+type PageId = "practice" | "typing-test" | "debug" | "config";
 
 const pages: readonly Readonly<{ id: PageId; label: string }>[] = [
   { id: "practice", label: "Practice" },
+  { id: "typing-test", label: "Typing Test" },
   { id: "debug", label: "Debug" },
   { id: "config", label: "Config" },
 ];
@@ -154,6 +156,18 @@ function App() {
             editorState={editorState}
             onEditorAction={onEditorAction}
           />
+        ) : page === "typing-test" ? (
+          <TypingTestPage
+            pad={selectedPad}
+            leftConfig={leftConfig}
+            rightConfig={rightConfig}
+            activeLayerId={activeLayerId}
+            onActiveLayerChange={setActiveLayerId}
+            leftMapping={leftMapping}
+            rightMapping={rightMapping}
+            bindings={bindings}
+            deadzone={deadzone}
+          />
         ) : page === "debug" ? (
           <DebugPage
             pad={selectedPad}
@@ -190,7 +204,8 @@ function App() {
           <h1>Connect a controller</h1>
           <p>
             Press a button on your controller, then choose it in the browser
-            prompt. Connect a controller to open Practice, Debug, and Config.
+            prompt. Connect a controller to open Practice, Typing Test, Debug,
+            and Config.
           </p>
         </main>
       )}
