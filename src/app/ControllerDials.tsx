@@ -7,7 +7,11 @@ import {
   rightDialConfig,
   useControllerEvents,
 } from "../typing";
-import type { ControllerEvent, GamepadSnapshot } from "../typing";
+import type {
+  ControlAction,
+  ControllerEvent,
+  GamepadSnapshot,
+} from "../typing";
 import { useStableSliceIndex } from "../typing/useStableSliceIndex";
 import {
   defaultLeftMapping,
@@ -17,7 +21,11 @@ import {
 import type { AxisMapping } from "./axisMapping";
 import "./controllerDials.css";
 
-type ControllerDialsProps = Readonly<{ pad: GamepadSnapshot }>;
+type ControllerDialsProps = Readonly<{
+  pad: GamepadSnapshot;
+  onCharacterInput?: (character: string) => void;
+  onActionInput?: (action: ControlAction) => void;
+}>;
 const deadzone = 0.2;
 
 type AxisControlsProps = Readonly<{
@@ -103,7 +111,11 @@ function describeEvent(event: ControllerEvent): string {
   return `${event.side} stick ${event.phase}`;
 }
 
-export function ControllerDials({ pad }: ControllerDialsProps) {
+export function ControllerDials({
+  pad,
+  onCharacterInput,
+  onActionInput,
+}: ControllerDialsProps) {
   const [activeLayerId, setActiveLayerId] = useState(
     leftDialConfig.layers[0].id,
   );
@@ -157,6 +169,10 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
       setRecentEvents((current) =>
         [describeEvent(event), ...current].slice(0, 8),
       );
+      if (event.kind === "character") {
+        onCharacterInput?.(event.character);
+        return;
+      }
       if (event.kind !== "button" || event.phase !== "press") {
         return;
       }
@@ -164,6 +180,9 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
         changeLayer(-1);
       } else if (event.action === "nextLayer") {
         changeLayer(1);
+      }
+      if (event.action) {
+        onActionInput?.(event.action);
       }
     },
     (side) => {
