@@ -23,6 +23,48 @@ describe("controller dial input", () => {
     container.remove();
   });
 
+  it.each(["auto", "manual"] as const)(
+    "commits once in %s selection mode",
+    (selectionMode) => {
+      const characters: string[] = [];
+      const base: GamepadSnapshot = {
+        id: "Pad",
+        index: 0,
+        connected: true,
+        mapping: "standard",
+        axes: [0, 0, 0, 0],
+        buttons: Array.from({ length: 16 }, () => ({
+          pressed: false,
+          value: 0,
+        })),
+      };
+      const render = (axes: number[], clicked = false) =>
+        act(() =>
+          root.render(
+            <ControllerDials
+              pad={{
+                ...base,
+                axes,
+                buttons: base.buttons.map((button, index) =>
+                  index === 10 && clicked
+                    ? { pressed: true, value: 1 }
+                    : button,
+                ),
+              }}
+              selectionMode={selectionMode}
+              onCharacterInput={(character) => characters.push(character)}
+            />,
+          ),
+        );
+      render([0, 0, 0, 0]);
+      render([0, -1, 0, 0]);
+      render([0, -1, 0, 0], true);
+      expect(characters).toHaveLength(selectionMode === "manual" ? 1 : 0);
+      render([0, 0, 0, 0]);
+      expect(characters).toEqual(["e"]);
+    },
+  );
+
   it("reads the standard axis pairs and a chosen raw axis pair", () => {
     expect(
       readStickPosition([0.3, -0.4, 0.5, -0.6], defaultRightMapping),

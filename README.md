@@ -32,3 +32,28 @@ Run `npm install` and `npm run dev` to open the app. Connect a controller to use
 Run `npm run check` to typecheck, lint, check formatting, test the dials, and build the app.
 
 Controller button icons and artwork are by Zacksly under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+
+## Interface concepts
+
+The original interface is available at `/` and `/original`. Five alternate layouts
+use the same controller logic and settings:
+
+| Route   | Direction                        | Layout                                                                                                      |
+| ------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `/ui-1` | Cockpit, navy and mint           | Writing area above compact dials; suggestions above the dials; controls and session details in a right rail |
+| `/ui-2` | Fieldnotes, cream and terracotta | Editorial workspace with a left rail                                                                        |
+| `/ui-3` | Arcade, purple and lime          | Game board with a bottom control strip                                                                      |
+| `/ui-4` | Lab, white and cobalt            | Vertical page navigation and a right instrument panel                                                       |
+| `/ui-5` | Arena, charcoal and amber        | Presentation stage with a right score panel                                                                 |
+
+Each route has Practice, Speed Test, Head to Head, Customize, and Diagnostics.
+The layouts remain visible without a controller; controller input requires a connected
+pad. The alternate layouts offer release-to-type and stick-click modes, an adjustable
+deadzone, and axis mappings saved per controller in the browser. Start cycles pages
+outside timed runs; during a timed run it submits the result. The original source
+is also recoverable from commit `dc31d12919873f26fddd3bbe697d9eeffaa7cdb4`.
+
+Timed runs end on an exact match, Submit, or after two minutes. They use the passage
+"The quick brown fox jumps over the lazy dog." Autocomplete is disabled during timed
+runs. The bundled autocomplete word list is generated from the full source CSV by
+`scripts/prepare-dictionary.py`; the browser downloads the smaller top-100,000 list.

@@ -10,11 +10,16 @@ import type {
 import { ControllerDials } from "./ControllerDials";
 import { readStickPosition } from "./axisMapping";
 import type { AxisMapping } from "./axisMapping";
-import { scoreTypingTest, typingTestPrompt } from "./typingTest";
-import type { TypingTestResult } from "./typingTest";
+import { typingTestPrompt } from "./typingTest";
+import {
+  useTimedRun,
+  scoreRun,
+  formatTime,
+  type TimedRun as Run,
+  type RunResult as ComparisonResult,
+} from "./useTimedRun";
 import "./pages.css";
 
-const runLimit = 120_000;
 const keyboardDirectionThreshold = 0.55;
 const keyboardRepeatDelay = 450;
 const keyboardRepeatInterval = 200;
@@ -24,24 +29,7 @@ type Key = Readonly<{
   value: string;
   kind: "character" | "shift" | "space" | "backspace";
 }>;
-type Run = Readonly<{
-  text: string;
-  startedAt: number | null;
-  elapsed: number;
-  result: ComparisonResult | null;
-}>;
-type ComparisonResult = TypingTestResult &
-  Readonly<{
-    elapsed: number;
-  }>;
 type Stage = "one-stick" | "two-stick";
-
-const blankRun: Run = {
-  text: "",
-  startedAt: null,
-  elapsed: 0,
-  result: null,
-};
 
 function characterRow(
   pairs: readonly (readonly [string, string])[],
@@ -190,19 +178,6 @@ function moveKeyboardFocus(index: number, direction: Direction): number {
   );
 }
 
-function scoreRun(run: Run, elapsed: number): ComparisonResult {
-  const score = scoreTypingTest(run.text, elapsed);
-  return {
-    ...score,
-    elapsed,
-  };
-}
-
-function formatTime(milliseconds: number): string {
-  const seconds = Math.floor(milliseconds / 1000);
-  return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
-}
-
 type Props = Readonly<{
   pad: GamepadSnapshot;
   leftConfig: DialConfig;
@@ -227,8 +202,20 @@ export function ComparisonPage({
   deadzone,
 }: Props) {
   const [stage, setStage] = useState<Stage>("one-stick");
-  const [oneRun, setOneRun] = useState(blankRun);
-  const [twoRun, setTwoRun] = useState(blankRun);
+  const {
+    run: oneRun,
+    insert: insertOne,
+    backspace: backspaceOne,
+    finish: finishOne,
+    reset: resetOne,
+  } = useTimedRun();
+  const {
+    run: twoRun,
+    insert: insertTwo,
+    backspace: backspaceTwo,
+    finish: finishTwo,
+    reset: resetTwo,
+  } = useTimedRun();
   const [focusIndex, setFocusIndex] = useState(0);
   const [shifted, setShifted] = useState(false);
   const leftPosition = readStickPosition(pad.axes, leftMapping);
@@ -241,49 +228,26 @@ export function ComparisonPage({
         ? "complete"
         : stage;
 
-  const insert = useCallback((mode: "one" | "two", character: string) => {
-    const setRun = mode === "one" ? setOneRun : setTwoRun;
-    setRun((current) => {
-      if (current.result) return current;
-      const now = performance.now();
-      const startedAt = current.startedAt ?? now;
-      const next: Run = {
-        ...current,
-        text: current.text + character,
-        startedAt,
-        elapsed: now - startedAt,
-      };
-      return next.text === typingTestPrompt
-        ? { ...next, result: scoreRun(next, next.elapsed) }
-        : next;
-    });
-  }, []);
-
+  const insert = useCallback(
+    (mode: "one" | "two", character: string) => {
+      (mode === "one" ? insertOne : insertTwo)(character);
+    },
+    [insertOne, insertTwo],
+  );
   const edit = useCallback(
     (mode: "one" | "two", action: ControlAction) => {
-      const setRun = mode === "one" ? setOneRun : setTwoRun;
-      if (action === "backspace") {
-        setRun((current) =>
-          current.result
-            ? current
-            : { ...current, text: current.text.slice(0, -1) },
-        );
-      } else if (action === "space") {
-        insert(mode, " ");
-      }
+      if (action === "backspace")
+        (mode === "one" ? backspaceOne : backspaceTwo)();
+      else if (action === "space") insert(mode, " ");
     },
-    [insert],
+    [backspaceOne, backspaceTwo, insert],
   );
-
-  const finish = useCallback((mode: "one" | "two") => {
-    const setRun = mode === "one" ? setOneRun : setTwoRun;
-    setRun((current) => {
-      if (current.result) return current;
-      const elapsed =
-        current.startedAt === null ? 0 : performance.now() - current.startedAt;
-      return { ...current, elapsed, result: scoreRun(current, elapsed) };
-    });
-  }, []);
+  const finish = useCallback(
+    (mode: "one" | "two") => {
+      (mode === "one" ? finishOne : finishTwo)();
+    },
+    [finishOne, finishTwo],
+  );
 
   const selectKey = useCallback(
     (key: Key) => {
@@ -297,12 +261,12 @@ export function ComparisonPage({
   );
 
   const reset = useCallback(() => {
-    setOneRun(blankRun);
-    setTwoRun(blankRun);
+    resetOne();
+    resetTwo();
     setFocusIndex(0);
     setShifted(false);
     setStage("one-stick");
-  }, []);
+  }, [resetOne, resetTwo]);
 
   useEffect(() => {
     if (visibleStage !== "one-stick" || direction === null) return;
@@ -356,29 +320,9 @@ export function ComparisonPage({
     handleKeyboardEvent,
   );
 
-  const activeRun = stage === "two-stick" ? twoRun : oneRun;
-  useEffect(() => {
-    if (
-      (stage !== "one-stick" && stage !== "two-stick") ||
-      activeRun.startedAt === null ||
-      activeRun.result
-    )
-      return;
-    const interval = window.setInterval(() => {
-      const elapsed =
-        performance.now() - (activeRun.startedAt ?? performance.now());
-      if (elapsed >= runLimit) finish(stage === "two-stick" ? "two" : "one");
-      else {
-        const setRun = stage === "two-stick" ? setTwoRun : setOneRun;
-        setRun((current) => ({ ...current, elapsed }));
-      }
-    }, 100);
-    return () => window.clearInterval(interval);
-  }, [activeRun.result, activeRun.startedAt, finish, stage]);
-
   const handleDialAction = (action: ControlAction) => {
     if (visibleStage === "ready-two-stick" && action === "enter") {
-      setTwoRun(blankRun);
+      resetTwo();
       setStage("two-stick");
     } else if (visibleStage === "two-stick" && action === "submit")
       finish("two");

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Ref } from "react";
-import frequencyCsvUrl from "../data/ngram_freq_filtered.csv?url";
-import { parseFrequencyLine, WordTrie, type WordFrequency } from "./wordTrie";
+import { loadWordTrie } from "./wordDictionary";
+import { WordTrie, type WordFrequency } from "./wordTrie";
 import "./autocompleteBar.css";
 
 type AutocompleteBarProps = Readonly<{
@@ -19,46 +19,6 @@ type AutocompleteBarProps = Readonly<{
 }>;
 
 const defaultMaxWords = 100_000;
-
-async function loadWordTrie(
-  maxWords: number,
-  maxSuggestions: number,
-  signal: AbortSignal,
-): Promise<WordTrie> {
-  const response = await fetch(frequencyCsvUrl, { signal });
-  if (!response.ok || !response.body) {
-    throw new Error(`Unable to load word frequency data (${response.status})`);
-  }
-
-  const trie = new WordTrie(maxSuggestions);
-  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
-  let remainder = "";
-  let loadedWords = 0;
-
-  while (loadedWords < maxWords) {
-    const { value, done } = await reader.read();
-    if (done) {
-      break;
-    }
-    remainder += value;
-    const lines = remainder.split(/\r?\n/);
-    remainder = lines.pop() ?? "";
-
-    for (const line of lines) {
-      const entry = parseFrequencyLine(line);
-      if (entry) {
-        trie.insert(entry);
-        loadedWords += 1;
-        if (loadedWords >= maxWords) {
-          break;
-        }
-      }
-    }
-  }
-
-  await reader.cancel();
-  return trie;
-}
 
 export function AutocompleteBar({
   value,
@@ -81,21 +41,24 @@ export function AutocompleteBar({
   const query = value ?? internalQuery;
 
   useEffect(() => {
-    const controller = new AbortController();
+    let active = true;
 
-    loadWordTrie(maxWords, maxSuggestions, controller.signal)
+    loadWordTrie(maxWords, maxSuggestions)
       .then((loadedTrie) => {
+        if (!active) return;
         setTrie(loadedTrie);
         setStatus("ready");
       })
       .catch((error: unknown) => {
-        if (!controller.signal.aborted) {
+        if (active) {
           console.error("Failed to load word frequency data", error);
           setStatus("error");
         }
       });
 
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, [maxSuggestions, maxWords]);
 
   const suggestions = useMemo<WordFrequency[]>(

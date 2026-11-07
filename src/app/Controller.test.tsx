@@ -41,6 +41,29 @@ describe("combined controller", () => {
     vi.useRealTimers();
   });
 
+  it("disables suggestions and their focus shortcut during timed input", () => {
+    const onActionInput = vi.fn();
+    const render = (pad: GamepadSnapshot) =>
+      act(() =>
+        root.render(
+          <Controller
+            pad={pad}
+            value="th"
+            autocompleteEnabled={false}
+            onValueChange={() => undefined}
+            onCharacterInput={() => undefined}
+            onActionInput={onActionInput}
+          />,
+        ),
+      );
+    render(base);
+    render(pressed(3));
+    render(base);
+    render(pressed(0));
+    expect(container.querySelector(".autocomplete")).toBeNull();
+    expect(onActionInput).toHaveBeenCalledWith("enter");
+  });
+
   it("navigates visible suggestions with X, D-pad, and B", async () => {
     const onValueChange = vi.fn();
     const onActionInput = vi.fn();

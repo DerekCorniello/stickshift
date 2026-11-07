@@ -54,6 +54,8 @@ type ControllerProps = Readonly<{
   bindings?: ButtonBindings;
   deadzone?: number;
   showDiagnostics?: boolean;
+  autocompleteEnabled?: boolean;
+  selectionMode?: "auto" | "manual";
 }>;
 
 export function Controller({
@@ -74,8 +76,11 @@ export function Controller({
   bindings,
   deadzone,
   showDiagnostics,
+  autocompleteEnabled = true,
+  selectionMode,
 }: ControllerProps) {
-  const [autocompleteActive, setAutocompleteActive] = useState(false);
+  const [autocompleteRequested, setAutocompleteActive] = useState(false);
+  const autocompleteActive = autocompleteEnabled && autocompleteRequested;
   const [suggestions, setSuggestions] = useState<readonly string[]>([]);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
   const autocompleteInputRef = useRef<HTMLInputElement>(null);
@@ -142,7 +147,7 @@ export function Controller({
       setSuppressEnterRepeat(false);
     }
     if (event.kind === "button" && event.phase === "press") {
-      if (event.action === "autocomplete") {
+      if (event.action === "autocomplete" && autocompleteEnabled) {
         setAutocompleteActive((active) => !active);
       } else if (event.action === "close") {
         setAutocompleteActive(false);
@@ -192,20 +197,22 @@ export function Controller({
 
   return (
     <section className="controller-component" aria-label="Controller input">
-      <div className="controller-component__autocomplete">
-        <AutocompleteBar
-          label="Autocomplete"
-          value={value}
-          onChange={onValueChange}
-          onSelect={selectSuggestion}
-          readOnly
-          inputRef={autocompleteInputRef}
-          selectionActive={autocompleteActive}
-          selectedSuggestionIndex={selectedSuggestionIndex}
-          onSuggestionsChange={handleSuggestionsChange}
-        />
-      </div>
-      {autocompleteActive && (
+      {autocompleteEnabled && (
+        <div className="controller-component__autocomplete">
+          <AutocompleteBar
+            label="Autocomplete"
+            value={value}
+            onChange={onValueChange}
+            onSelect={selectSuggestion}
+            readOnly
+            inputRef={autocompleteInputRef}
+            selectionActive={autocompleteActive}
+            selectedSuggestionIndex={selectedSuggestionIndex}
+            onSuggestionsChange={handleSuggestionsChange}
+          />
+        </div>
+      )}
+      {autocompleteActive && autocompleteEnabled && (
         <p className="controller-component__mode" role="status">
           Autocomplete: use the D-pad to choose a suggestion, then press B to
           select. Press X to return to typing.
@@ -229,6 +236,7 @@ export function Controller({
           onRightMappingChange={onRightMappingChange}
           bindings={bindings}
           deadzone={deadzone}
+          selectionMode={selectionMode}
           showDiagnostics={showDiagnostics}
           onCharacterInput={handleCharacterInput}
           onActionInput={handleActionInput}

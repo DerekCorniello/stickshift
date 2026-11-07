@@ -1,0 +1,1539 @@
+.variant-app {
+  --bg: #101d25;
+  --panel: #182a34;
+  --panel-raised: #1e333e;
+  --ink: #edf6f5;
+  --muted: #a1b8c0;
+  --line: #304650;
+  --accent: #9cf3d0;
+  --accent-ink: #102c25;
+  --radius: 14px;
+  --dial-size: clamp(152px, 26vh, 224px);
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-areas: "header header" "nav nav" "intro sidebar" "workspace sidebar" "footer footer";
+  gap: 14px 24px;
+  padding: 20px 32px 12px;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+.variant-app * {
+  box-sizing: border-box;
+}
+.variant-app button,
+.variant-app select,
+.variant-app input {
+  font: inherit;
+}
+.variant-app button,
+.variant-app a,
+.variant-app select {
+  touch-action: manipulation;
+}
+.variant-app a {
+  color: inherit;
+  text-decoration: none;
+}
+.variant-app button {
+  cursor: pointer;
+}
+.variant-app button:focus-visible,
+.variant-app a:focus-visible,
+.variant-app input:focus-visible,
+.variant-app select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.variant-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  min-height: 40px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.variant-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+.variant-brand::before {
+  content: "";
+  width: 23px;
+  height: 23px;
+  border: 6px solid var(--accent);
+  border-radius: 50%;
+  box-shadow:
+    10px 0 0 -3px var(--bg),
+    14px 0 0 -3px var(--accent);
+  margin-right: 8px;
+}
+.variant-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.variant-switcher a {
+  padding: 7px 9px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+}
+.variant-switcher a:hover,
+.variant-switcher a[aria-current],
+.variant-switcher a.is-active {
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--panel);
+}
+.variant-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.variant-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.variant-status select {
+  max-width: 180px;
+}
+.variant-nav {
+  grid-area: nav;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.variant-nav button {
+  padding: 9px 17px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+}
+.variant-nav button[aria-current],
+.variant-nav button.is-active,
+.variant-nav button[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.variant-nav button:hover {
+  border-color: var(--accent);
+}
+.variant-intro {
+  grid-area: intro;
+  align-self: end;
+  min-width: 0;
+  padding: 2px 0;
+}
+.variant-kicker {
+  color: var(--accent);
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.variant-intro h1 {
+  margin: 7px 0;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.05;
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+.variant-intro p {
+  margin: 7px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.variant-workspace {
+  grid-area: workspace;
+  min-width: 0;
+  align-self: start;
+}
+.variant-sidebar {
+  grid-area: sidebar;
+  align-self: stretch;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  overflow: auto;
+  max-height: calc(100dvh - 170px);
+}
+.sidebar-section + .sidebar-section {
+  margin-top: 19px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+}
+.sidebar-section h2,
+.sidebar-section h3 {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+}
+.sidebar-section p,
+.sidebar-section li {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.sidebar-section ul,
+.sidebar-section ol {
+  padding-left: 17px;
+}
+.sidebar-section dl {
+  margin: 0;
+}
+.sidebar-section dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0;
+}
+.sidebar-section dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+.sidebar-section dd {
+  margin: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+.sidebar-section label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+.variant-app select,
+.sidebar-section button {
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-raised);
+  color: var(--ink);
+}
+.sidebar-section input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.sidebar-section kbd {
+  display: inline-block;
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 10px;
+}
+.variant-footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+}
+.variant-app .page-shell {
+  width: 100%;
+  padding: 0;
+}
+.variant-app .page-heading,
+.variant-app .practice-page__guide,
+.variant-app .practice-page__note,
+.variant-app .controller-dials__header {
+  display: none;
+}
+.variant-app .practice-page__layout {
+  display: block;
+  margin: 0 0 12px;
+}
+.variant-app .practice-page__editor-card,
+.variant-app .typing-test-page__card,
+.variant-app .comparison-page__card,
+.variant-app .comparison-page__keyboard,
+.variant-app .debug-page__text {
+  max-width: none;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: none;
+  background: var(--panel);
+}
+.variant-app .practice-page__editor-heading {
+  margin-bottom: 8px;
+}
+.variant-app .practice-page__editor-heading h2,
+.variant-app .debug-page__text h2 {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.variant-app .practice-page__editor-heading span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.variant-app .practice-page__editor {
+  min-height: 90px;
+  max-height: 120px;
+  padding: 7px 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  background: transparent;
+  font:
+    20px/1.6 "Avenir Next",
+    "Segoe UI",
+    sans-serif;
+}
+.variant-app .practice-page__placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+.variant-app .practice-page__caret {
+  background: var(--accent);
+}
+.variant-app .controller-component,
+.variant-app .controller-dials {
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-family: inherit;
+}
+.variant-app .controller-component__autocomplete {
+  padding: 0 0 8px;
+  border: 0;
+}
+.variant-app .autocomplete {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+}
+.variant-app .autocomplete__label {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+.variant-app .autocomplete__input {
+  flex: 1;
+  min-width: 70px;
+  width: auto;
+  max-width: 170px;
+  padding: 7px 10px;
+  color: var(--ink);
+  background: var(--panel);
+  border-color: var(--line);
+  font-size: 11px;
+}
+.variant-app .autocomplete__suggestions {
+  flex: 1;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+.variant-app .autocomplete__suggestions button {
+  padding: 7px 10px;
+  min-width: 60px;
+  color: var(--ink);
+  background: var(--panel);
+  border-color: var(--line);
+  border-radius: 6px;
+  font-size: 11px;
+}
+.variant-app .autocomplete__suggestions button[aria-selected="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.variant-app .autocomplete__message,
+.variant-app .controller-component__mode {
+  margin: 5px 0;
+  color: var(--accent);
+  font-size: 11px;
+}
+.variant-app .controller-component__dials .controller-dials {
+  padding: 0;
+}
+.variant-app .controller-dials__layers {
+  justify-content: center;
+  gap: 5px;
+  margin: 5px 0 8px;
+}
+.variant-app .controller-dials__layers button {
+  padding: 5px 10px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  font-size: 10px;
+}
+.variant-app .controller-dials__layers button[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.variant-app .controller-dials__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.variant-app .controller-dials__card {
+  position: relative;
+  min-width: 0;
+  padding: 10px 14px 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.variant-app .controller-dials__card h2 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.variant-app .controller-dials__card output {
+  width: 25px;
+  height: 25px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--panel-raised);
+  font-size: 14px;
+}
+.variant-app .controller-dials__card .dial {
+  width: min(100%, var(--dial-size));
+  margin: 0 auto;
+}
+.variant-app .dial {
+  --dial-wedge: var(--panel-raised);
+  --dial-wedge-highlighted: var(--accent);
+  --dial-label: var(--ink);
+  --dial-label-highlighted: var(--accent-ink);
+  --dial-outline: var(--panel);
+}
+.variant-app .dial-slice__label {
+  font-family: inherit;
+  font-weight: 500;
+}
+.variant-app .dial-layer__stick-line,
+.variant-app .dial-layer__stick-dot {
+  stroke: var(--accent);
+}
+.variant-app .dial-layer__stick-dot {
+  fill: var(--accent);
+}
+.variant-app .typing-test-page__prompt {
+  margin-bottom: 7px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: clamp(16px, 1.7vw, 23px);
+  font-weight: 500;
+  line-height: 1.4;
+}
+.variant-app .typing-test-page__progress {
+  color: var(--muted);
+  font-size: 10px;
+}
+.variant-app .typing-test-page__input {
+  min-height: 42px;
+  padding: 8px 10px;
+  margin-top: 8px;
+  color: var(--ink);
+  background: var(--panel-raised);
+  border-color: var(--line);
+  font-size: 14px;
+}
+.variant-app .typing-test-page__stats {
+  gap: 10px;
+  margin-top: 10px;
+}
+.variant-app .typing-test-page__stats div {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: var(--panel-raised);
+}
+.variant-app .typing-test-page__stats span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.variant-app .typing-test-page__stats strong {
+  color: var(--accent);
+  font-size: 20px;
+}
+.variant-app .typing-test-page__reset {
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-color: var(--line);
+  color: var(--ink);
+  background: var(--panel-raised);
+  font-size: 10px;
+}
+.variant-app .typing-test-page__complete {
+  margin-top: 6px;
+  color: var(--accent);
+  font-size: 12px;
+}
+.variant-app .comparison-page__runs {
+  margin-top: 8px;
+  gap: 10px;
+}
+.variant-app .comparison-page__run {
+  padding: 9px 12px;
+  border-color: var(--line);
+  border-radius: 6px;
+  background: var(--panel-raised);
+}
+.variant-app .comparison-page__run.is-active {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.variant-app .comparison-page__run h2,
+.variant-app .comparison-page__difference h2 {
+  color: var(--ink);
+  font-size: 11px;
+}
+.variant-app .comparison-page__progress {
+  min-height: 1.5em;
+  margin: 7px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.variant-app .comparison-page__run dl {
+  gap: 8px;
+}
+.variant-app .comparison-page__run dt {
+  color: var(--muted);
+  font-size: 9px;
+}
+.variant-app .comparison-page__run dd {
+  color: var(--accent);
+  font-size: 17px;
+}
+.variant-app .comparison-page__instructions {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.variant-app .comparison-page__keyboard-hint {
+  color: var(--muted);
+  font-size: 10px;
+}
+.variant-app .comparison-page__keyboard {
+  gap: 4px;
+  padding: 12px;
+}
+.variant-app .comparison-page__keyboard-row {
+  gap: 5px;
+}
+.variant-app .comparison-page__key {
+  min-height: 27px;
+  padding: 4px;
+  border-color: var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  background: var(--panel-raised);
+  font-size: 11px;
+}
+.variant-app .comparison-page__key.is-selected {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.variant-app .comparison-page__difference {
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--panel-raised);
+}
+.variant-app .comparison-page__difference p {
+  color: var(--muted);
+  font-size: 12px;
+}
+.variant-app .debug-page {
+  max-height: calc(100dvh - 245px);
+  overflow: auto;
+  scrollbar-color: var(--line) transparent;
+}
+.variant-app .debug-page__text output {
+  color: var(--ink);
+}
+.variant-app .axis-controls,
+.variant-app .controller-dials__events {
+  padding: 8px;
+  border-color: var(--line);
+  background: var(--panel);
+  font-size: 10px;
+}
+.variant-app .axis-controls select {
+  min-width: 0;
+  padding: 4px;
+}
+.variant-app .controller-dials__events h2 {
+  font-size: 12px;
+}
+.variant-app .controller-dials__events p,
+.variant-app .controller-dials__events ol {
+  color: var(--muted);
+  font-size: 11px;
+}
+.variant-app .config-page {
+  max-height: calc(100dvh - 230px);
+  overflow: auto;
+  scrollbar-color: var(--line) transparent;
+}
+.variant-app .config-page__tabs {
+  gap: 6px;
+  margin-bottom: 9px;
+}
+.variant-app .config-page__sections {
+  grid-template-columns: minmax(0, 1.4fr) minmax(180px, 0.8fr);
+  gap: 10px;
+}
+.variant-app .config-panel,
+.variant-app .config-page__dial-mappings {
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+.variant-app .config-page__dial-mappings {
+  padding: 0;
+}
+.variant-app .config-panel--active,
+.variant-app .config-page__dial-mappings--active {
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.variant-app .config-panel h2 {
+  color: var(--ink);
+  font-size: 13px;
+}
+.variant-app .config-panel p,
+.variant-app .config-panel li {
+  color: var(--muted);
+  font-size: 11px;
+}
+.variant-app .config-page__tabs button,
+.variant-app .config-page__layer-actions button,
+.variant-app .config-page__slice-actions button,
+.variant-app .config-row button {
+  min-height: 28px;
+  padding: 5px 8px;
+  color: var(--ink);
+  background: var(--panel-raised);
+  border-color: var(--line);
+  font-size: 11px;
+}
+.variant-app .config-page__tabs button[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.variant-app .config-page__dial {
+  padding: 7px;
+  border-color: var(--line);
+}
+.variant-app .config-page__dial--active {
+  border-color: var(--accent);
+}
+.variant-app .config-page__dial h3 {
+  color: var(--muted);
+  font-size: 11px;
+}
+.variant-app .config-page__dial .dial {
+  width: min(100%, 180px);
+}
+.variant-app .config-page__layer-actions {
+  margin-top: 8px;
+}
+.variant-app .config-panel th,
+.variant-app .config-panel td {
+  padding: 5px;
+  border-color: var(--line);
+  font-size: 11px;
+}
+.variant-app .config-overlay {
+  border-color: var(--accent);
+  background: var(--panel);
+  color: var(--ink);
+}
+.variant-app .config-confirm button,
+.variant-app .config-keyboard button {
+  border-color: var(--line);
+  color: var(--ink);
+  background: var(--panel-raised);
+}
+.variant-app .config-page .gamepad-button-label img {
+  filter: none;
+}
+
+/* Cockpit: the task above the instruments, guidance always on the right. */
+.ui-1 .variant-intro h1 {
+  font-weight: 500;
+}
+.ui-1 .controller-dials__card {
+  background-image: radial-gradient(
+    ellipse at center,
+    #9cf3d007,
+    transparent 70%
+  );
+}
+.ui-1 .variant-sidebar {
+  border-top: 3px solid var(--accent);
+}
+
+/* Studio: a paper workspace with an editorial rail and generous type. */
+.ui-2 {
+  --bg: #eee9de;
+  --panel: #faf7ef;
+  --panel-raised: #e8e2d5;
+  --ink: #343b30;
+  --muted: #77796a;
+  --line: #d4cebf;
+  --accent: #a74428;
+  --accent-ink: #fff9ed;
+  --radius: 3px;
+  grid-template-columns: 230px minmax(0, 1fr);
+  grid-template-areas: "header header" "nav nav" "sidebar intro" "sidebar workspace" "footer footer";
+  gap: 12px 36px;
+  padding-inline: 4vw;
+}
+.ui-2 .variant-brand {
+  font-family: Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+  font-size: 30px;
+}
+.ui-2 .variant-intro h1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: 42px;
+  letter-spacing: -0.045em;
+}
+.ui-2 .variant-nav {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+.ui-2 .variant-nav button {
+  border-radius: 0;
+  padding: 8px 22px;
+}
+.ui-2 .variant-sidebar {
+  padding: 14px 18px 14px 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+}
+.ui-2 .sidebar-section h2,
+.ui-2 .sidebar-section h3 {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+.ui-2 .practice-page__editor {
+  font-family: Georgia, serif;
+  font-size: 24px;
+}
+.ui-2 .controller-dials__card {
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+}
+.ui-2 .dial {
+  --dial-outline: var(--bg);
+}
+.ui-2 .controller-dials__layers {
+  justify-content: flex-start;
+}
+.ui-2 .variant-footer {
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+.ui-2 .config-page .gamepad-button-label img {
+  filter: invert(1);
+}
+
+/* Arcade: a compact game board with a horizontal instruction deck. */
+.ui-3 {
+  --bg: #20122e;
+  --panel: #302040;
+  --panel-raised: #443054;
+  --ink: #faf3ff;
+  --muted: #b9a4ce;
+  --line: #5b4270;
+  --accent: #d9ff70;
+  --accent-ink: #202812;
+  --radius: 0px;
+  --dial-size: clamp(148px, 24vh, 210px);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "header" "nav" "intro" "workspace" "sidebar" "footer";
+  grid-template-rows: auto auto auto 1fr auto auto;
+  gap: 10px;
+  padding: 16px max(24px, calc((100vw - 1150px) / 2));
+  background-image: radial-gradient(#ffffff09 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.ui-3 .variant-brand {
+  font-family: "Arial Black", sans-serif;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.07em;
+}
+.ui-3 .variant-nav {
+  justify-content: center;
+}
+.ui-3 .variant-nav button {
+  border: 1px solid var(--line);
+  border-radius: 0;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.09em;
+}
+.ui-3 .variant-nav button[aria-current] {
+  box-shadow: 3px 3px 0 #887399;
+  transform: translate(-1px, -1px);
+}
+.ui-3 .variant-intro {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+.ui-3 .variant-intro h1 {
+  font-family: "Arial Black", sans-serif;
+  font-size: 30px;
+  text-transform: uppercase;
+  font-style: italic;
+}
+.ui-3 .variant-intro p {
+  margin: 0;
+}
+.ui-3 .variant-sidebar {
+  display: flex;
+  gap: 20px;
+  max-height: 155px;
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  box-shadow: 4px 4px 0 #11081c;
+}
+.ui-3 .sidebar-section {
+  flex: 1;
+  min-width: 0;
+}
+.ui-3 .sidebar-section + .sidebar-section {
+  margin: 0;
+  padding: 0 0 0 18px;
+  border-top: 0;
+  border-left: 1px solid var(--line);
+}
+.ui-3 .sidebar-section p,
+.ui-3 .sidebar-section li {
+  font-size: 10px;
+}
+.ui-3 .sidebar-section h2,
+.ui-3 .sidebar-section h3 {
+  margin-bottom: 7px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+.ui-3 .sidebar-section label {
+  margin: 5px 0;
+}
+.ui-3 .practice-page__editor-card {
+  box-shadow: 4px 4px 0 #11081c;
+}
+.ui-3 .practice-page__editor {
+  min-height: 60px;
+  max-height: 80px;
+  font-family: monospace;
+  font-size: 17px;
+}
+.ui-3 .controller-dials__card {
+  border: 0;
+  background: transparent;
+}
+.ui-3 .controller-dials__card-header {
+  position: absolute;
+  top: 12px;
+  left: 5px;
+  right: 5px;
+}
+.ui-3 .controller-dials__card h2 {
+  writing-mode: vertical-rl;
+}
+.ui-3 .dial {
+  --dial-outline: var(--bg);
+}
+.ui-3 .controller-dials__layers {
+  margin: 0 0 3px;
+}
+.ui-3 .controller-dials__layers button {
+  border-radius: 0;
+}
+.ui-3 .variant-footer {
+  font-family: monospace;
+}
+
+/* Lab: a vertical task rail and a clean, measured instrument surface. */
+.ui-4 {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-raised: #eaf0fa;
+  --ink: #172c49;
+  --muted: #64758b;
+  --line: #dce4ee;
+  --accent: #174fe4;
+  --accent-ink: #ffffff;
+  --radius: 8px;
+  grid-template-columns: 150px minmax(0, 1fr) 230px;
+  grid-template-areas: "header header header" "nav intro sidebar" "nav workspace sidebar" "footer footer footer";
+  grid-template-rows: auto auto 1fr auto;
+  gap: 20px;
+}
+.ui-4 .variant-nav {
+  flex-direction: column;
+  align-items: stretch;
+  align-self: start;
+  padding-top: 8px;
+  gap: 8px;
+}
+.ui-4 .variant-nav button {
+  text-align: left;
+  padding: 12px;
+  border-radius: 6px;
+}
+.ui-4 .variant-brand {
+  letter-spacing: -0.045em;
+}
+.ui-4 .variant-intro h1 {
+  font-size: 32px;
+  font-weight: 500;
+}
+.ui-4 .variant-sidebar {
+  padding: 16px;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+}
+.ui-4 .practice-page__editor-card {
+  border-top: 3px solid var(--accent);
+}
+.ui-4 .controller-dials__card {
+  padding: 12px;
+}
+.ui-4 .controller-dials__layers {
+  justify-content: flex-start;
+}
+.ui-4 .controller-dials__layers button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+}
+.ui-4 .controller-dials__layers button[aria-pressed="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+.ui-4 .config-page .gamepad-button-label img {
+  filter: invert(1);
+}
+.ui-4 .variant-footer {
+  padding-left: 170px;
+}
+
+/* Arena: a presentation stage, bold headline, and a scorekeeper rail. */
+.ui-5 {
+  --bg: #181815;
+  --panel: #22231f;
+  --panel-raised: #34362e;
+  --ink: #f5f2e8;
+  --muted: #aaa99a;
+  --line: #42443a;
+  --accent: #ffbd59;
+  --accent-ink: #292013;
+  --radius: 22px;
+  --dial-size: clamp(160px, 27vh, 230px);
+  padding-inline: 4vw;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  background-image: radial-gradient(
+    ellipse at 10% 20%,
+    #ffbd5907,
+    transparent 55%
+  );
+}
+.ui-5 .variant-header {
+  border: 0;
+}
+.ui-5 .variant-brand {
+  font-size: 26px;
+  letter-spacing: -0.07em;
+}
+.ui-5 .variant-nav {
+  padding: 5px;
+  width: fit-content;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+}
+.ui-5 .variant-nav button {
+  border-radius: 999px;
+  padding-inline: 21px;
+}
+.ui-5 .variant-intro {
+  padding: 4px 0;
+}
+.ui-5 .variant-intro h1 {
+  font-size: clamp(32px, 3.4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+.ui-5 .variant-sidebar {
+  padding: 24px;
+  border-radius: 24px;
+  border-color: #ffbd5940;
+}
+.ui-5 .sidebar-section dd {
+  font-size: 25px;
+}
+.ui-5 .sidebar-section h2,
+.ui-5 .sidebar-section h3 {
+  color: var(--accent);
+}
+.ui-5 .controller-dials__card {
+  border: 0;
+  background: transparent;
+}
+.ui-5 .controller-dials__card-header {
+  justify-content: center;
+  gap: 12px;
+}
+.ui-5 .controller-dials__card output {
+  border-radius: 50%;
+}
+.ui-5 .dial {
+  --dial-outline: var(--bg);
+}
+.ui-5 .practice-page__editor-card {
+  border-color: #ffbd5940;
+}
+.ui-5 .practice-page__editor {
+  min-height: 78px;
+  max-height: 105px;
+  font-size: 23px;
+}
+.ui-5 .controller-dials__layers button {
+  border-radius: 999px;
+}
+.ui-5 .variant-switcher a {
+  border-radius: 999px;
+}
+
+@media (min-width: 1100px) and (max-height: 800px) {
+  .variant-app {
+    --dial-size: 174px;
+    padding-top: 12px;
+    gap: 9px 20px;
+  }
+  .variant-header {
+    padding-bottom: 9px;
+    min-height: 32px;
+  }
+  .variant-intro h1 {
+    font-size: 30px;
+  }
+  .variant-intro p {
+    margin: 4px 0;
+  }
+  .variant-app .practice-page__editor {
+    min-height: 68px;
+    max-height: 90px;
+  }
+  .variant-app .practice-page__editor-card {
+    padding-block: 10px;
+  }
+  .ui-3 {
+    --dial-size: 156px;
+  }
+  .ui-3 .variant-sidebar {
+    max-height: 126px;
+  }
+  .ui-3 .variant-intro h1 {
+    font-size: 25px;
+  }
+}
+@media (max-width: 1099px) {
+  .variant-app {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 12px 16px;
+    padding: 16px 20px;
+  }
+  .ui-2 {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+  .ui-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ui-4 {
+    grid-template-columns: 115px minmax(0, 1fr) 190px;
+  }
+  .variant-sidebar {
+    padding: 14px;
+  }
+  .variant-app .config-page__sections {
+    grid-template-columns: 1fr;
+  }
+  .variant-intro h1 {
+    font-size: 29px;
+  }
+  .variant-switcher {
+    gap: 1px;
+  }
+  .variant-switcher a {
+    padding: 5px 6px;
+  }
+  .variant-app .autocomplete__input {
+    max-width: 110px;
+  }
+}
+@media (max-width: 760px) {
+  .variant-app,
+  .ui-2,
+  .ui-3,
+  .ui-4,
+  .ui-5 {
+    --dial-size: clamp(130px, 30vw, 200px);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto auto;
+    grid-template-areas: "header" "nav" "intro" "workspace" "sidebar" "footer";
+    padding: 14px;
+    gap: 12px;
+  }
+  .variant-header {
+    gap: 10px;
+  }
+  .variant-brand {
+    font-size: 23px;
+  }
+  .variant-switcher {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .variant-nav,
+  .ui-4 .variant-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 0 4px;
+    width: 100%;
+  }
+  .variant-nav button,
+  .ui-4 .variant-nav button,
+  .ui-5 .variant-nav button {
+    flex: 1 0 auto;
+    padding: 8px 10px;
+    font-size: 10px;
+    text-align: center;
+  }
+  .variant-intro h1,
+  .ui-2 .variant-intro h1,
+  .ui-5 .variant-intro h1 {
+    font-size: 29px;
+  }
+  .variant-intro p {
+    font-size: 11px;
+  }
+  .variant-sidebar,
+  .ui-2 .variant-sidebar,
+  .ui-3 .variant-sidebar,
+  .ui-4 .variant-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    max-height: none;
+    padding: 15px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+  }
+  .sidebar-section + .sidebar-section,
+  .ui-3 .sidebar-section + .sidebar-section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .variant-app .controller-dials__grid {
+    gap: 8px;
+  }
+  .variant-app .controller-dials__card {
+    padding: 8px 6px 4px;
+  }
+  .variant-app .practice-page__editor {
+    min-height: 62px;
+    max-height: 92px;
+    font-size: 17px;
+  }
+  .variant-app .practice-page__editor-card {
+    padding: 12px;
+  }
+  .variant-app .controller-dials__layers {
+    flex-wrap: nowrap;
+  }
+  .variant-app .controller-dials__layers button {
+    padding: 5px 6px;
+    font-size: 9px;
+  }
+  .variant-app .autocomplete__label {
+    font-size: 9px;
+  }
+  .variant-app .autocomplete__input {
+    max-width: 95px;
+  }
+  .variant-app .autocomplete__suggestions {
+    flex-basis: 100%;
+  }
+  .variant-app .typing-test-page__stats {
+    flex-direction: row;
+    gap: 4px;
+  }
+  .variant-app .typing-test-page__stats div {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 5px 8px;
+  }
+  .variant-app .comparison-page__runs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .variant-app .comparison-page__run dl {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .variant-app .comparison-page__run dd {
+    font-size: 13px;
+  }
+  .variant-app .config-page,
+  .variant-app .debug-page {
+    max-height: none;
+  }
+  .variant-footer,
+  .ui-4 .variant-footer {
+    padding-left: 0;
+    font-size: 9px;
+  }
+  .ui-3 .controller-dials__card-header {
+    position: static;
+  }
+  .ui-3 .controller-dials__card h2 {
+    writing-mode: horizontal-tb;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .variant-app *,
+  .variant-app *::before,
+  .variant-app *::after {
+    animation: none;
+    transition: none;
+  }
+}
+
+.variant-brand > span[aria-hidden] {
+  display: none;
+}
+.variant-nav button > span {
+  margin-right: 8px;
+  opacity: 0.5;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sidebar-stats > div {
+  display: grid;
+  gap: 4px;
+}
+.sidebar-stats strong {
+  color: var(--accent);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar-stats span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.quick-controls {
+  display: grid;
+  gap: 4px;
+}
+.quick-controls button,
+.quick-controls .quick-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 10px;
+}
+.quick-controls .quick-control {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-raised);
+}
+.quick-controls button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.quick-controls .gamepad-button-label {
+  min-height: 18px;
+  font-size: 9px;
+}
+.quick-controls .gamepad-button-label img {
+  width: 18px;
+  height: 18px;
+}
+.ui-2 .quick-controls img,
+.ui-4 .quick-controls img {
+  filter: invert(1);
+}
+.preview-note {
+  padding: 8px 10px;
+  border-left: 2px solid var(--accent);
+  background: var(--panel-raised);
+}
+.demo-next {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--accent-ink);
+  background: var(--accent);
+  font-size: 11px;
+  font-weight: 650;
+  text-align: left;
+}
+.demo-next span {
+  font-size: 19px;
+}
+.ui-3 .sidebar-stats strong {
+  font-size: 24px;
+}
+.ui-3 .quick-controls {
+  grid-template-columns: 1fr 1fr;
+}
+.ui-3 .quick-controls .gamepad-button-label {
+  display: none;
+}
+.ui-3 .variant-sidebar {
+  max-height: 165px;
+}
+.ui-3 .variant-sidebar .demo-next {
+  width: 120px;
+  flex: 0 0 120px;
+  align-self: center;
+  margin: 0;
+}
+.ui-3 .variant-sidebar .input-tuning {
+  flex: 1.2;
+}
+.ui-3 .variant-sidebar select {
+  max-width: 120px;
+  padding: 4px;
+}
+.ui-3 .preview-note {
+  display: none;
+}
+.ui-5 .demo-next {
+  border-radius: 999px;
+}
+@media (min-width: 1100px) and (max-height: 800px) {
+  .variant-sidebar .sidebar-section + .sidebar-section {
+    margin-top: 12px;
+    padding-top: 11px;
+  }
+  .variant-sidebar .sidebar-section p {
+    margin-block: 7px;
+  }
+  .variant-sidebar .preview-note {
+    font-size: 10px;
+  }
+  .variant-sidebar .sidebar-stats strong {
+    font-size: 25px;
+  }
+  .ui-3 .variant-sidebar .sidebar-section + .sidebar-section {
+    margin: 0;
+    padding: 0 0 0 18px;
+  }
+}
+@media (max-width: 760px) {
+  .variant-nav button > span {
+    display: none;
+  }
+  .ui-3 .variant-sidebar {
+    max-height: none;
+  }
+  .ui-3 .variant-sidebar .demo-next {
+    width: 100%;
+  }
+  .variant-sidebar .demo-next {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The typing controls stay together rather than filling the full workspace. */
+.variant-app .controller-dials__grid {
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  justify-content: center;
+  gap: 8px;
+}
+.variant-app .controller-dials__card {
+  padding: 6px 8px 2px;
+}
+.variant-app .controller-dials__card .dial {
+  width: min(100%, var(--dial-size));
+}
+.variant-app .controller-dials__layers {
+  margin: 3px 0 6px;
+}
+.variant-app .controller-component__autocomplete {
+  min-height: 30px;
+  padding: 0 0 4px;
+}
+.variant-app .autocomplete {
+  flex-wrap: nowrap;
+  min-height: 27px;
+}
+.variant-app .autocomplete__label {
+  width: 78px;
+}
+.variant-app .autocomplete__input {
+  display: none;
+}
+.variant-app .autocomplete__suggestions {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.variant-app .autocomplete__suggestions button {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.variant-app .variant-intro p:not(.variant-kicker) {
+  display: none;
+}
+.variant-app .variant-intro h1 {
+  margin-bottom: 0;
+}
+.variant-app .variant-sidebar {
+  padding: 14px;
+}
+.variant-app .sidebar-section + .sidebar-section {
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.variant-app .sidebar-overview p {
+  margin: 0 0 12px;
+}
+.variant-app .sidebar-stats strong {
+  font-size: 23px;
+}
+.variant-app .quick-controls {
+  gap: 3px;
+}
+.variant-app .quick-controls .quick-control {
+  padding: 3px 7px;
+}
+.variant-app .variant-footer {
+  justify-content: flex-end;
+  padding-top: 5px;
+}
+.variant-app .demo-next {
+  margin-top: 12px;
+  padding: 9px 11px;
+}
+.ui-3 .variant-sidebar .sidebar-section + .sidebar-section {
+  margin: 0;
+  padding: 0 0 0 12px;
+}
+@media (max-width: 760px) {
+  .variant-app .controller-dials__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .variant-app .autocomplete__label {
+    width: auto;
+  }
+  .variant-app .autocomplete__suggestions {
+    flex-basis: auto;
+  }
+}
+.variant-app .input-tuning summary {
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.variant-app .input-tuning[open] summary {
+  margin-bottom: 10px;
+  color: var(--ink);
+}

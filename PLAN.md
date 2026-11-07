@@ -50,15 +50,14 @@ The letter layout is a heuristic based on [English letter and bigram counts](htt
 
 The 32 punctuation characters follow ASCII code-point order across the two symbol layers.
 
-The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. Selection mode and deadzone remain fixed for now.
+The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. The original interface keeps its fixed settings. The five alternate interfaces expose automatic/manual selection and deadzone controls, and save those plus axis mappings per controller in the browser.
 
 ## Project structure
 
-- `src/app/`: App shell, page navigation, and shared styling.
-- `src/app/`: Practice, typing test, comparison, debug, and config screens.
-- `src/typing/`: Reusable dial input, gamepad controls, autocomplete, and settings.
-- `src/benchmark/`: Timed runs, scoring, and comparison results.
-- `src/data/`: The test sentence and local autocomplete dictionary.
+- `src/app/`: Original and alternate app shells, pages, controller composition, autocomplete, timed runs, and configuration.
+- `src/typing/`: Reusable dials, authored layouts, Gamepad API polling, and event decoding.
+- `src/data/`: Source and generated autocomplete dictionaries.
+- `scripts/`: Dictionary and static route preparation.
 
 Keep components and tests beside the feature that uses them. Add more directories only when the code needs them.
 
