@@ -1,7 +1,14 @@
-import React from "react";
+import type { CSSProperties } from "react";
+import type { GamepadSnapshot } from "./useGamepad";
 
-export default function GamepadVisualizer({ gamepads }) {
-  const gamepadsArray = Object.values(gamepads || {});
+type GamepadVisualizerProps = Readonly<{
+  gamepads: Readonly<Record<number, GamepadSnapshot>>;
+}>;
+
+export default function GamepadVisualizer({
+  gamepads,
+}: GamepadVisualizerProps) {
+  const gamepadsArray = Object.values(gamepads);
 
   return (
     <div style={styles.container}>
@@ -26,38 +33,47 @@ export default function GamepadVisualizer({ gamepads }) {
                       const x = pad.axes[i * 2];
                       const y = pad.axes[i * 2 + 1];
                       return (
-                        <svg
-                          key={i}
-                          viewBox="-2.2 -2.2 4.4 4.4"
-                          width="100"
-                          height="100"
-                          style={styles.svg}
-                        >
-                          <circle
-                            cx="0"
-                            cy="0"
-                            r="2"
-                            fill="none"
-                            stroke="#555"
-                            strokeWidth="0.05"
-                          />
-                          <path
-                            d="M0,-2L0,2M-2,0L2,0"
-                            stroke="#555"
-                            strokeWidth="0.05"
-                          />
-                          <circle cx={x * 2} cy={y * 2} r="0.25" fill="#fff" />
-                          <text
-                            textAnchor="middle"
-                            x="0"
-                            y="2"
-                            fill="#fff"
-                            fontSize="0.6px"
-                            fontFamily="monospace"
+                        <div key={i} style={styles.axisPair}>
+                          <span>
+                            Axes {i * 2}/{i * 2 + 1}
+                          </span>
+                          <svg
+                            viewBox="-2.2 -2.2 4.4 4.4"
+                            width="100"
+                            height="100"
+                            style={styles.svg}
                           >
-                            {x.toFixed(2)},{y.toFixed(2)}
-                          </text>
-                        </svg>
+                            <circle
+                              cx="0"
+                              cy="0"
+                              r="2"
+                              fill="none"
+                              stroke="#555"
+                              strokeWidth="0.05"
+                            />
+                            <path
+                              d="M0,-2L0,2M-2,0L2,0"
+                              stroke="#555"
+                              strokeWidth="0.05"
+                            />
+                            <circle
+                              cx={x * 2}
+                              cy={y * 2}
+                              r="0.25"
+                              fill="#fff"
+                            />
+                            <text
+                              textAnchor="middle"
+                              x="0"
+                              y="2"
+                              fill="#fff"
+                              fontSize="0.6px"
+                              fontFamily="monospace"
+                            >
+                              {x.toFixed(2)},{y.toFixed(2)}
+                            </text>
+                          </svg>
+                        </div>
                       );
                     },
                   )}
@@ -124,7 +140,7 @@ export default function GamepadVisualizer({ gamepads }) {
   );
 }
 
-const styles = {
+const styles: Record<string, CSSProperties> = {
   container: {
     backgroundColor: "#000",
     color: "#fff",
@@ -150,6 +166,7 @@ const styles = {
   grid: { display: "flex", flexDirection: "column", gap: "20px" },
   section: { display: "flex", flexDirection: "column" },
   axesContainer: { display: "flex", flexWrap: "wrap", gap: "10px" },
+  axisPair: { display: "grid", justifyItems: "center", gap: "4px" },
   buttonsContainer: { display: "flex", flexWrap: "wrap", gap: "10px" },
   svg: {
     backgroundColor: "#111",

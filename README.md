@@ -1,6 +1,6 @@
 # StickShift
 
-The typing components are a pair of React dials in `src/typing/`. Each dial renders the slices in its active layer and reports the character under a normalized stick position. `src/app/useGamepad.ts` polls connected controllers and returns snapshots of their axes and buttons. The hook is not wired to the dials or character entry yet.
+The typing components are a pair of React dials in `src/typing/`. Each dial renders the slices in its active layer and reports the character under a normalized stick position. `src/app/useGamepad.ts` polls connected controllers and returns snapshots of their axes and buttons. The app reads those axes to highlight characters on both dials. Character entry is not connected yet.
 
 ```tsx
 import { Dial, leftDialConfig, rightDialConfig } from "./src/typing";
@@ -18,4 +18,6 @@ Render a second `Dial` with `rightDialConfig` and the same `activeLayerId`. The 
 
 On the numbers and symbols layer, the five digits on each dial run from upper left to upper right.
 
-Run `npm install` and `npm run dev` to open the gamepad visualizer. Run `npm run check` to typecheck, lint, check formatting, test the dials, and build the app.
+Run `npm install` and `npm run dev` to open the app. Connect a controller and move its sticks to highlight characters. The layer buttons change both dials together. If a stick uses unusual axes, use its X and Y selectors below the dial. For example, choose axes 6 and 7 for a stick that reports there. The visualizer below the dials shows the live axis numbers and values. Axis choices last until you switch controllers or reload the page.
+
+Run `npm run check` to typecheck, lint, check formatting, test the dials, and build the app.
