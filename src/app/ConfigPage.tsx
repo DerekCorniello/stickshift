@@ -6,6 +6,8 @@ import {
   useControllerEvents,
 } from "../typing";
 import type { ButtonBindings, ControlAction, GamepadSnapshot } from "../typing";
+import { GamepadButtonLabel } from "./GamepadButtonLabel";
+import { getControllerButtonName } from "./gamepadLabels";
 import { highlightedSliceIndex } from "../typing/geometry";
 import { readStickPosition } from "./axisMapping";
 import type { AxisMapping } from "./axisMapping";
@@ -324,7 +326,9 @@ export function ConfigPage({
       bindingCounts.set(index, (bindingCounts.get(index) ?? 0) + 1);
   for (const [index, count] of bindingCounts)
     if (count > 1)
-      warnings.push(`Button ${index} is assigned to ${count} actions.`);
+      warnings.push(
+        `${getControllerButtonName(pad.id, index)} is assigned to ${count} actions.`,
+      );
   const currentWarnings = [...new Set(warnings)].sort();
   return (
     <main className="page-shell config-page">
@@ -465,12 +469,34 @@ export function ConfigPage({
               aria-label="Slice actions"
             >
               <button type="button" onClick={addSlice}>
-                Add slice (left stick click, button{" "}
-                {bindings.commitLeft ?? "unassigned"})
+                Add slice (left stick click
+                {bindings.commitLeft === null ? (
+                  ", unassigned"
+                ) : (
+                  <>
+                    {", "}
+                    <GamepadButtonLabel
+                      gamepadId={pad.id}
+                      buttonIndex={bindings.commitLeft}
+                    />
+                  </>
+                )}
+                )
               </button>
               <button type="button" onClick={deleteSlice}>
-                Delete last slice (right stick click, button{" "}
-                {bindings.commitRight ?? "unassigned"})
+                Delete last slice (right stick click
+                {bindings.commitRight === null ? (
+                  ", unassigned"
+                ) : (
+                  <>
+                    {", "}
+                    <GamepadButtonLabel
+                      gamepadId={pad.id}
+                      buttonIndex={bindings.commitRight}
+                    />
+                  </>
+                )}
+                )
               </button>
             </div>
             <div className="config-page__dials">
@@ -547,7 +573,16 @@ export function ConfigPage({
                   }
                 >
                   <td>{actionLabels[action]}</td>
-                  <td>{bindings[action] ?? "Unassigned"}</td>
+                  <td>
+                    {bindings[action] === null ? (
+                      "Unassigned"
+                    ) : (
+                      <GamepadButtonLabel
+                        gamepadId={pad.id}
+                        buttonIndex={bindings[action]}
+                      />
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

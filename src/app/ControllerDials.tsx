@@ -21,6 +21,7 @@ import {
   readStickPosition,
 } from "./axisMapping";
 import type { AxisMapping } from "./axisMapping";
+import { getControllerButtonName } from "./gamepadLabels";
 import "./controllerDials.css";
 
 type ControllerDialsProps = Readonly<{
@@ -112,10 +113,11 @@ function AxisControls({
   );
 }
 
-function describeEvent(event: ControllerEvent): string {
+function describeEvent(event: ControllerEvent, gamepadId: string): string {
   if (event.kind === "button") {
     const action = event.action ? actionLabels[event.action] : "Unassigned";
-    return `Button ${event.buttonIndex} ${event.phase}: ${action}`;
+    const button = getControllerButtonName(gamepadId, event.buttonIndex);
+    return `${button} (${event.buttonIndex}) ${event.phase}: ${action}`;
   }
   if (event.kind === "character") {
     const side = event.side === "left" ? "Left" : "Right";
@@ -187,23 +189,27 @@ export function ControllerDials({
   };
 
   const vibrateOnSelection = () => {
-  const gamepad = navigator.getGamepads?.()[pad.index];
-  const actuator = gamepad?.vibrationActuator;
-  
-  console.log("Sending vibration");
-  if (!actuator) {
-      console.log("No vibration actuator found for this controller in this browser.");
+    const gamepad = navigator.getGamepads?.()[pad.index];
+    const actuator = gamepad?.vibrationActuator;
+
+    console.log("Sending vibration");
+    if (!actuator) {
+      console.log(
+        "No vibration actuator found for this controller in this browser.",
+      );
       return;
     }
 
-  void actuator.playEffect("dual-rumble", {
-    duration: 150,
-    strongMagnitude: 0.5,
-    weakMagnitude: 0.5,
-  }).catch(err => {
-      console.error("Vibration playEffect rejected by browser:", err);
-    });
-};
+    void actuator
+      .playEffect("dual-rumble", {
+        duration: 150,
+        strongMagnitude: 0.5,
+        weakMagnitude: 0.5,
+      })
+      .catch((err) => {
+        console.error("Vibration playEffect rejected by browser:", err);
+      });
+  };
 
   const reportEvent = (event: ControllerEvent) => {
     onControllerEvent?.(event);
@@ -228,7 +234,7 @@ export function ControllerDials({
     (event) => {
       reportEvent(event);
       setRecentEvents((current) =>
-        [describeEvent(event), ...current].slice(0, 8),
+        [describeEvent(event, pad.id), ...current].slice(0, 8),
       );
       if (event.kind !== "button" || event.phase !== "press") {
         return;

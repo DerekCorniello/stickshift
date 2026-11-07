@@ -1,7 +1,9 @@
 import { actionLabels, defaultBindings } from "../typing";
 import type { ControlAction, GamepadSnapshot } from "../typing";
 import { Controller } from "./Controller";
+import { GamepadButtonLabel } from "./GamepadButtonLabel";
 import type { AxisMapping } from "./axisMapping";
+import { getControllerInfo } from "./gamepadLabels";
 import type { DialConfig } from "../typing";
 import type { EditorAction, EditorState } from "./practiceEditor";
 import "./pages.css";
@@ -104,7 +106,9 @@ export function PracticePage({
             enter the highlighted character.
           </p>
         </div>
-        <span className="connection-badge">{pad.id}</span>
+        <span className="connection-badge">
+          {getControllerInfo(pad.id).name}
+        </span>
       </header>
 
       <div className="practice-page__layout">
@@ -153,7 +157,17 @@ export function PracticePage({
             <li>Triggers: change character layer</li>
             {Object.entries(bindings).map(([action, buttonIndex]) => (
               <li key={action}>
-                Button {buttonIndex ?? "None"}:{" "}
+                {buttonIndex === null ? (
+                  "Unassigned: "
+                ) : (
+                  <>
+                    <GamepadButtonLabel
+                      gamepadId={pad.id}
+                      buttonIndex={buttonIndex}
+                    />
+                    {": "}
+                  </>
+                )}
                 {actionLabels[action as keyof typeof actionLabels]}
               </li>
             ))}

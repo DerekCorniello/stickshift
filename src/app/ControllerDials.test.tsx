@@ -160,7 +160,7 @@ describe("controller dial input", () => {
     ).toBe("e");
     expect(
       container.querySelector(".controller-dials__events")?.textContent,
-    ).toContain("Button 6 press: Previous layer");
+    ).toContain("B6 (6) press: Previous layer");
   });
 
   it("keeps the confirmed character through boundary wobble and return", () => {

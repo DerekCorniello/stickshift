@@ -4,6 +4,7 @@ import type { DialConfig } from "../typing";
 import GamepadVisualizer from "./gamepadVisualizer";
 import { Controller } from "./Controller";
 import type { AxisMapping } from "./axisMapping";
+import { getControllerInfo } from "./gamepadLabels";
 import "./pages.css";
 
 type DebugPageProps = Readonly<{
@@ -46,7 +47,9 @@ export function DebugPage({
           <h1>Controller diagnostics</h1>
           <p>Inspect raw axes, button events, and dial selection behavior.</p>
         </div>
-        <span className="connection-badge">{pad.id}</span>
+        <span className="connection-badge">
+          {getControllerInfo(pad.id).name}
+        </span>
       </header>
       <section className="debug-page__text" aria-label="Debug typed text">
         <h2>Controller text</h2>

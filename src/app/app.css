@@ -12,6 +12,19 @@
   box-sizing: border-box;
 }
 
+.gamepad-button-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  vertical-align: middle;
+}
+
+.gamepad-button-label img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;

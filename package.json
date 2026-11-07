@@ -14,6 +14,7 @@
     "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
   },
   "dependencies": {
+    "@lizardbyte/gamepad-helper": "^2026.816.4539",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
