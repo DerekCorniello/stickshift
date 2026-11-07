@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 import type { GamepadSnapshot } from "../typing";
+import { GamepadButtonLabel } from "./GamepadButtonLabel";
+import { getControllerAxisName, getControllerInfo } from "./gamepadLabels";
 
 type GamepadVisualizerProps = Readonly<{
   gamepads: Readonly<Record<number, GamepadSnapshot>>;
@@ -21,7 +23,9 @@ export default function GamepadVisualizer({
         gamepadsArray.map((pad) => (
           <div key={pad.index} style={styles.gamepadBox}>
             <div style={styles.info}>
-              <strong>Gamepad {pad.index}:</strong> {pad.id}
+              <strong>{getControllerInfo(pad.id).name}</strong>
+              <span> (Gamepad {pad.index})</span>
+              <div style={styles.rawId}>{pad.id}</div>
             </div>
 
             <div style={styles.grid}>
@@ -35,7 +39,8 @@ export default function GamepadVisualizer({
                       return (
                         <div key={i} style={styles.axisPair}>
                           <span>
-                            Axes {i * 2}/{i * 2 + 1}
+                            {getControllerAxisName(pad.id, i * 2)} /{" "}
+                            {getControllerAxisName(pad.id, i * 2 + 1)}
                           </span>
                           <svg
                             viewBox="-2.2 -2.2 4.4 4.4"
@@ -84,51 +89,46 @@ export default function GamepadVisualizer({
                 <h3 style={styles.subhead}>Buttons</h3>
                 <div style={styles.buttonsContainer}>
                   {pad.buttons.map((btn, i) => (
-                    <svg
-                      key={i}
-                      viewBox="-2.2 -2.2 4.4 4.4"
-                      width="60"
-                      height="60"
-                      style={styles.svg}
-                    >
-                      <circle
-                        cx="0"
-                        cy="0"
-                        r="2"
-                        fill="none"
-                        stroke="#555"
-                        strokeWidth="0.1"
-                      />
-                      <circle
-                        cx="0"
-                        cy="0"
-                        r={btn.value * 2}
-                        fill={btn.pressed ? "#000" : "#fff"}
-                      />
-                      <text
-                        dominantBaseline="middle"
-                        textAnchor="middle"
-                        x="0"
-                        y="0"
-                        fill={btn.pressed ? "#fff" : "#888"}
-                        fontSize="0.8px"
-                        fontFamily="monospace"
+                    <div key={i} style={styles.buttonCell}>
+                      <svg
+                        viewBox="-2.2 -2.2 4.4 4.4"
+                        width="60"
+                        height="60"
+                        style={styles.svg}
+                        aria-hidden="true"
                       >
-                        {btn.value.toFixed(2)}
-                      </text>
-                      <text
-                        alignmentBaseline="hanging"
-                        dominantBaseline="hanging"
-                        textAnchor="start"
-                        x="-2"
-                        y="-2"
-                        fill="#fff"
-                        fontSize="0.6px"
-                        fontFamily="monospace"
-                      >
-                        {i}
-                      </text>
-                    </svg>
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r="2"
+                          fill="none"
+                          stroke="#555"
+                          strokeWidth="0.1"
+                        />
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r={btn.value * 2}
+                          fill={btn.pressed ? "#000" : "#fff"}
+                        />
+                        <text
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          x="0"
+                          y="0"
+                          fill={btn.pressed ? "#fff" : "#888"}
+                          fontSize="0.8px"
+                          fontFamily="monospace"
+                        >
+                          {btn.value.toFixed(2)}
+                        </text>
+                      </svg>
+                      <GamepadButtonLabel
+                        gamepadId={pad.id}
+                        buttonIndex={i}
+                        color="White"
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -163,11 +163,18 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "4px",
   },
   info: { marginBottom: "15px", fontSize: "1.2rem" },
+  rawId: { color: "#aaa", fontSize: "0.75rem", marginTop: "4px" },
   grid: { display: "flex", flexDirection: "column", gap: "20px" },
   section: { display: "flex", flexDirection: "column" },
   axesContainer: { display: "flex", flexWrap: "wrap", gap: "10px" },
   axisPair: { display: "grid", justifyItems: "center", gap: "4px" },
   buttonsContainer: { display: "flex", flexWrap: "wrap", gap: "10px" },
+  buttonCell: {
+    display: "grid",
+    justifyItems: "center",
+    gap: "4px",
+    minWidth: "72px",
+  },
   svg: {
     backgroundColor: "#111",
     border: "1px solid #222",

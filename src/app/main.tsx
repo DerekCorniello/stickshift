@@ -12,6 +12,7 @@ import type { Layout } from "./configModel";
 import type { AxisMapping } from "./axisMapping";
 import { defaultLeftMapping, defaultRightMapping } from "./axisMapping";
 import { PracticePage } from "./PracticePage";
+import { getControllerInfo } from "./gamepadLabels";
 import { editorReducer, initialEditorState } from "./practiceEditor";
 import { loadSavedConfig, saveConfig } from "./savedConfig";
 import "./app.css";
@@ -123,13 +124,15 @@ function App() {
                 >
                   {connectedPads.map((pad) => (
                     <option key={pad.index} value={pad.index}>
-                      {pad.index}: {pad.id}
+                      {getControllerInfo(pad.id).name} (Gamepad {pad.index})
                     </option>
                   ))}
                 </select>
               </label>
             ) : (
-              <span className="connection-badge">{selectedPad.id}</span>
+              <span className="connection-badge">
+                {getControllerInfo(selectedPad.id).name}
+              </span>
             )
           ) : (
             <span className="connection-badge connection-badge--offline">
