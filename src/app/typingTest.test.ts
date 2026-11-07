@@ -16,4 +16,10 @@ describe("typing test scoring", () => {
     });
     expect(scoreTypingTest("the x", 30_000).characterAccuracy).toBe(80);
   });
+
+  it("counts a missing space once without shifting all following characters", () => {
+    expect(
+      scoreTypingTest("thequick brown fox", 60_000).characterAccuracy,
+    ).toBe(94.4);
+  });
 });

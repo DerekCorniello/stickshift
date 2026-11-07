@@ -14,15 +14,17 @@ import { defaultLeftMapping, defaultRightMapping } from "./axisMapping";
 import { PracticePage } from "./PracticePage";
 import { getControllerInfo } from "./gamepadLabels";
 import { TypingTestPage } from "./TypingTestPage";
+import { ComparisonPage } from "./ComparisonPage";
 import { editorReducer, initialEditorState } from "./practiceEditor";
 import { loadSavedConfig, saveConfig } from "./savedConfig";
 import "./app.css";
 
-type PageId = "practice" | "typing-test" | "debug" | "config";
+type PageId = "practice" | "typing-test" | "comparison" | "debug" | "config";
 
 const pages: readonly Readonly<{ id: PageId; label: string }>[] = [
   { id: "practice", label: "Practice" },
   { id: "typing-test", label: "Typing Test" },
+  { id: "comparison", label: "Compare" },
   { id: "debug", label: "Debug" },
   { id: "config", label: "Config" },
 ];
@@ -171,6 +173,18 @@ function App() {
             bindings={bindings}
             deadzone={deadzone}
           />
+        ) : page === "comparison" ? (
+          <ComparisonPage
+            pad={selectedPad}
+            leftConfig={leftConfig}
+            rightConfig={rightConfig}
+            activeLayerId={activeLayerId}
+            onActiveLayerChange={setActiveLayerId}
+            leftMapping={leftMapping}
+            rightMapping={rightMapping}
+            bindings={bindings}
+            deadzone={deadzone}
+          />
         ) : page === "debug" ? (
           <DebugPage
             pad={selectedPad}
@@ -207,8 +221,8 @@ function App() {
           <h1>Connect a controller</h1>
           <p>
             Press a button on your controller, then choose it in the browser
-            prompt. Connect a controller to open Practice, Typing Test, Debug,
-            and Config.
+            prompt. Connect a controller to open Practice, Typing Test, Compare,
+            Debug, and Config.
           </p>
         </main>
       )}

@@ -61,12 +61,12 @@ describe("Config page controller navigation", () => {
     const render = (pad: GamepadSnapshot) =>
       act(() => root.render(<Harness pad={pad} />));
     render(base);
-    render(pressed(15)); // D-pad right adds a slice
+    render(pressed(10)); // Left stick click adds a slice
     expect(
       container.querySelector(".config-page__dial--active h3")?.textContent,
     ).toContain("14 slices");
     render(base);
-    render(pressed(14)); // D-pad left requests deletion
+    render(pressed(11)); // Right stick click requests deletion
     expect(
       container.querySelector('[role="alertdialog"]')?.textContent,
     ).toContain("Are you sure?");
@@ -146,7 +146,7 @@ describe("Config page controller navigation", () => {
     expect(
       container.querySelector("tbody tr:first-child td:last-child")
         ?.textContent,
-    ).toBe("2");
+    ).toBe("B2");
     act(() => root.unmount());
     container.remove();
   });

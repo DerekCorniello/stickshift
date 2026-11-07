@@ -9,12 +9,12 @@ React and TypeScript, using the browser Gamepad API for joystick positions and b
 ## Demo flow
 
 1. **Practice:** Show a controller-only writing area, both dials, and a concise on-screen control guide. Keep autocomplete visible above the dials. X (top) enters suggestion selection, the D-pad moves the selection, and B (bottom) accepts a suggestion and returns to typing.
-2. **Typing test:** Show the sentence "The quick brown fox jumps over the lazy dog." to transcribe with the two dials. Show time, words per minute (WPM), and keystroke accuracy during and after the run.
-3. **Comparison:** Type that same sentence first with a one-stick on-screen QWERTY keyboard, then with the two dials. Show each mode's time, WPM, and keystroke accuracy side by side, with the differences. The QWERTY grid has letters, digits, punctuation, Shift, Space, and Backspace. Move its focus with the left stick and select a key with A.
+2. **Typing test:** Show the sentence "The quick brown fox jumps over the lazy dog." to transcribe with the two dials. Show time, words per minute (WPM), and character accuracy during and after the run.
+3. **Comparison:** Type that same sentence first with a one-stick on-screen QWERTY keyboard, then with the two dials. Show each mode's time, WPM, and character accuracy side by side, with the differences. The QWERTY grid has letters, digits, punctuation, Shift, Space, and Backspace. Move its focus with the left stick and select a key with A.
 
-The timer starts with the first entered character. A run ends when the text exactly matches the prompt, when the user presses Submit, or after two minutes. An early submission or timeout is scored using the text entered so far. WPM is correctly entered final characters divided by five, then divided by elapsed minutes. Keystroke accuracy is correct character insertions divided by all character insertions; mistakes still count after correction, and Backspace is not an insertion. Autocomplete is off during timed runs. Results are not saved after refresh.
+The timer starts with the first entered character. A run ends when the text exactly matches the prompt, when the user presses Submit, or after two minutes. An early submission or timeout is scored using the text entered so far. WPM is correctly entered final characters divided by five, then divided by elapsed minutes. Character accuracy uses the minimum edit distance between the current text and any prompt prefix, so one missing space counts once instead of making every following character incorrect. Backspace updates the score as the text is corrected. Autocomplete is off during timed runs. Results are not saved after refresh.
 
-The app currently has three destinations: Practice for controller-only writing, Debug for raw controller diagnostics, and Config for controller-driven setup. Start (button 9) cycles pages.
+The app has five destinations: Practice for controller-only writing, Typing Test for two-dial transcription, Compare for one-stick versus two-stick runs, Debug for raw controller diagnostics, and Config for controller-driven setup. Start (button 9) cycles pages.
 
 ## Controls
 
@@ -22,16 +22,16 @@ Both sticks control their respective dials. Automatic selection is the default: 
 
 The input module supports customizable action bindings. Config can edit these defaults and saves changes in the current browser:
 
-| Control              | Action                                                        |
-| -------------------- | ------------------------------------------------------------- |
-| Left / right trigger | Previous / next generated layer                               |
-| Left / right bumper  | Backspace / Space                                             |
-| Plus                 | Submit text or end a timed run early                          |
-| Minus                | Leave autocomplete selection                                  |
-| X (top)              | Enter or leave autocomplete selection                          |
-| B (bottom)           | Enter while typing; accept a suggestion in autocomplete       |
-| D-pad                | Move the text cursor or autocomplete selection                |
-| B                    | Unassigned                                                    |
+| Control              | Action                                                  |
+| -------------------- | ------------------------------------------------------- |
+| Left / right trigger | Previous / next generated layer                         |
+| Left / right bumper  | Backspace / Space                                       |
+| Plus                 | Submit text or end a timed run early                    |
+| Minus                | Leave autocomplete selection                            |
+| X (top)              | Enter or leave autocomplete selection                   |
+| B (bottom)           | Enter while typing; accept a suggestion in autocomplete |
+| D-pad                | Move the text cursor or autocomplete selection          |
+| B                    | Unassigned                                              |
 
 The D-pad moves the writing caret while typing and changes the active suggestion while autocomplete has focus. Holding Backspace, Enter, or Space repeats that action after a short delay. Stick character entry does not repeat.
 
@@ -55,7 +55,7 @@ The current app starts with the authored default layout. Config can add, remove,
 ## Project structure
 
 - `src/app/`: App shell, page navigation, and shared styling.
-- `src/pages/`: Free typing, typing test, and comparison screens.
+- `src/app/`: Practice, typing test, comparison, debug, and config screens.
 - `src/typing/`: Reusable dial input, gamepad controls, autocomplete, and settings.
 - `src/benchmark/`: Timed runs, scoring, and comparison results.
 - `src/data/`: The test sentence and local autocomplete dictionary.
@@ -65,6 +65,6 @@ Keep components and tests beside the feature that uses them. Add more directorie
 ## Demo checks
 
 - Try Practice and Debug with the team's three controllers and verify axis remapping.
-- Check exact completion, early submission, and timeout. Verify WPM and keystroke accuracy after errors and corrections.
+- Check exact completion, early submission, and timeout. Verify WPM and character accuracy after errors and corrections.
 - Check that autocomplete works in free typing and stays off in both timed modes.
 - Check that minor movement around a sector boundary does not change the visual highlight or pending character, while moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters only the last confirmed character. Check both sticks and a layer change while held.
