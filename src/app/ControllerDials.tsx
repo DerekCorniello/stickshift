@@ -186,9 +186,29 @@ export function ControllerDials({
     updateLayer(layers[(index + step + layers.length) % layers.length].id);
   };
 
+  const vibrateOnSelection = () => {
+  const gamepad = navigator.getGamepads?.()[pad.index];
+  const actuator = gamepad?.vibrationActuator;
+  
+  console.log("Sending vibration");
+  if (!actuator) {
+      console.log("No vibration actuator found for this controller in this browser.");
+      return;
+    }
+
+  void actuator.playEffect("dual-rumble", {
+    duration: 150,
+    strongMagnitude: 0.5,
+    weakMagnitude: 0.5,
+  }).catch(err => {
+      console.error("Vibration playEffect rejected by browser:", err);
+    });
+};
+
   const reportEvent = (event: ControllerEvent) => {
     onControllerEvent?.(event);
     if (event.kind === "character") {
+      vibrateOnSelection();
       onCharacterInput?.(event.character);
     } else if (
       event.kind === "button" &&
