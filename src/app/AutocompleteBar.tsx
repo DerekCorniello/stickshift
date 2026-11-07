@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { Ref } from "react";
 import frequencyCsvUrl from "../data/ngram_freq_filtered.csv?url";
 import { parseFrequencyLine, WordTrie, type WordFrequency } from "./wordTrie";
 import "./autocompleteBar.css";
@@ -9,6 +10,12 @@ type AutocompleteBarProps = Readonly<{
   maxWords?: number;
   maxSuggestions?: number;
   onSelect?: (word: string) => void;
+  readOnly?: boolean;
+  inputRef?: Ref<HTMLInputElement>;
+  selectionActive?: boolean;
+  selectedSuggestionIndex?: number;
+  onSuggestionsChange?: (suggestions: readonly string[]) => void;
+  label?: string;
 }>;
 
 const defaultMaxWords = 100_000;
@@ -59,6 +66,12 @@ export function AutocompleteBar({
   maxWords = defaultMaxWords,
   maxSuggestions = 5,
   onSelect,
+  readOnly = false,
+  inputRef,
+  selectionActive = false,
+  selectedSuggestionIndex = 0,
+  onSuggestionsChange,
+  label = "Type a word",
 }: AutocompleteBarProps) {
   const [trie, setTrie] = useState<WordTrie | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
@@ -89,13 +102,24 @@ export function AutocompleteBar({
     () => (trie && query.length > 0 ? trie.search(query) : []),
     [query, trie],
   );
+  const suggestionWords = useMemo(
+    () => suggestions.map((suggestion) => suggestion.word),
+    [suggestions],
+  );
+
+  useEffect(() => {
+    onSuggestionsChange?.(suggestionWords);
+  }, [onSuggestionsChange, suggestionWords]);
 
   const selectWord = (word: string) => {
-    onChange?.(word);
+    if (onSelect) {
+      onSelect(word);
+    } else {
+      onChange?.(word);
+    }
     if (value === undefined) {
       setInternalQuery(word);
     }
-    onSelect?.(word);
   };
 
   const updateQuery = (nextQuery: string) => {
@@ -108,20 +132,26 @@ export function AutocompleteBar({
   return (
     <section className="autocomplete" aria-label="Word autocomplete">
       <label className="autocomplete__label" htmlFor="word-autocomplete">
-        Type a word
+        {label}
       </label>
       <input
+        ref={inputRef}
         id="word-autocomplete"
         className="autocomplete__input"
         value={query}
         onChange={(event) => updateQuery(event.target.value)}
+        readOnly={readOnly}
         autoComplete="off"
         aria-autocomplete="list"
         aria-controls="word-suggestions"
+        aria-activedescendant={
+          selectionActive && suggestionWords[selectedSuggestionIndex]
+            ? `word-suggestion-${selectedSuggestionIndex}`
+            : undefined
+        }
         placeholder={
           status === "loading" ? "Loading word list..." : "Start typing..."
         }
-        disabled={status !== "ready"}
       />
       {status === "error" && (
         <p className="autocomplete__message" role="alert">
@@ -135,11 +165,15 @@ export function AutocompleteBar({
           role="listbox"
           aria-label="Word suggestions"
         >
-          {suggestions.map((suggestion) => (
+          {suggestions.map((suggestion, index) => (
             <button
               key={suggestion.word}
+              id={`word-suggestion-${index}`}
               type="button"
               role="option"
+              aria-selected={
+                selectionActive && index === selectedSuggestionIndex
+              }
               onClick={() => selectWord(suggestion.word)}
             >
               {suggestion.word}

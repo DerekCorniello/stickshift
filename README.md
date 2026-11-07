@@ -18,6 +18,12 @@ Render a second `Dial` with `rightDialConfig` and the same `activeLayerId`. The 
 
 On the numbers and symbols layer, the five digits on each dial run from upper left to upper right.
 
-Run `npm install` and `npm run dev` to open the app. Connect a controller and move its sticks to highlight characters. The highlight and pending character change immediately when the stick moves clearly past a sector boundary; a small buffer around each boundary prevents minor wobble from switching sectors. The event list reports the confirmed character when each stick returns to the deadzone. The left and right triggers move between layers, and the layer buttons do the same. Other buttons appear in the event list with their default action names, ready for later typing behavior. If a stick uses unusual axes, use its X and Y selectors below the dial. For example, choose axes 6 and 7 for a stick that reports there. The visualizer below the dials shows the live axis numbers and values. Axis choices last until you switch controllers or reload the page. Character entry and autocomplete are not connected yet.
+Run `npm install` and `npm run dev` to open the app. Connect a controller to use Practice and Debug. A sector changes when the stick moves clearly past its boundary; a small buffer around each boundary prevents minor wobble from switching sectors. Returning to center enters the last selected character. Axis choices can be changed in Debug and last until you switch controllers or reload the page.
+
+## App pages
+
+- **Practice** is a controller-only writing area. Stick selections enter characters on return to center; mapped buttons handle spaces, line breaks, deletion, and caret movement. The on-screen guide lists the current button actions.
+- The autocomplete bar stays above the dials. X (top face button) enters or leaves suggestion selection, the D-pad changes the selection, and B (bottom face button) accepts it and returns focus to the dials. Holding Backspace, Enter, or Space repeats that editing action after a short delay.
+- **Debug** keeps the dial event list, axis selectors, and raw gamepad visualizer.
 
 Run `npm run check` to typecheck, lint, check formatting, test the dials, and build the app.

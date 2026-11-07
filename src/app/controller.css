@@ -1,0 +1,45 @@
+.controller-component {
+  padding: 24px;
+  border: 1px solid #dce3ee;
+  border-radius: 16px;
+  color: #17243a;
+  background: #f5f7fb;
+  font-family: system-ui, sans-serif;
+}
+
+.controller-component__autocomplete {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #dce3ee;
+}
+
+.controller-component__autocomplete .autocomplete {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.controller-component__dials .controller-dials {
+  padding: 20px 0 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.controller-component__mode {
+  margin: 12px 0 0;
+  color: #355ec2;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.controller-component__dials:focus-visible {
+  outline: 3px solid #8ba5e5;
+  outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .controller-component {
+    padding: 16px;
+  }
+}

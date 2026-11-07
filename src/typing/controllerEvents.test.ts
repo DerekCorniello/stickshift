@@ -122,7 +122,7 @@ describe("controller events", () => {
 
   it.each([
     [0, "enter"],
-    [2, "autocomplete"],
+    [3, "autocomplete"],
     [4, "backspace"],
     [5, "space"],
     [6, "previousLayer"],

@@ -56,6 +56,12 @@
   background: #e7edfb;
 }
 
+.autocomplete__suggestions button[aria-selected="true"] {
+  border-color: #355ec2;
+  color: white;
+  background: #355ec2;
+}
+
 .autocomplete__message {
   color: #53627b;
 }
