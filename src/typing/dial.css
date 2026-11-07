@@ -1,0 +1,42 @@
+.dial {
+  --dial-wedge: #e8edf5;
+  --dial-wedge-highlighted: #4b74d3;
+  --dial-label: #17243a;
+  --dial-label-highlighted: #fff;
+  --dial-outline: #fff;
+  width: min(100%, 20rem);
+}
+
+.dial-layer {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dial-slice__wedge {
+  fill: var(--dial-wedge);
+  stroke: var(--dial-outline);
+  stroke-width: 2;
+}
+
+.dial-slice__label {
+  fill: var(--dial-label);
+  font:
+    600 12px system-ui,
+    sans-serif;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.dial-slice--highlighted .dial-slice__wedge {
+  fill: var(--dial-wedge-highlighted);
+}
+
+.dial-slice--highlighted .dial-slice__label {
+  fill: var(--dial-label-highlighted);
+}
+
+.dial-layer__hub {
+  fill: var(--dial-outline);
+}
