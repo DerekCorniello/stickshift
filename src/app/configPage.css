@@ -1,0 +1,261 @@
+.config-page__sections {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.8fr);
+  gap: 18px;
+}
+.config-page__dial-mappings {
+  border: 1px solid #dce3ee;
+  border-radius: 14px;
+  background: white;
+  overflow: hidden;
+}
+.config-page__dial-mappings--active {
+  border-color: #355ec2;
+  box-shadow: 0 0 0 3px #dfe8ff;
+}
+.config-page__dial-mappings > .config-panel {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid #dce3ee;
+}
+.config-panel {
+  padding: 20px;
+  margin-bottom: 18px;
+  border: 1px solid #dce3ee;
+  border-radius: 14px;
+  background: white;
+}
+.config-panel--active {
+  border-color: #355ec2;
+  box-shadow: 0 0 0 3px #dfe8ff;
+}
+.config-panel h2 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+.config-panel p {
+  color: #53627b;
+  line-height: 1.5;
+}
+.config-page__layers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.config-row {
+  padding: 3px;
+  border-radius: 7px;
+}
+.config-row button {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.config-page__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.config-page__tabs button,
+.config-page__layer-actions button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #cbd5e5;
+  border-radius: 8px;
+  color: #24324a;
+  background: white;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+.config-page__tabs button[aria-pressed="true"] {
+  border-color: #355ec2;
+  color: white;
+  background: #355ec2;
+}
+.config-page__tabs .config-page__reset {
+  margin-left: auto;
+}
+.config-page__layer-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.config-page__layer-actions button {
+  width: 100%;
+}
+.config-page__layer-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.config-row--selected,
+.config-keyboard__selected,
+.config-confirm__selected {
+  background: #355ec2 !important;
+  color: white !important;
+}
+.config-row--selected button {
+  color: white;
+}
+.config-page__dials {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.config-page__dial {
+  padding: 10px;
+  border: 1px solid #dce3ee;
+  border-radius: 10px;
+}
+.config-page__dial--active {
+  border-color: #355ec2;
+}
+.config-page__dial h3 {
+  margin: 0;
+  text-transform: capitalize;
+}
+.config-page__dial .dial {
+  max-width: 280px;
+  margin: auto;
+}
+.config-page .dial-slice--selected {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+.config-page .dial-slice--duplicate .dial-slice__wedge {
+  fill: #c93642;
+  stroke: #941f2a;
+}
+.config-page .dial-slice--duplicate .dial-slice__label {
+  fill: white;
+}
+.config-page .dial-slice--unassigned .dial-slice__wedge {
+  fill: #c88418;
+  stroke: #87540b;
+}
+.config-page .dial-slice--unassigned .dial-slice__label {
+  fill: white;
+}
+.config-page__slice-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.config-page__slice-actions button {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #cbd5e5;
+  border-radius: 8px;
+  color: #24324a;
+  background: white;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+.config-warning--duplicate {
+  color: #b42332;
+  font-weight: 700;
+}
+.config-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.config-panel th,
+.config-panel td {
+  padding: 8px;
+  border-bottom: 1px solid #dce3ee;
+  text-align: left;
+}
+.config-overlay {
+  position: fixed;
+  z-index: 10;
+  inset: 10% max(5%, calc((100% - 650px) / 2));
+  padding: 24px;
+  overflow: auto;
+  border: 2px solid #355ec2;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 20px 80px #17243a66;
+}
+.config-keyboard {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 5px;
+}
+.config-keyboard-wrap {
+  position: relative;
+  padding-top: 44px;
+}
+.config-lifted-slice {
+  position: absolute;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: #355ec2;
+  box-shadow: 0 8px 16px #17243a55;
+  transform: translateX(-50%) scale(1.15);
+  transition:
+    left 160ms ease,
+    top 160ms ease;
+  pointer-events: none;
+}
+.config-remap-preview {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 24px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+.config-remap-preview span:first-child {
+  padding: 12px 18px;
+  border-radius: 12px;
+  color: white;
+  background: #355ec2;
+  box-shadow: none;
+}
+.config-overlay--move {
+  inset: auto 18px 18px auto;
+  width: min(360px, calc(100% - 36px));
+}
+.config-keyboard button,
+.config-confirm button {
+  min-height: 40px;
+  border: 1px solid #cbd5e5;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+.config-confirm {
+  display: flex;
+  gap: 10px;
+}
+.config-confirm button {
+  min-width: 100px;
+}
+@media (max-width: 850px) {
+  .config-page__sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .config-page .dial-slice--selected {
+    transition: none;
+  }
+  .config-lifted-slice {
+    transition: none;
+  }
+}

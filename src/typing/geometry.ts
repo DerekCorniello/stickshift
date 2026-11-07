@@ -51,6 +51,17 @@ export function slicePath(index: number, sliceCount: number): string {
   const center = 100;
   const innerRadius = 30;
   const outerRadius = 94;
+  if (sliceCount === 1) {
+    return [
+      `M ${center} ${center - outerRadius}`,
+      `A ${outerRadius} ${outerRadius} 0 1 1 ${center} ${center + outerRadius}`,
+      `A ${outerRadius} ${outerRadius} 0 1 1 ${center} ${center - outerRadius}`,
+      `M ${center} ${center - innerRadius}`,
+      `A ${innerRadius} ${innerRadius} 0 1 0 ${center} ${center + innerRadius}`,
+      `A ${innerRadius} ${innerRadius} 0 1 0 ${center} ${center - innerRadius}`,
+      "Z",
+    ].join(" ");
+  }
   const sweep = (2 * Math.PI) / sliceCount;
   const start = (index - 0.5) * sweep;
   const end = (index + 0.5) * sweep;
