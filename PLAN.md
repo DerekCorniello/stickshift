@@ -14,13 +14,13 @@ React and TypeScript, using the browser Gamepad API for joystick positions and b
 
 The timer starts with the first entered character. A run ends when the text exactly matches the prompt, when the user presses Submit, or after two minutes. An early submission or timeout is scored using the text entered so far. WPM is correctly entered final characters divided by five, then divided by elapsed minutes. Keystroke accuracy is correct character insertions divided by all character insertions; mistakes still count after correction, and Backspace is not an insertion. Autocomplete is off during timed runs. Results are not saved after refresh.
 
-The app currently has two destinations: Practice for controller-only writing and Debug for raw controller diagnostics. A separate configuration page is not part of the current interface.
+The app currently has three destinations: Practice for controller-only writing, Debug for raw controller diagnostics, and Config for controller-driven setup. Start (button 9) cycles pages.
 
 ## Controls
 
 Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. In manual mode, moving the stick highlights a sector and clicking that stick enters its character.
 
-The input module supports customizable action bindings. The current app uses these defaults and does not include a settings page:
+The input module supports customizable action bindings. Config can edit these defaults and saves changes in the current browser:
 
 | Control              | Action                                                        |
 | -------------------- | ------------------------------------------------------------- |
@@ -50,7 +50,7 @@ The letter layout is a heuristic based on [English letter and bigram counts](htt
 
 The 32 punctuation characters follow ASCII code-point order across the two symbol layers.
 
-The current app uses the authored default layout. A future configuration experience may let users change sector count, character placement, selection mode, deadzone, and action bindings.
+The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. Selection mode and deadzone remain fixed for now.
 
 ## Project structure
 

@@ -67,6 +67,12 @@ input[type="range"] {
   gap: 6px;
 }
 
+.app-header__hint {
+  color: #67758b;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .app-nav__item {
   padding: 9px 13px;
   border: 0;

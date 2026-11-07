@@ -8,6 +8,8 @@ type LayerProps = Readonly<{
   position: StickPosition;
   deadzone: number;
   highlightedIndex?: number | null;
+  selectedSliceId?: string | null;
+  flaggedSliceIds?: ReadonlySet<string>;
   onHighlightChange: (character: string | null) => void;
 }>;
 
@@ -16,6 +18,8 @@ export function Layer({
   position,
   deadzone,
   highlightedIndex: selectedIndex,
+  selectedSliceId,
+  flaggedSliceIds,
   onHighlightChange,
 }: LayerProps) {
   const highlightedIndex =
@@ -46,6 +50,9 @@ export function Layer({
           index={index}
           count={config.slices.length}
           highlighted={index === highlightedIndex}
+          selected={slice.id === selectedSliceId}
+          duplicate={flaggedSliceIds?.has(slice.id) ?? false}
+          unassigned={slice.character.length !== 1}
         />
       ))}
       <circle className="dial-layer__hub" cx="100" cy="100" r="27" />
