@@ -43,7 +43,11 @@ export function getControllerButtonName(
   buttonIndex: number,
 ): string {
   const { type } = helper.getGamepadInfo(gamepadId);
-  return helper.getButtonName(type, buttonIndex);
+  if (buttonIndex === 10 || buttonIndex === 11) {
+    const side = buttonIndex === 10 ? "Left" : "Right";
+    return `${side} stick click`;
+  }
+  return helper.getButtonName(type, getVisualButtonIndex(type, buttonIndex));
 }
 
 export function getControllerAxisName(
@@ -57,14 +61,30 @@ export function getControllerAxisName(
 export function getControllerButtonIcon(
   gamepadId: string,
   buttonIndex: number,
-  color: "Black" | "White" = "Black",
+  color: "Black" | "White" = "White",
 ): string | null {
   const { type } = helper.getGamepadInfo(gamepadId);
-  return helper.getButtonImagePath(
+  const icon = helper.getButtonImagePath(
     type,
-    buttonIndex,
+    getVisualButtonIndex(type, buttonIndex),
     imageBasePath,
     color,
     "Outline",
   );
+  if (icon === null) return null;
+  if (buttonIndex === 10)
+    return icon.replace("Left Stick.svg", "Left Stick Click.svg");
+  if (buttonIndex === 11)
+    return icon.replace("Right Stick.svg", "Right Stick Click.svg");
+  return icon;
+}
+
+function getVisualButtonIndex(
+  type: ControllerType,
+  buttonIndex: number,
+): number {
+  if (type !== "xbox") return buttonIndex;
+  if (buttonIndex === 2) return 3;
+  if (buttonIndex === 3) return 2;
+  return buttonIndex;
 }
