@@ -127,6 +127,92 @@
   line-height: 1.45;
 }
 
+.typing-test-page__card {
+  max-width: 900px;
+  margin-bottom: 22px;
+  padding: clamp(20px, 3vw, 34px);
+  border: 1px solid #dce3ee;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 26px rgb(30 51 85 / 4%);
+}
+
+.typing-test-page__prompt {
+  margin: 0 0 10px;
+  color: #182439;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.typing-test-page__progress {
+  color: #67758b;
+  font-size: 13px;
+}
+
+.typing-test-page__input {
+  min-height: 68px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #d4ddeb;
+  border-radius: 11px;
+  color: #273650;
+  background: #fbfcfe;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 18px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.typing-test-page__stats {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.typing-test-page__stats div {
+  display: grid;
+  gap: 5px;
+  min-width: 150px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #eef3ff;
+}
+
+.typing-test-page__stats span {
+  color: #59677d;
+  font-size: 12px;
+}
+
+.typing-test-page__stats strong {
+  color: #254cae;
+  font-size: 24px;
+}
+
+.typing-test-page__complete {
+  margin-top: 18px;
+  color: #276344;
+  font-weight: 700;
+}
+
+.typing-test-page__reset {
+  margin-top: 18px;
+  padding: 9px 14px;
+  border: 1px solid #b9c9e8;
+  border-radius: 8px;
+  color: #254cae;
+  background: #f5f8ff;
+  cursor: pointer;
+  font-weight: 650;
+}
+
+@media (max-width: 620px) {
+  .typing-test-page__stats {
+    flex-direction: column;
+  }
+}
+
 .debug-page .gamepad-visualizer {
   margin-top: 22px;
 }
