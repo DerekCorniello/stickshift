@@ -9,6 +9,7 @@ import {
 } from "../typing";
 import type {
   ButtonBindings,
+  ControlAction,
   ControllerEvent,
   DialConfig,
   GamepadSnapshot,
@@ -36,6 +37,8 @@ type ControllerDialsProps = Readonly<{
   deadzone?: number;
   showDiagnostics?: boolean;
   onControllerEvent?: (event: ControllerEvent) => void;
+  onCharacterInput?: (character: string) => void;
+  onActionInput?: (action: ControlAction) => void;
 }>;
 
 type AxisControlsProps = Readonly<{
@@ -135,6 +138,8 @@ export function ControllerDials({
   deadzone = 0.2,
   showDiagnostics = true,
   onControllerEvent,
+  onCharacterInput,
+  onActionInput,
 }: ControllerDialsProps) {
   const [localLayerId, setLocalLayerId] = useState(leftConfig.layers[0].id);
   const [localLeftMapping, setLocalLeftMapping] =
@@ -181,6 +186,19 @@ export function ControllerDials({
     updateLayer(layers[(index + step + layers.length) % layers.length].id);
   };
 
+  const reportEvent = (event: ControllerEvent) => {
+    onControllerEvent?.(event);
+    if (event.kind === "character") {
+      onCharacterInput?.(event.character);
+    } else if (
+      event.kind === "button" &&
+      event.phase === "press" &&
+      event.action
+    ) {
+      onActionInput?.(event.action);
+    }
+  };
+
   useControllerEvents(
     pad,
     bindings,
@@ -188,7 +206,7 @@ export function ControllerDials({
     rightPosition,
     deadzone,
     (event) => {
-      onControllerEvent?.(event);
+      reportEvent(event);
       setRecentEvents((current) =>
         [describeEvent(event), ...current].slice(0, 8),
       );
@@ -200,7 +218,7 @@ export function ControllerDials({
         const layer = side === "left" ? leftLayer : rightLayer;
         const index = side === "left" ? leftSelectedIndex : rightSelectedIndex;
         if (index !== null) {
-          onControllerEvent?.({
+          reportEvent({
             kind: "character",
             side,
             character: layer.slices[index].character,
