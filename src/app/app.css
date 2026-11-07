@@ -15,6 +15,7 @@
 .gamepad-button-label {
   display: inline-flex;
   align-items: center;
+  min-height: 24px;
   gap: 6px;
   vertical-align: middle;
 }

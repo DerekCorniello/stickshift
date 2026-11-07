@@ -173,6 +173,7 @@
   padding: 8px;
   border-bottom: 1px solid #dce3ee;
   text-align: left;
+  vertical-align: middle;
 }
 .config-page .gamepad-button-label img {
   filter: invert(1);
