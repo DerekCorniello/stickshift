@@ -39,6 +39,16 @@ The default is 13 sectors per dial. Generate enough layers to place all 94 print
 
 Users can set any positive whole number of sectors per dial, with no upper limit or warning. Changing the count regenerates a complete layout, after which users can move characters between sectors and layers. Save the sector count, character placement, selection mode, deadzone, and action bindings in the current browser.
 
+## Project structure
+
+- `src/app/`: App shell, page navigation, and shared styling.
+- `src/pages/`: Free typing, typing test, and comparison screens.
+- `src/typing/`: Reusable dial input, gamepad controls, autocomplete, and settings.
+- `src/benchmark/`: Timed runs, scoring, and comparison results.
+- `src/data/`: The test sentence and local autocomplete dictionary.
+
+Keep components and tests beside the feature that uses them. Add more directories only when the code needs them.
+
 ## Demo checks
 
 - Try the three-page flow with the team's three controllers, including both selection modes, changed sector counts, remapped buttons, and settings after refresh.
