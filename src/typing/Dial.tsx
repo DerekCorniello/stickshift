@@ -7,6 +7,7 @@ export type DialProps = Readonly<{
   activeLayerId: string;
   position: StickPosition;
   deadzone: number;
+  highlightedIndex?: number | null;
   onHighlightChange: (character: string | null) => void;
 }>;
 
@@ -15,6 +16,7 @@ export function Dial({
   activeLayerId,
   position,
   deadzone,
+  highlightedIndex,
   onHighlightChange,
 }: DialProps) {
   const layer = config.layers.find(
@@ -30,6 +32,7 @@ export function Dial({
         config={layer}
         position={position}
         deadzone={deadzone}
+        highlightedIndex={highlightedIndex}
         onHighlightChange={onHighlightChange}
       />
     </div>

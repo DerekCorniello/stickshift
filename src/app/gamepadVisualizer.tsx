@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { GamepadSnapshot } from "./useGamepad";
+import type { GamepadSnapshot } from "../typing";
 
 type GamepadVisualizerProps = Readonly<{
   gamepads: Readonly<Record<number, GamepadSnapshot>>;

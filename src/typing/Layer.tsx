@@ -7,6 +7,7 @@ type LayerProps = Readonly<{
   config: LayerConfig;
   position: StickPosition;
   deadzone: number;
+  highlightedIndex?: number | null;
   onHighlightChange: (character: string | null) => void;
 }>;
 
@@ -14,13 +15,13 @@ export function Layer({
   config,
   position,
   deadzone,
+  highlightedIndex: selectedIndex,
   onHighlightChange,
 }: LayerProps) {
-  const highlightedIndex = highlightedSliceIndex(
-    position,
-    deadzone,
-    config.slices.length,
-  );
+  const highlightedIndex =
+    selectedIndex === undefined
+      ? highlightedSliceIndex(position, deadzone, config.slices.length)
+      : selectedIndex;
   const highlightedCharacter =
     highlightedIndex === null
       ? null

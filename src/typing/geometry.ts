@@ -19,6 +19,34 @@ export function highlightedSliceIndex(
   return Math.floor((angle + sweep / 2) / sweep) % sliceCount;
 }
 
+export function stableSliceIndex(
+  position: StickPosition,
+  deadzone: number,
+  sliceCount: number,
+  currentIndex: number | null,
+): number | null {
+  const candidateIndex = highlightedSliceIndex(position, deadzone, sliceCount);
+  if (candidateIndex === null || currentIndex === null) {
+    return candidateIndex;
+  }
+
+  if (candidateIndex === currentIndex) {
+    return currentIndex;
+  }
+
+  const sweep = (2 * Math.PI) / sliceCount;
+  const angle =
+    (Math.atan2(position.x, -position.y) + 2 * Math.PI) % (2 * Math.PI);
+  const currentCenter = (currentIndex * 2 * Math.PI) / sliceCount;
+  const signedDistance =
+    ((angle - currentCenter + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+  const boundaryWithBuffer = sweep * 0.65;
+
+  return Math.abs(signedDistance) > boundaryWithBuffer
+    ? candidateIndex
+    : currentIndex;
+}
+
 export function slicePath(index: number, sliceCount: number): string {
   const center = 100;
   const innerRadius = 30;

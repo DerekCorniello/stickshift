@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Dial } from "./Dial";
 import { leftDialConfig, rightDialConfig } from "./defaultLayout";
-import { highlightedSliceIndex, slicePath } from "./geometry";
+import { highlightedSliceIndex, slicePath, stableSliceIndex } from "./geometry";
 import type { DialConfig, StickPosition } from "./types";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -50,16 +50,16 @@ describe("default dial layout", () => {
   it("splits letters, digits, and punctuation across the expected layers", () => {
     expect(
       leftDialConfig.layers[0].slices.map((slice) => slice.character).join(""),
-    ).toBe("abcdefghijklm");
+    ).toBe("ehaiduqfgyvxs");
     expect(
       rightDialConfig.layers[0].slices.map((slice) => slice.character).join(""),
-    ).toBe("nopqrstuvwxyz");
+    ).toBe("tnolcmpwbkjzr");
     expect(
       leftDialConfig.layers[1].slices.map((slice) => slice.character).join(""),
-    ).toBe("ABCDEFGHIJKLM");
+    ).toBe("EHAIDUQFGYVXS");
     expect(
       rightDialConfig.layers[1].slices.map((slice) => slice.character).join(""),
-    ).toBe("NOPQRSTUVWXYZ");
+    ).toBe("TNOLCMPWBKJZR");
     const topIndices = [11, 12, 0, 1, 2];
     expect(
       topIndices
@@ -82,6 +82,25 @@ describe("default dial layout", () => {
       ...rightDialConfig.layers[3].slices,
     ].map((slice) => slice.character);
     expect(placedPunctuation).toEqual(punctuation);
+  });
+
+  it("keeps common letter connections near each other", () => {
+    const left = leftDialConfig.layers[0].slices.map(
+      (slice) => slice.character,
+    );
+    const right = rightDialConfig.layers[0].slices.map(
+      (slice) => slice.character,
+    );
+    const distance = (first: number, second: number) => {
+      const gap = Math.abs(first - second);
+      return Math.min(gap, 13 - gap);
+    };
+
+    expect(distance(left.indexOf("e"), right.indexOf("t"))).toBe(0);
+    expect(distance(right.indexOf("t"), left.indexOf("h"))).toBe(1);
+    expect(distance(left.indexOf("e"), right.indexOf("r"))).toBe(1);
+    expect(distance(left.indexOf("a"), right.indexOf("n"))).toBe(1);
+    expect(distance(left.indexOf("e"), left.indexOf("s"))).toBe(1);
   });
 });
 
@@ -115,6 +134,22 @@ describe("slice geometry and highlighting", () => {
       expect(
         highlightedSliceIndex(position(-boundary - 0.001), 0.2, count),
       ).toBe(count - 1);
+    },
+  );
+
+  it.each([8, 13])(
+    "keeps the current selection through a small boundary wobble on a %i-slice layer",
+    (count) => {
+      const sweep = (2 * Math.PI) / count;
+      const position = (angle: number): StickPosition => ({
+        x: Math.sin(angle),
+        y: -Math.cos(angle),
+      });
+
+      expect(stableSliceIndex(position(sweep * 0.58), 0.2, count, 0)).toBe(0);
+      expect(stableSliceIndex(position(sweep * 0.66), 0.2, count, 0)).toBe(1);
+      expect(stableSliceIndex(position(sweep * 0.42), 0.2, count, 1)).toBe(1);
+      expect(stableSliceIndex(position(sweep * 0.34), 0.2, count, 1)).toBe(0);
     },
   );
 
@@ -171,8 +206,8 @@ describe("Dial", () => {
       container
         .querySelector(".dial-slice--highlighted")
         ?.getAttribute("data-character"),
-    ).toBe("a");
-    expect(onHighlightChange).toHaveBeenLastCalledWith("a");
+    ).toBe("e");
+    expect(onHighlightChange).toHaveBeenLastCalledWith("e");
 
     renderDial(leftDialConfig, "symbols", { x: 0, y: -1 }, onHighlightChange);
     expect(container.querySelectorAll(".dial-slice")).toHaveLength(8);
@@ -205,7 +240,7 @@ describe("Dial", () => {
       container
         .querySelector(".dial-slice--highlighted")
         ?.getAttribute("data-character"),
-    ).toBe("n");
-    expect(onHighlightChange).toHaveBeenLastCalledWith("n");
+    ).toBe("t");
+    expect(onHighlightChange).toHaveBeenLastCalledWith("t");
   });
 });

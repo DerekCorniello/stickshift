@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ControllerDials } from "./ControllerDials";
 import { readStickPosition, defaultRightMapping } from "./axisMapping";
-import type { GamepadSnapshot } from "./useGamepad";
+import type { GamepadSnapshot } from "../typing";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -55,7 +55,10 @@ describe("controller dial input", () => {
       container
         .querySelector('[data-dial-id="left"] .dial-slice--highlighted')
         ?.getAttribute("data-character"),
-    ).toBe("a");
+    ).toBe("e");
+    expect(
+      container.querySelector(".controller-dials__events")?.textContent,
+    ).not.toContain("would type");
     expect(
       container.querySelector(
         '[data-dial-id="right"] .dial-slice--highlighted',
@@ -79,7 +82,10 @@ describe("controller dial input", () => {
       container
         .querySelector('[data-dial-id="right"] .dial-slice--highlighted')
         ?.getAttribute("data-character"),
-    ).toBe("n");
+    ).toBe("t");
+    expect(
+      container.querySelector(".controller-dials__events")?.textContent,
+    ).not.toContain("would type");
 
     const numberLayerButton = Array.from(
       container.querySelectorAll("button"),
@@ -98,5 +104,97 @@ describe("controller dial input", () => {
         .querySelector('[data-dial-id="right"] .dial-slice--highlighted')
         ?.getAttribute("data-character"),
     ).toBe("7");
+    act(() =>
+      root.render(<ControllerDials pad={{ ...pad, axes: Array(8).fill(0) }} />),
+    );
+    expect(
+      container.querySelector(".controller-dials__events")?.textContent,
+    ).toContain('Left stick would type "2" (numbers-symbols)');
+    expect(
+      container.querySelector(".controller-dials__events")?.textContent,
+    ).toContain('Right stick would type "7" (numbers-symbols)');
+  });
+
+  it("switches layers once per trigger press and identifies the new character", () => {
+    const base: GamepadSnapshot = {
+      id: "Standard controller",
+      index: 0,
+      connected: true,
+      mapping: "standard",
+      axes: [0, -1, 0, 0],
+      buttons: Array.from({ length: 18 }, () => ({ pressed: false, value: 0 })),
+    };
+    const renderPad = (pad: GamepadSnapshot) =>
+      act(() => root.render(<ControllerDials pad={pad} />));
+    const withButton = (index: number, pressed: boolean): GamepadSnapshot => ({
+      ...base,
+      buttons: base.buttons.map((button, buttonIndex) =>
+        buttonIndex === index ? { pressed, value: pressed ? 1 : 0 } : button,
+      ),
+    });
+
+    renderPad(base);
+    renderPad(withButton(7, true));
+    expect(
+      container.querySelector(".dial-layer")?.getAttribute("data-layer-id"),
+    ).toBe("uppercase");
+    expect(
+      container
+        .querySelector('[data-dial-id="left"] .dial-slice--highlighted')
+        ?.getAttribute("data-character"),
+    ).toBe("E");
+
+    renderPad(withButton(7, true));
+    expect(
+      container.querySelector(".dial-layer")?.getAttribute("data-layer-id"),
+    ).toBe("uppercase");
+    renderPad(base);
+    renderPad(withButton(6, true));
+    expect(
+      container.querySelector(".dial-layer")?.getAttribute("data-layer-id"),
+    ).toBe("lowercase");
+    expect(
+      container
+        .querySelector('[data-dial-id="left"] .dial-slice--highlighted')
+        ?.getAttribute("data-character"),
+    ).toBe("e");
+    expect(
+      container.querySelector(".controller-dials__events")?.textContent,
+    ).toContain("Button 6 press: Previous layer");
+  });
+
+  it("keeps the confirmed character through boundary wobble and return", () => {
+    const base: GamepadSnapshot = {
+      id: "Standard controller",
+      index: 0,
+      connected: true,
+      mapping: "standard",
+      axes: [0, -1, 0, 0],
+      buttons: [],
+    };
+    const renderPad = (pad: GamepadSnapshot) =>
+      act(() => root.render(<ControllerDials pad={pad} />));
+
+    renderPad(base);
+    const wobbleAngle = (2 * Math.PI * 0.58) / 13;
+    renderPad({
+      ...base,
+      axes: [Math.sin(wobbleAngle), -Math.cos(wobbleAngle), 0, 0],
+    });
+
+    expect(
+      container
+        .querySelector('[data-dial-id="left"] .dial-slice--highlighted')
+        ?.getAttribute("data-character"),
+    ).toBe("e");
+
+    renderPad({ ...base, axes: [0, 0, 0, 0] });
+    expect(
+      container.querySelector('[aria-label="Left highlighted character"]')
+        ?.textContent,
+    ).toBe("-");
+    expect(
+      container.querySelector(".controller-dials__events")?.textContent,
+    ).toContain('Left stick would type "e" (lowercase)');
   });
 });

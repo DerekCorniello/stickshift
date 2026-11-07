@@ -1,6 +1,14 @@
 import { useState } from "react";
-import { Dial, leftDialConfig, rightDialConfig } from "../typing";
-import type { GamepadSnapshot } from "./useGamepad";
+import {
+  actionLabels,
+  defaultBindings,
+  Dial,
+  leftDialConfig,
+  rightDialConfig,
+  useControllerEvents,
+} from "../typing";
+import type { ControllerEvent, GamepadSnapshot } from "../typing";
+import { useStableSliceIndex } from "../typing/useStableSliceIndex";
 import {
   defaultLeftMapping,
   defaultRightMapping,
@@ -10,6 +18,7 @@ import type { AxisMapping } from "./axisMapping";
 import "./controllerDials.css";
 
 type ControllerDialsProps = Readonly<{ pad: GamepadSnapshot }>;
+const deadzone = 0.2;
 
 type AxisControlsProps = Readonly<{
   side: "Left" | "Right";
@@ -82,6 +91,18 @@ function AxisControls({
   );
 }
 
+function describeEvent(event: ControllerEvent): string {
+  if (event.kind === "button") {
+    const action = event.action ? actionLabels[event.action] : "Unassigned";
+    return `Button ${event.buttonIndex} ${event.phase}: ${action}`;
+  }
+  if (event.kind === "character") {
+    const side = event.side === "left" ? "Left" : "Right";
+    return `${side} stick would type ${JSON.stringify(event.character)} (${event.layerId})`;
+  }
+  return `${event.side} stick ${event.phase}`;
+}
+
 export function ControllerDials({ pad }: ControllerDialsProps) {
   const [activeLayerId, setActiveLayerId] = useState(
     leftDialConfig.layers[0].id,
@@ -92,6 +113,67 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
     useState<AxisMapping>(defaultRightMapping);
   const [leftHighlight, setLeftHighlight] = useState<string | null>(null);
   const [rightHighlight, setRightHighlight] = useState<string | null>(null);
+  const [recentEvents, setRecentEvents] = useState<readonly string[]>([]);
+  const leftPosition = readStickPosition(pad.axes, leftMapping);
+  const rightPosition = readStickPosition(pad.axes, rightMapping);
+  const layers = leftDialConfig.layers;
+  const leftLayer = leftDialConfig.layers.find(
+    (layer) => layer.id === activeLayerId,
+  );
+  const rightLayer = rightDialConfig.layers.find(
+    (layer) => layer.id === activeLayerId,
+  );
+  if (!leftLayer || !rightLayer) {
+    throw new Error(`Both dials must define layer ${activeLayerId}`);
+  }
+
+  const leftSelectedIndex = useStableSliceIndex(
+    activeLayerId,
+    leftPosition,
+    deadzone,
+    leftLayer.slices.length,
+  );
+  const rightSelectedIndex = useStableSliceIndex(
+    activeLayerId,
+    rightPosition,
+    deadzone,
+    rightLayer.slices.length,
+  );
+
+  const changeLayer = (step: number) => {
+    setActiveLayerId((current) => {
+      const index = layers.findIndex((layer) => layer.id === current);
+      return layers[(index + step + layers.length) % layers.length].id;
+    });
+  };
+
+  useControllerEvents(
+    pad,
+    defaultBindings,
+    leftPosition,
+    rightPosition,
+    deadzone,
+    (event) => {
+      setRecentEvents((current) =>
+        [describeEvent(event), ...current].slice(0, 8),
+      );
+      if (event.kind !== "button" || event.phase !== "press") {
+        return;
+      }
+      if (event.action === "previousLayer") {
+        changeLayer(-1);
+      } else if (event.action === "nextLayer") {
+        changeLayer(1);
+      }
+    },
+    (side) => {
+      const layer = side === "left" ? leftLayer : rightLayer;
+      const index = side === "left" ? leftSelectedIndex : rightSelectedIndex;
+      return index === null
+        ? null
+        : { character: layer.slices[index].character, layerId: layer.id };
+    },
+  );
 
   return (
     <section className="controller-dials" aria-label="Controller dials">
@@ -99,8 +181,8 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
         <div>
           <h1>StickShift dials</h1>
           <p>
-            Move the sticks to highlight characters. Select axes below if a
-            stick uses a raw layout.
+            Move the sticks to identify characters. The triggers change layers;
+            other buttons report their actions below.
           </p>
         </div>
         <span className="controller-dials__mapping">
@@ -132,8 +214,9 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
           <Dial
             config={leftDialConfig}
             activeLayerId={activeLayerId}
-            position={readStickPosition(pad.axes, leftMapping)}
-            deadzone={0.2}
+            position={leftPosition}
+            deadzone={deadzone}
+            highlightedIndex={leftSelectedIndex}
             onHighlightChange={setLeftHighlight}
           />
           <AxisControls
@@ -153,8 +236,9 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
           <Dial
             config={rightDialConfig}
             activeLayerId={activeLayerId}
-            position={readStickPosition(pad.axes, rightMapping)}
-            deadzone={0.2}
+            position={rightPosition}
+            deadzone={deadzone}
+            highlightedIndex={rightSelectedIndex}
             onHighlightChange={setRightHighlight}
           />
           <AxisControls
@@ -165,6 +249,21 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
           />
         </div>
       </div>
+      <section
+        className="controller-dials__events"
+        aria-label="Controller events"
+      >
+        <h2>Recent controller events</h2>
+        {recentEvents.length === 0 ? (
+          <p>Move a stick or press a button to see its event.</p>
+        ) : (
+          <ol aria-live="polite">
+            {recentEvents.map((event, index) => (
+              <li key={`${index}-${event}`}>{event}</li>
+            ))}
+          </ol>
+        )}
+      </section>
     </section>
   );
 }

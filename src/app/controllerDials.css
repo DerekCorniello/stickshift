@@ -126,6 +126,31 @@
   gap: 4px;
 }
 
+.controller-dials__events {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border: 1px solid #dce3ee;
+  border-radius: 12px;
+  background: white;
+}
+
+.controller-dials__events h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.controller-dials__events p,
+.controller-dials__events ol {
+  margin: 0;
+  color: #53627b;
+  font-size: 13px;
+}
+
+.controller-dials__events ol {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
 @media (max-width: 760px) {
   .controller-dials {
     padding: 16px;

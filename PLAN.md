@@ -16,26 +16,37 @@ The timer starts with the first entered character. A run ends when the text exac
 
 ## Controls
 
-Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone enters the selected character once, and the stick must return to center before another selection. In manual mode, moving the stick highlights a sector and clicking that stick enters its character.
+Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. In manual mode, moving the stick highlights a sector and clicking that stick enters its character.
 
 All action bindings are customizable. Defaults are:
 
-| Control | Action |
-| --- | --- |
-| Left / right trigger | Previous / next generated layer |
-| Left / right bumper | Backspace / Space |
-| A | Enter while typing; select a key on the one-stick QWERTY grid |
-| Plus | Submit text or end a timed run early |
-| Minus | Close the typing interface |
-| X | Open or close autocomplete |
-| D-pad | Move the text cursor while autocomplete is closed |
-| B | Unassigned |
+| Control              | Action                                                        |
+| -------------------- | ------------------------------------------------------------- |
+| Left / right trigger | Previous / next generated layer                               |
+| Left / right bumper  | Backspace / Space                                             |
+| A                    | Enter while typing; select a key on the one-stick QWERTY grid |
+| Plus                 | Submit text or end a timed run early                          |
+| Minus                | Close the typing interface                                    |
+| X                    | Open or close autocomplete                                    |
+| D-pad                | Move the text cursor while autocomplete is closed             |
+| B                    | Unassigned                                                    |
 
 While autocomplete is open, D-pad Left and Right move through suggestions, Up accepts the selected suggestion, and Down closes the menu. Accepting a suggestion replaces the current word. The settings panel can remap these actions too.
 
 ## Dial layout and settings
 
-The default is 13 sectors per dial. Generate enough layers to place all 94 printable ASCII characters other than Space: 26 lowercase letters, 26 uppercase letters, 10 digits, and 32 symbols (including backtick and backslash). With 13 sectors on each dial, this takes four layers. Keep character placement deterministic when generating a layout.
+The default has four explicit layers for all 94 printable ASCII characters other than Space: 26 lowercase letters, 26 uppercase letters, 10 digits, and 32 symbols (including backtick and backslash). The first three layers have 13 sectors per dial. The final layer has eight wider sectors. Slice zero is at the top, and the rest advance clockwise.
+
+The letter layout is a heuristic based on [English letter and bigram counts](https://www.norvig.com/mayzner.html). Common letters are spread across the two sticks, with E and T at the top. Frequent pairs such as TH, ER, and AN sit at nearby angles. The uppercase layer uses the same positions. It is an authored default, not a measured speed optimum.
+
+| Layer               | Left dial                                       | Right dial                                      |
+| ------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| Lowercase           | `e h a i d u q f g y v x s`, clockwise from top | `t n o l c m p w b k j z r`, clockwise from top |
+| Uppercase           | Same positions in uppercase                     | Same positions in uppercase                     |
+| Numbers and symbols | `0-4` across the top, eight symbols elsewhere   | `5-9` across the top, eight symbols elsewhere   |
+| Symbols             | Eight symbols                                   | Eight symbols                                   |
+
+The 32 punctuation characters follow ASCII code-point order across the two symbol layers.
 
 Users can set any positive whole number of sectors per dial, with no upper limit or warning. Changing the count regenerates a complete layout, after which users can move characters between sectors and layers. Save the sector count, character placement, selection mode, deadzone, and action bindings in the current browser.
 
@@ -54,3 +65,4 @@ Keep components and tests beside the feature that uses them. Add more directorie
 - Try the three-page flow with the team's three controllers, including both selection modes, changed sector counts, remapped buttons, and settings after refresh.
 - Check exact completion, early submission, and timeout. Verify WPM and keystroke accuracy after errors and corrections.
 - Check that autocomplete works in free typing and stays off in both timed modes.
+- Check that minor movement around a sector boundary does not change the visual highlight or pending character, while moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters only the last confirmed character. Check both sticks and a layer change while held.

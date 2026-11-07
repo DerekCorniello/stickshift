@@ -1,7 +1,7 @@
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 import GamepadVisualizer from "./gamepadVisualizer";
-import { useGamepads } from "./useGamepad";
+import { useGamepads } from "../typing";
 import { ControllerDials } from "./ControllerDials";
 
 function App() {
