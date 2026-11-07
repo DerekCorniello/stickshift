@@ -129,14 +129,19 @@
   transform-origin: center;
   transition: transform 180ms ease-out;
 }
-.config-page .dial-slice--duplicate .dial-slice__wedge {
+.config-page .dial-wedge--selected {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+.config-page .dial-wedge--duplicate .dial-slice__wedge {
   fill: #c93642;
   stroke: #941f2a;
 }
 .config-page .dial-slice--duplicate .dial-slice__label {
   fill: white;
 }
-.config-page .dial-slice--unassigned .dial-slice__wedge {
+.config-page .dial-wedge--unassigned .dial-slice__wedge {
   fill: #c88418;
   stroke: #87540b;
 }
@@ -257,6 +262,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .config-page .dial-slice--selected {
+    transition: none;
+  }
+  .config-page .dial-wedge--selected {
     transition: none;
   }
   .config-lifted-slice {

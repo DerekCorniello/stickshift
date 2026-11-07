@@ -29,7 +29,7 @@
   pointer-events: none;
 }
 
-.dial-slice--highlighted .dial-slice__wedge {
+.dial-wedge--highlighted .dial-slice__wedge {
   fill: var(--dial-wedge-highlighted);
 }
 
@@ -39,4 +39,20 @@
 
 .dial-layer__hub {
   fill: var(--dial-outline);
+}
+
+.dial-layer__stick-line {
+  stroke: #f97316;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.dial-layer__stick-dot {
+  fill: #f97316;
+  stroke: #fff;
+  stroke-width: 2;
+  opacity: 0.55;
+  pointer-events: none;
 }

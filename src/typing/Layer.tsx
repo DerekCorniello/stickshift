@@ -30,6 +30,23 @@ export function Layer({
     highlightedIndex === null
       ? null
       : config.slices[highlightedIndex].character;
+  const stickX = 100 + Math.max(-1, Math.min(1, position.x)) * 70;
+  const stickY = 100 + Math.max(-1, Math.min(1, position.y)) * 70;
+  const renderSlices = (showWedge: boolean, showLabel: boolean) =>
+    config.slices.map((slice, index) => (
+      <Slice
+        key={slice.id + "-" + (showWedge ? "wedge" : "label")}
+        config={slice}
+        index={index}
+        count={config.slices.length}
+        highlighted={index === highlightedIndex}
+        selected={slice.id === selectedSliceId}
+        duplicate={flaggedSliceIds?.has(slice.id) ?? false}
+        unassigned={slice.character.length !== 1}
+        showWedge={showWedge}
+        showLabel={showLabel}
+      />
+    ));
 
   useEffect(() => {
     onHighlightChange(highlightedCharacter);
@@ -43,19 +60,24 @@ export function Layer({
       aria-label={`${config.id} dial layer`}
       data-layer-id={config.id}
     >
-      {config.slices.map((slice, index) => (
-        <Slice
-          key={slice.id}
-          config={slice}
-          index={index}
-          count={config.slices.length}
-          highlighted={index === highlightedIndex}
-          selected={slice.id === selectedSliceId}
-          duplicate={flaggedSliceIds?.has(slice.id) ?? false}
-          unassigned={slice.character.length !== 1}
-        />
-      ))}
+      {renderSlices(true, false)}
       <circle className="dial-layer__hub" cx="100" cy="100" r="27" />
+      <line
+        className="dial-layer__stick-line"
+        x1="100"
+        y1="100"
+        x2={stickX}
+        y2={stickY}
+        aria-hidden="true"
+      />
+      <circle
+        className="dial-layer__stick-dot"
+        cx={stickX}
+        cy={stickY}
+        r="5"
+        aria-hidden="true"
+      />
+      {renderSlices(false, true)}
     </svg>
   );
 }
