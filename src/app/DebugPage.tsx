@@ -1,7 +1,8 @@
+import { useState } from "react";
 import type { ButtonBindings, GamepadSnapshot } from "../typing";
 import type { DialConfig } from "../typing";
 import GamepadVisualizer from "./gamepadVisualizer";
-import { ControllerDials } from "./ControllerDials";
+import { Controller } from "./Controller";
 import type { AxisMapping } from "./axisMapping";
 import "./pages.css";
 
@@ -34,6 +35,9 @@ export function DebugPage({
   bindings,
   deadzone,
 }: DebugPageProps) {
+  const [typedText, setTypedText] = useState("");
+  const currentWord = typedText.match(/[A-Za-z]+$/)?.[0] ?? "";
+
   return (
     <main className="page-shell debug-page">
       <header className="page-heading">
@@ -44,8 +48,30 @@ export function DebugPage({
         </div>
         <span className="connection-badge">{pad.id}</span>
       </header>
-      <ControllerDials
+      <section className="debug-page__text" aria-label="Debug typed text">
+        <h2>Controller text</h2>
+        <output aria-label="Typed text">
+          {typedText || "Start typing with the dials."}
+        </output>
+      </section>
+      <Controller
         pad={pad}
+        value={currentWord}
+        onValueChange={(value) =>
+          setTypedText((current) => current.replace(/[A-Za-z]*$/, value))
+        }
+        onCharacterInput={(character) =>
+          setTypedText((current) => current + character)
+        }
+        onActionInput={(action) => {
+          if (action === "backspace") {
+            setTypedText((current) => current.slice(0, -1));
+          } else if (action === "space") {
+            setTypedText((current) => current + " ");
+          } else if (action === "enter") {
+            setTypedText((current) => current + "\n");
+          }
+        }}
         leftConfig={leftConfig}
         rightConfig={rightConfig}
         activeLayerId={activeLayerId}

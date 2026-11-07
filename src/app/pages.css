@@ -131,6 +131,26 @@
   margin-top: 22px;
 }
 
+.debug-page__text {
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  border: 1px solid #dce3ee;
+  border-radius: 12px;
+  background: white;
+}
+
+.debug-page__text h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.debug-page__text output {
+  display: block;
+  min-height: 1.5em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 850px) {
   .practice-page__layout {
     grid-template-columns: 1fr;
