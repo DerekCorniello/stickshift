@@ -57,7 +57,7 @@ export function getControllerAxisName(
 export function getControllerButtonIcon(
   gamepadId: string,
   buttonIndex: number,
-  color: "Black" | "White" = "Black",
+  color: "Black" | "White" = "White",
 ): string | null {
   const { type } = helper.getGamepadInfo(gamepadId);
   return helper.getButtonImagePath(
