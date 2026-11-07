@@ -11,7 +11,7 @@ export default function GamepadVisualizer({
   const gamepadsArray = Object.values(gamepads);
 
   return (
-    <div style={styles.container}>
+    <div className="gamepad-visualizer" style={styles.container}>
       <h1 style={styles.header}>Gamepad Visualizer</h1>
       {gamepadsArray.length === 0 ? (
         <p>

@@ -7,7 +7,12 @@ import {
   rightDialConfig,
   useControllerEvents,
 } from "../typing";
-import type { ControllerEvent, GamepadSnapshot } from "../typing";
+import type {
+  ButtonBindings,
+  ControllerEvent,
+  DialConfig,
+  GamepadSnapshot,
+} from "../typing";
 import { useStableSliceIndex } from "../typing/useStableSliceIndex";
 import {
   defaultLeftMapping,
@@ -17,8 +22,21 @@ import {
 import type { AxisMapping } from "./axisMapping";
 import "./controllerDials.css";
 
-type ControllerDialsProps = Readonly<{ pad: GamepadSnapshot }>;
-const deadzone = 0.2;
+type ControllerDialsProps = Readonly<{
+  pad: GamepadSnapshot;
+  leftConfig?: DialConfig;
+  rightConfig?: DialConfig;
+  activeLayerId?: string;
+  onActiveLayerChange?: (layerId: string) => void;
+  leftMapping?: AxisMapping;
+  rightMapping?: AxisMapping;
+  onLeftMappingChange?: (mapping: AxisMapping) => void;
+  onRightMappingChange?: (mapping: AxisMapping) => void;
+  bindings?: ButtonBindings;
+  deadzone?: number;
+  showDiagnostics?: boolean;
+  onControllerEvent?: (event: ControllerEvent) => void;
+}>;
 
 type AxisControlsProps = Readonly<{
   side: "Left" | "Right";
@@ -103,24 +121,42 @@ function describeEvent(event: ControllerEvent): string {
   return `${event.side} stick ${event.phase}`;
 }
 
-export function ControllerDials({ pad }: ControllerDialsProps) {
-  const [activeLayerId, setActiveLayerId] = useState(
-    leftDialConfig.layers[0].id,
-  );
-  const [leftMapping, setLeftMapping] =
+export function ControllerDials({
+  pad,
+  leftConfig = leftDialConfig,
+  rightConfig = rightDialConfig,
+  activeLayerId: externalLayerId,
+  onActiveLayerChange,
+  leftMapping: externalLeftMapping,
+  rightMapping: externalRightMapping,
+  onLeftMappingChange,
+  onRightMappingChange,
+  bindings = defaultBindings,
+  deadzone = 0.2,
+  showDiagnostics = true,
+  onControllerEvent,
+}: ControllerDialsProps) {
+  const [localLayerId, setLocalLayerId] = useState(leftConfig.layers[0].id);
+  const [localLeftMapping, setLocalLeftMapping] =
     useState<AxisMapping>(defaultLeftMapping);
-  const [rightMapping, setRightMapping] =
+  const [localRightMapping, setLocalRightMapping] =
     useState<AxisMapping>(defaultRightMapping);
+  const activeLayerId = externalLayerId ?? localLayerId;
+  const leftMapping = externalLeftMapping ?? localLeftMapping;
+  const rightMapping = externalRightMapping ?? localRightMapping;
+  const updateLayer = onActiveLayerChange ?? setLocalLayerId;
+  const updateLeftMapping = onLeftMappingChange ?? setLocalLeftMapping;
+  const updateRightMapping = onRightMappingChange ?? setLocalRightMapping;
   const [leftHighlight, setLeftHighlight] = useState<string | null>(null);
   const [rightHighlight, setRightHighlight] = useState<string | null>(null);
   const [recentEvents, setRecentEvents] = useState<readonly string[]>([]);
   const leftPosition = readStickPosition(pad.axes, leftMapping);
   const rightPosition = readStickPosition(pad.axes, rightMapping);
-  const layers = leftDialConfig.layers;
-  const leftLayer = leftDialConfig.layers.find(
+  const layers = leftConfig.layers;
+  const leftLayer = leftConfig.layers.find(
     (layer) => layer.id === activeLayerId,
   );
-  const rightLayer = rightDialConfig.layers.find(
+  const rightLayer = rightConfig.layers.find(
     (layer) => layer.id === activeLayerId,
   );
   if (!leftLayer || !rightLayer) {
@@ -141,23 +177,36 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
   );
 
   const changeLayer = (step: number) => {
-    setActiveLayerId((current) => {
-      const index = layers.findIndex((layer) => layer.id === current);
-      return layers[(index + step + layers.length) % layers.length].id;
-    });
+    const index = layers.findIndex((layer) => layer.id === activeLayerId);
+    updateLayer(layers[(index + step + layers.length) % layers.length].id);
   };
 
   useControllerEvents(
     pad,
-    defaultBindings,
+    bindings,
     leftPosition,
     rightPosition,
     deadzone,
     (event) => {
+      onControllerEvent?.(event);
       setRecentEvents((current) =>
         [describeEvent(event), ...current].slice(0, 8),
       );
       if (event.kind !== "button" || event.phase !== "press") {
+        return;
+      }
+      if (event.action === "commitLeft" || event.action === "commitRight") {
+        const side = event.action === "commitLeft" ? "left" : "right";
+        const layer = side === "left" ? leftLayer : rightLayer;
+        const index = side === "left" ? leftSelectedIndex : rightSelectedIndex;
+        if (index !== null) {
+          onControllerEvent?.({
+            kind: "character",
+            side,
+            character: layer.slices[index].character,
+            layerId: layer.id,
+          });
+        }
         return;
       }
       if (event.action === "previousLayer") {
@@ -181,8 +230,8 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
         <div>
           <h1>StickShift dials</h1>
           <p>
-            Move the sticks to identify characters. The triggers change layers;
-            other buttons report their actions below.
+            Aim with either stick and return it to center to enter its
+            character. Triggers change layers.
           </p>
         </div>
         <span className="controller-dials__mapping">
@@ -191,12 +240,12 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
       </header>
 
       <div className="controller-dials__layers" aria-label="Layer">
-        {leftDialConfig.layers.map((layer) => (
+        {leftConfig.layers.map((layer) => (
           <button
             key={layer.id}
             type="button"
             aria-pressed={activeLayerId === layer.id}
-            onClick={() => setActiveLayerId(layer.id)}
+            onClick={() => updateLayer(layer.id)}
           >
             {layer.id === "numbers-symbols" ? "Numbers + symbols" : layer.id}
           </button>
@@ -212,19 +261,21 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
             </output>
           </div>
           <Dial
-            config={leftDialConfig}
+            config={leftConfig}
             activeLayerId={activeLayerId}
             position={leftPosition}
             deadzone={deadzone}
             highlightedIndex={leftSelectedIndex}
             onHighlightChange={setLeftHighlight}
           />
-          <AxisControls
-            side="Left"
-            axisCount={pad.axes.length}
-            mapping={leftMapping}
-            onChange={setLeftMapping}
-          />
+          {showDiagnostics && (
+            <AxisControls
+              side="Left"
+              axisCount={pad.axes.length}
+              mapping={leftMapping}
+              onChange={updateLeftMapping}
+            />
+          )}
         </div>
         <div className="controller-dials__card">
           <div className="controller-dials__card-header">
@@ -234,36 +285,40 @@ export function ControllerDials({ pad }: ControllerDialsProps) {
             </output>
           </div>
           <Dial
-            config={rightDialConfig}
+            config={rightConfig}
             activeLayerId={activeLayerId}
             position={rightPosition}
             deadzone={deadzone}
             highlightedIndex={rightSelectedIndex}
             onHighlightChange={setRightHighlight}
           />
-          <AxisControls
-            side="Right"
-            axisCount={pad.axes.length}
-            mapping={rightMapping}
-            onChange={setRightMapping}
-          />
+          {showDiagnostics && (
+            <AxisControls
+              side="Right"
+              axisCount={pad.axes.length}
+              mapping={rightMapping}
+              onChange={updateRightMapping}
+            />
+          )}
         </div>
       </div>
-      <section
-        className="controller-dials__events"
-        aria-label="Controller events"
-      >
-        <h2>Recent controller events</h2>
-        {recentEvents.length === 0 ? (
-          <p>Move a stick or press a button to see its event.</p>
-        ) : (
-          <ol aria-live="polite">
-            {recentEvents.map((event, index) => (
-              <li key={`${index}-${event}`}>{event}</li>
-            ))}
-          </ol>
-        )}
-      </section>
+      {showDiagnostics && (
+        <section
+          className="controller-dials__events"
+          aria-label="Controller events"
+        >
+          <h2>Recent controller events</h2>
+          {recentEvents.length === 0 ? (
+            <p>Move a stick or press a button to see its event.</p>
+          ) : (
+            <ol aria-live="polite">
+              {recentEvents.map((event, index) => (
+                <li key={`${index}-${event}`}>{event}</li>
+              ))}
+            </ol>
+          )}
+        </section>
+      )}
     </section>
   );
 }

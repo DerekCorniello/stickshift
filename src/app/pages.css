@@ -1,0 +1,149 @@
+.page-shell {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 48px);
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.page-heading h1 {
+  margin: 4px 0 8px;
+  color: #182439;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.045em;
+}
+
+.page-heading p:not(.page-eyebrow) {
+  max-width: 700px;
+  margin: 0;
+  color: #59677d;
+  line-height: 1.55;
+}
+
+.page-eyebrow {
+  margin: 0;
+  color: #355ec2;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.practice-page__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.practice-page__editor-card,
+.practice-page__guide {
+  padding: clamp(18px, 2vw, 26px);
+  border: 1px solid #dce3ee;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 26px rgb(30 51 85 / 4%);
+}
+
+.practice-page__editor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.practice-page__editor-heading h2,
+.practice-page__guide h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.practice-page__editor-heading span {
+  color: #67758b;
+  font-size: 12px;
+}
+
+.practice-page__editor {
+  min-height: 250px;
+  max-height: 52vh;
+  padding: 20px;
+  overflow: auto;
+  border: 1px solid #d4ddeb;
+  border-radius: 11px;
+  color: #273650;
+  background: #fbfcfe;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 17px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.practice-page__placeholder {
+  color: #98a4b5;
+}
+
+.practice-page__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin: 0 1px -0.18em;
+  background: #355ec2;
+  animation: caret-blink 1s step-end infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.practice-page__note,
+.practice-page__guide > p {
+  margin: 13px 0 0;
+  color: #66748a;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.practice-page__guide h2 {
+  margin-bottom: 13px;
+}
+
+.practice-page__guide ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding-left: 19px;
+  color: #4b5a71;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.debug-page .gamepad-visualizer {
+  margin-top: 22px;
+}
+
+@media (max-width: 850px) {
+  .practice-page__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .page-shell {
+    padding: 20px 14px 32px;
+  }
+
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
