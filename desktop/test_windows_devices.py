@@ -3,7 +3,7 @@ import unittest
 
 from desktop.app import device_classes
 from desktop.input_engine import InputEngine
-from desktop.test_input_engine import config
+from desktop.test_input_engine import FakeKeyboard, config
 from desktop.windows_devices import (
     KEYEVENTF_KEYUP,
     KEYEVENTF_UNICODE,
@@ -42,14 +42,34 @@ class WindowsDeviceTests(unittest.TestCase):
         pad = generic_gamepad_snapshot(
             "DirectInput Controller",
             [-1.0, 0.5, 0.25, -0.75, 1.0, -1.0],
-            [True, False, True],
+            [True, False, True, False, True, True],
             (1, -1),
         )
         self.assertEqual(pad["axes"], [-1.0, 0.5, 0.25, -0.75])
         self.assertEqual(
             [index for index, button in enumerate(pad["buttons"]) if button["pressed"]],
-            [0, 2, 6, 13, 15],
+            [0, 2, 4, 5, 6, 13, 15],
         )
+
+    def test_generic_bumpers_use_backspace_and_space_bindings(self):
+        keyboard = FakeKeyboard()
+        engine = InputEngine()
+        engine.configure(config())
+        engine.config["bindings"]["backspace"] = 4
+        engine.set_keyboard(keyboard)
+
+        base = generic_gamepad_snapshot("DirectInput Controller", [], [])
+        left_bumper = generic_gamepad_snapshot(
+            "DirectInput Controller", [], [False] * 4 + [True]
+        )
+        right_bumper = generic_gamepad_snapshot(
+            "DirectInput Controller", [], [False] * 5 + [True]
+        )
+        engine.process(base, 0)
+        engine.process(left_bumper, 0.1)
+        engine.process(base, 0.2)
+        engine.process(right_bumper, 0.3)
+        self.assertEqual(keyboard.keys, ["BACKSPACE", " "])
 
     def test_reader_falls_back_to_generic_controller(self):
         class FakeGeneric:
