@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
 import { Controller } from "./Controller";
 import type { AxisMapping } from "./axisMapping";
 import type { ControlAction, DialConfig, GamepadSnapshot } from "../typing";
 import { defaultBindings } from "../typing";
-import {
-  scoreTypingTest,
-  typingTestPrompt,
-  type TypingTestResult,
-} from "./typingTest";
+import { scoreTypingTest, typingTestPrompt } from "./typingTest";
+import { useTimedRun, formatTime } from "./useTimedRun";
 import "./pages.css";
 
 type TypingTestPageProps = Readonly<{
@@ -33,62 +29,15 @@ export function TypingTestPage({
   bindings,
   deadzone,
 }: TypingTestPageProps) {
-  const [typedText, setTypedText] = useState("");
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const [elapsedMilliseconds, setElapsedMilliseconds] = useState(0);
-  const [result, setResult] = useState<TypingTestResult | null>(null);
-
-  const reset = () => {
-    setTypedText("");
-    setStartedAt(null);
-    setElapsedMilliseconds(0);
-    setResult(null);
-  };
-
-  useEffect(() => {
-    if (startedAt === null || result) return;
-    const timer = window.setInterval(() => {
-      setElapsedMilliseconds(performance.now() - startedAt);
-    }, 100);
-    return () => window.clearInterval(timer);
-  }, [result, startedAt]);
-
-  const updateText = (nextText: string) => {
-    if (result || nextText.length > typingTestPrompt.length) return;
-
-    const now = performance.now();
-    const nextStartedAt = startedAt ?? now;
-    if (startedAt === null) {
-      setStartedAt(nextStartedAt);
-    }
-    setElapsedMilliseconds(now - nextStartedAt);
-    setTypedText(nextText);
-
-    if (nextText.length === typingTestPrompt.length) {
-      setResult(scoreTypingTest(nextText, now - nextStartedAt));
-    }
-  };
-
+  const { run, insert, backspace, finish, reset } = useTimedRun();
+  const { text: typedText, result } = run;
   const handleActionInput = (action: ControlAction) => {
-    if (action === "backspace" && typedText.length > 0) {
-      updateText(typedText.slice(0, -1));
-    } else if (action === "space") {
-      updateText(`${typedText} `);
-    }
+    if (action === "backspace") backspace();
+    else if (action === "space") insert(" ");
+    else if (action === "submit") finish();
+    else if (action === "close" || (action === "enter" && result)) reset();
   };
-
-  const handleSuggestionChange = (value: string) => {
-    const wordStart = typedText.lastIndexOf(" ") + 1;
-    updateText(`${typedText.slice(0, wordStart)}${value}`);
-  };
-
-  const currentWordStart = typedText.lastIndexOf(" ") + 1;
-  const currentWord = typedText.slice(currentWordStart);
-
-  const liveResult = startedAt
-    ? scoreTypingTest(typedText, elapsedMilliseconds)
-    : { wordsPerMinute: 0, characterAccuracy: 100 };
-  const displayedResult = result ?? liveResult;
+  const displayedResult = result ?? scoreTypingTest(typedText, run.elapsed);
 
   return (
     <main className="page-shell typing-test-page">
@@ -118,6 +67,10 @@ export function TypingTestPage({
         </div>
         <div className="typing-test-page__stats">
           <div>
+            <span>Time / 2:00</span>
+            <strong>{formatTime(run.elapsed)}</strong>
+          </div>
+          <div>
             <span>Words per minute</span>
             <strong>{displayedResult.wordsPerMinute.toFixed(1)}</strong>
           </div>
@@ -133,8 +86,18 @@ export function TypingTestPage({
         ) : (
           <p className="practice-page__note">
             Aim with either stick and return it to center to enter a character.
-            Use the mapped Backspace button to correct mistakes.
+            Use Backspace to correct mistakes. Submit ends the run early; the
+            limit is two minutes. Autocomplete is off.
           </p>
+        )}
+        {!result && (
+          <button
+            className="typing-test-page__reset"
+            type="button"
+            onClick={finish}
+          >
+            Submit run
+          </button>
         )}
         <button
           className="typing-test-page__reset"
@@ -147,9 +110,10 @@ export function TypingTestPage({
 
       <Controller
         pad={pad}
-        value={currentWord}
-        onValueChange={handleSuggestionChange}
-        onCharacterInput={(character) => updateText(`${typedText}${character}`)}
+        value={typedText}
+        onValueChange={() => {}}
+        autocompleteEnabled={false}
+        onCharacterInput={insert}
         onActionInput={handleActionInput}
         leftConfig={leftConfig}
         rightConfig={rightConfig}

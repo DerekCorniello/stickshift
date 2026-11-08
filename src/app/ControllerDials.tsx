@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useContext, useRef, useState } from "react";
+import { InputSettingsContext } from "./inputSettings";
 import {
   actionLabels,
   defaultBindings,
@@ -137,12 +138,15 @@ export function ControllerDials({
   onLeftMappingChange,
   onRightMappingChange,
   bindings = defaultBindings,
-  deadzone = 0.2,
+  deadzone: externalDeadzone,
   showDiagnostics = true,
   onControllerEvent,
   onCharacterInput,
   onActionInput,
 }: ControllerDialsProps) {
+  const settings = useContext(InputSettingsContext);
+  const deadzone = externalDeadzone ?? settings.deadzone;
+  const cancelled = useRef({ left: false, right: false });
   const [localLayerId, setLocalLayerId] = useState(leftConfig.layers[0].id);
   const [localLeftMapping, setLocalLeftMapping] =
     useState<AxisMapping>(defaultLeftMapping);
@@ -192,11 +196,7 @@ export function ControllerDials({
     const gamepad = navigator.getGamepads?.()[pad.index];
     const actuator = gamepad?.vibrationActuator;
 
-    console.log("Sending vibration");
     if (!actuator) {
-      console.log(
-        "No vibration actuator found for this controller in this browser.",
-      );
       return;
     }
 
@@ -232,6 +232,10 @@ export function ControllerDials({
     rightPosition,
     deadzone,
     (event) => {
+      if (event.kind === "stick" && event.phase === "enter") {
+        cancelled.current[event.side] = false;
+      }
+      if (event.kind === "character" && cancelled.current[event.side]) return;
       reportEvent(event);
       setRecentEvents((current) =>
         [describeEvent(event, pad.id), ...current].slice(0, 8),
@@ -241,16 +245,8 @@ export function ControllerDials({
       }
       if (event.action === "commitLeft" || event.action === "commitRight") {
         const side = event.action === "commitLeft" ? "left" : "right";
-        const layer = side === "left" ? leftLayer : rightLayer;
         const index = side === "left" ? leftSelectedIndex : rightSelectedIndex;
-        if (index !== null) {
-          reportEvent({
-            kind: "character",
-            side,
-            character: layer.slices[index].character,
-            layerId: layer.id,
-          });
-        }
+        if (index !== null) cancelled.current[side] = true;
         return;
       }
       if (event.action === "previousLayer") {
@@ -275,7 +271,8 @@ export function ControllerDials({
           <h1>StickShift dials</h1>
           <p>
             Aim with either stick and return it to center to enter its
-            character. Triggers change layers.
+            character. Click the stick to cancel the current selection. Triggers
+            change layers.
           </p>
         </div>
         <span className="controller-dials__mapping">

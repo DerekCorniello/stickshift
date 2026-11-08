@@ -54,6 +54,7 @@ type ControllerProps = Readonly<{
   bindings?: ButtonBindings;
   deadzone?: number;
   showDiagnostics?: boolean;
+  autocompleteEnabled?: boolean;
 }>;
 
 export function Controller({
@@ -74,8 +75,10 @@ export function Controller({
   bindings,
   deadzone,
   showDiagnostics,
+  autocompleteEnabled = true,
 }: ControllerProps) {
-  const [autocompleteActive, setAutocompleteActive] = useState(false);
+  const [autocompleteRequested, setAutocompleteActive] = useState(false);
+  const autocompleteActive = autocompleteEnabled && autocompleteRequested;
   const [suggestions, setSuggestions] = useState<readonly string[]>([]);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
   const autocompleteInputRef = useRef<HTMLInputElement>(null);
@@ -89,7 +92,7 @@ export function Controller({
     return button?.pressed === true || (button?.value ?? 0) >= 0.5;
   };
 
-  useButtonRepeat(buttonHeld("backspace"), !autocompleteActive, () =>
+  useButtonRepeat(buttonHeld("backspace"), true, () =>
     onActionInput("backspace"),
   );
   useButtonRepeat(
@@ -97,9 +100,7 @@ export function Controller({
     !autocompleteActive && !suppressEnterRepeat,
     () => onActionInput("enter"),
   );
-  useButtonRepeat(buttonHeld("space"), !autocompleteActive, () =>
-    onActionInput("space"),
-  );
+  useButtonRepeat(buttonHeld("space"), true, () => onActionInput("space"));
 
   useEffect(() => {
     if (autocompleteActive) {
@@ -142,7 +143,7 @@ export function Controller({
       setSuppressEnterRepeat(false);
     }
     if (event.kind === "button" && event.phase === "press") {
-      if (event.action === "autocomplete") {
+      if (event.action === "autocomplete" && autocompleteEnabled) {
         setAutocompleteActive((active) => !active);
       } else if (event.action === "close") {
         setAutocompleteActive(false);
@@ -166,12 +167,6 @@ export function Controller({
     onControllerEvent?.(event);
   };
 
-  const handleCharacterInput = (character: string) => {
-    if (!autocompleteActive) {
-      onCharacterInput(character);
-    }
-  };
-
   const handleActionInput = (action: ControlAction) => {
     if (
       autocompleteActive &&
@@ -180,8 +175,6 @@ export function Controller({
         action === "cursorLeft" ||
         action === "cursorRight" ||
         action === "enter" ||
-        action === "backspace" ||
-        action === "space" ||
         action === "autocomplete" ||
         action === "close")
     ) {
@@ -192,23 +185,25 @@ export function Controller({
 
   return (
     <section className="controller-component" aria-label="Controller input">
-      <div className="controller-component__autocomplete">
-        <AutocompleteBar
-          label="Autocomplete"
-          value={value}
-          onChange={onValueChange}
-          onSelect={selectSuggestion}
-          readOnly
-          inputRef={autocompleteInputRef}
-          selectionActive={autocompleteActive}
-          selectedSuggestionIndex={selectedSuggestionIndex}
-          onSuggestionsChange={handleSuggestionsChange}
-        />
-      </div>
-      {autocompleteActive && (
+      {autocompleteEnabled && (
+        <div className="controller-component__autocomplete">
+          <AutocompleteBar
+            label="Autocomplete"
+            value={value}
+            onChange={onValueChange}
+            onSelect={selectSuggestion}
+            readOnly
+            inputRef={autocompleteInputRef}
+            selectionActive={autocompleteActive}
+            selectedSuggestionIndex={selectedSuggestionIndex}
+            onSuggestionsChange={handleSuggestionsChange}
+          />
+        </div>
+      )}
+      {autocompleteActive && autocompleteEnabled && (
         <p className="controller-component__mode" role="status">
-          Autocomplete: use the D-pad to choose a suggestion, then press B to
-          select. Press X to return to typing.
+          Keep typing with the sticks. Use the D-pad to choose a suggestion, B
+          to accept it, or X to close selection.
         </p>
       )}
       <div
@@ -230,7 +225,7 @@ export function Controller({
           bindings={bindings}
           deadzone={deadzone}
           showDiagnostics={showDiagnostics}
-          onCharacterInput={handleCharacterInput}
+          onCharacterInput={onCharacterInput}
           onActionInput={handleActionInput}
           onControllerEvent={handleControllerEvent}
         />

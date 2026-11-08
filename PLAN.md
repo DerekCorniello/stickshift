@@ -8,7 +8,7 @@ React and TypeScript, using the browser Gamepad API for joystick positions and b
 
 ## Demo flow
 
-1. **Practice:** Show a controller-only writing area, both dials, and a concise on-screen control guide. Keep autocomplete visible above the dials. X (top) enters suggestion selection, the D-pad moves the selection, and B (bottom) accepts a suggestion and returns to typing.
+1. **Practice:** Show a controller-only writing area, both dials, and a concise on-screen control guide. Keep autocomplete visible above the dials. X (top) enters suggestion selection. Both sticks keep typing while the D-pad moves the selection, and B (bottom) accepts a suggestion.
 2. **Typing test:** Show the sentence "The quick brown fox jumps over the lazy dog." to transcribe with the two dials. Show time, words per minute (WPM), and character accuracy during and after the run.
 3. **Comparison:** Type that same sentence first with a one-stick on-screen QWERTY keyboard, then with the two dials. Show each mode's time, WPM, and character accuracy side by side, with the differences. The QWERTY grid has letters, digits, punctuation, Shift, Space, and Backspace. Move its focus with the left stick and select a key with A.
 
@@ -18,7 +18,7 @@ The app has five destinations: Practice for controller-only writing, Typing Test
 
 ## Controls
 
-Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. In manual mode, moving the stick highlights a sector and clicking that stick enters its character.
+Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. Clicking a held stick cancels that selection until it returns to center.
 
 The input module supports customizable action bindings. Config can edit these defaults and saves changes in the current browser:
 
@@ -50,15 +50,14 @@ The letter layout is a heuristic based on [English letter and bigram counts](htt
 
 The 32 punctuation characters follow ASCII code-point order across the two symbol layers.
 
-The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. Selection mode and deadzone remain fixed for now.
+The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. The main interface exposes a deadzone control and saves the deadzone and axis mappings per controller in the browser. The original interface remains at `/original`.
 
 ## Project structure
 
-- `src/app/`: App shell, page navigation, and shared styling.
-- `src/app/`: Practice, typing test, comparison, debug, and config screens.
-- `src/typing/`: Reusable dial input, gamepad controls, autocomplete, and settings.
-- `src/benchmark/`: Timed runs, scoring, and comparison results.
-- `src/data/`: The test sentence and local autocomplete dictionary.
+- `src/app/`: Main and original app shells, pages, controller composition, autocomplete, timed runs, and configuration.
+- `src/typing/`: Reusable dials, authored layouts, Gamepad API polling, and event decoding.
+- `src/data/`: Source and generated autocomplete dictionaries.
+- `scripts/`: Dictionary and static route preparation.
 
 Keep components and tests beside the feature that uses them. Add more directories only when the code needs them.
 

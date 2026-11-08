@@ -25,10 +25,28 @@ Run `npm install` and `npm run dev` to open the app. Connect a controller to use
 - **Practice** is a controller-only writing area. Stick selections enter characters on return to center; mapped buttons handle spaces, line breaks, deletion, and caret movement. The on-screen guide uses controller-aware button names and icons when available.
 - **Typing Test** uses the two dials to transcribe the shared test passage and reports time, WPM, and character accuracy.
 - **Compare** runs that passage twice: first with a one-stick on-screen QWERTY keyboard, then with both dials. Aim with the left stick and press the mapped A / Enter button to select. The keyboard includes letters, digits, punctuation, Shift, Space, and Backspace. Results and the difference between modes are shown together.
-- The autocomplete bar stays above the dials. X (top face button) enters or leaves suggestion selection, the D-pad changes the selection, and B (bottom face button) accepts it and returns focus to the dials. Holding Backspace, Enter, or Space repeats that editing action after a short delay.
+- The autocomplete bar stays above the dials. X (top face button) enters or leaves suggestion selection. The sticks continue typing while the D-pad changes the selection; B (bottom face button) accepts it. Holding Backspace, Enter, or Space repeats that editing action after a short delay.
 - **Debug** uses the same controller component as Practice, including autocomplete. It also shows the dial event list, axis selectors, typed text, and raw axis and button readings.
 - **Config** edits dial layers, slices, characters, and generic button bindings with the controller. X switches between Dial mappings and Generic mappings. D-pad Up/Down moves through the unnumbered layer list and its split Add/Delete controls at the bottom. B activates the highlighted row. Triggers choose a dial, bumpers reorder layers, and the stick-click buttons add or delete slices. Point a stick at a slice and press B to choose Remap or Move. Remap uses the on-screen QWERTY keyboard and requires a second B press to apply the preview. Move previews the new position with the stick and also requires B to confirm. Reset to defaults is available in both sections. Removing a slice, layer, or binding and resetting require confirmation. Current warnings flag duplicates, missing characters, and slice counts outside the recommended range without blocking use. Layout and bindings are saved in the browser. Generic mappings show controller-aware button names and icons when the controller is recognized.
 
 Run `npm run check` to typecheck, lint, check formatting, test the dials, and build the app.
 
 Controller button icons and artwork are by Zacksly under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+
+## Interface
+
+The Fieldnotes interface is the main app at `/`. It keeps the writing area,
+autocomplete, and both dials together, with controller details in a left rail.
+The original interface remains available at `/original` and its pre-change source
+is recoverable from commit `dc31d12919873f26fddd3bbe697d9eeffaa7cdb4`.
+
+Practice, Speed Test, Head to Head, Customize, and Diagnostics work with a
+connected controller. The layout remains visible when no controller is connected.
+Aim and return a stick to center to type; clicking a held stick cancels its
+selection. Deadzone and axis mappings are saved per controller in the browser.
+Start cycles pages outside timed runs and submits a timed run.
+
+Timed runs end on an exact match, Submit, or after two minutes. They use the passage
+"The quick brown fox jumps over the lazy dog." Autocomplete is disabled during timed
+runs. The bundled autocomplete word list is generated from the full source CSV by
+`scripts/prepare-dictionary.py`; the browser downloads the smaller top-100,000 list.

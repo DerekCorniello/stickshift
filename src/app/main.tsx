@@ -18,6 +18,7 @@ import { ComparisonPage } from "./ComparisonPage";
 import { editorReducer, initialEditorState } from "./practiceEditor";
 import { loadSavedConfig, saveConfig } from "./savedConfig";
 import "./app.css";
+import { DemoApp } from "./DemoApp";
 
 type PageId = "practice" | "typing-test" | "comparison" | "debug" | "config";
 
@@ -74,7 +75,11 @@ function App() {
   const previousPageButtonHeld = useRef(false);
   useEffect(() => {
     const shouldCycle =
-      pageButtonHeld && !previousPageButtonHeld.current && !configCapturing;
+      pageButtonHeld &&
+      !previousPageButtonHeld.current &&
+      !configCapturing &&
+      page !== "typing-test" &&
+      page !== "comparison";
     previousPageButtonHeld.current = pageButtonHeld;
     if (!shouldCycle) return;
     const timer = setTimeout(
@@ -89,7 +94,7 @@ function App() {
       0,
     );
     return () => clearTimeout(timer);
-  }, [pageButtonHeld, configCapturing]);
+  }, [pageButtonHeld, configCapturing, page]);
 
   return (
     <div className="app-shell">
@@ -237,6 +242,6 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    {/^\/original\/?$/.test(location.pathname) ? <App /> : <DemoApp />}
   </StrictMode>,
 );

@@ -41,6 +41,29 @@ describe("combined controller", () => {
     vi.useRealTimers();
   });
 
+  it("disables suggestions and their focus shortcut during timed input", () => {
+    const onActionInput = vi.fn();
+    const render = (pad: GamepadSnapshot) =>
+      act(() =>
+        root.render(
+          <Controller
+            pad={pad}
+            value="th"
+            autocompleteEnabled={false}
+            onValueChange={() => undefined}
+            onCharacterInput={() => undefined}
+            onActionInput={onActionInput}
+          />,
+        ),
+      );
+    render(base);
+    render(pressed(3));
+    render(base);
+    render(pressed(0));
+    expect(container.querySelector(".autocomplete")).toBeNull();
+    expect(onActionInput).toHaveBeenCalledWith("enter");
+  });
+
   it("navigates visible suggestions with X, D-pad, and B", async () => {
     const onValueChange = vi.fn();
     const onActionInput = vi.fn();
@@ -84,6 +107,41 @@ describe("combined controller", () => {
     expect(document.activeElement).toBe(
       container.querySelector(".controller-component__dials"),
     );
+  });
+
+  it("types stick characters while autocomplete selection stays active", async () => {
+    const characters: string[] = [];
+    const actions: string[] = [];
+    const render = (pad: GamepadSnapshot) =>
+      act(() =>
+        root.render(
+          <Controller
+            pad={pad}
+            value="th"
+            onValueChange={() => undefined}
+            onCharacterInput={(character) => characters.push(character)}
+            onActionInput={(action) => actions.push(action)}
+          />,
+        ),
+      );
+
+    render(base);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
+    render(pressed(3));
+    expect(container.querySelector('[aria-selected="true"]')).not.toBeNull();
+    render(base);
+    render({ ...base, axes: [0, -1, 0, 0] });
+    render(base);
+
+    expect(characters).toEqual(["e"]);
+    expect(container.querySelector('[aria-selected="true"]')).not.toBeNull();
+    render(pressed(4));
+    render(base);
+    render(pressed(5));
+    expect(actions).toContain("backspace");
+    expect(actions).toContain("space");
   });
 
   it("repeats editing actions until their buttons are released", () => {

@@ -1,4 +1,4 @@
-export const typingTestPrompt = "the quick brown fox jumps over the lazy dog";
+export const typingTestPrompt = "The quick brown fox jumps over the lazy dog.";
 
 export type TypingTestResult = Readonly<{
   wordsPerMinute: number;
