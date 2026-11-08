@@ -8,7 +8,7 @@ React and TypeScript, using the browser Gamepad API for joystick positions and b
 
 ## Demo flow
 
-1. **Practice:** Show a controller-only writing area, both dials, and a concise on-screen control guide. Keep autocomplete visible above the dials. X (top) enters suggestion selection, the D-pad moves the selection, and B (bottom) accepts a suggestion and returns to typing.
+1. **Practice:** Show a controller-only writing area, both dials, and a concise on-screen control guide. Keep autocomplete visible above the dials. X (top) enters suggestion selection. Both sticks keep typing while the D-pad moves the selection, and B (bottom) accepts a suggestion.
 2. **Typing test:** Show the sentence "The quick brown fox jumps over the lazy dog." to transcribe with the two dials. Show time, words per minute (WPM), and character accuracy during and after the run.
 3. **Comparison:** Type that same sentence first with a one-stick on-screen QWERTY keyboard, then with the two dials. Show each mode's time, WPM, and character accuracy side by side, with the differences. The QWERTY grid has letters, digits, punctuation, Shift, Space, and Backspace. Move its focus with the left stick and select a key with A.
 

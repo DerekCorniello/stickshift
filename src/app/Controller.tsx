@@ -92,7 +92,7 @@ export function Controller({
     return button?.pressed === true || (button?.value ?? 0) >= 0.5;
   };
 
-  useButtonRepeat(buttonHeld("backspace"), !autocompleteActive, () =>
+  useButtonRepeat(buttonHeld("backspace"), true, () =>
     onActionInput("backspace"),
   );
   useButtonRepeat(
@@ -100,9 +100,7 @@ export function Controller({
     !autocompleteActive && !suppressEnterRepeat,
     () => onActionInput("enter"),
   );
-  useButtonRepeat(buttonHeld("space"), !autocompleteActive, () =>
-    onActionInput("space"),
-  );
+  useButtonRepeat(buttonHeld("space"), true, () => onActionInput("space"));
 
   useEffect(() => {
     if (autocompleteActive) {
@@ -169,12 +167,6 @@ export function Controller({
     onControllerEvent?.(event);
   };
 
-  const handleCharacterInput = (character: string) => {
-    if (!autocompleteActive) {
-      onCharacterInput(character);
-    }
-  };
-
   const handleActionInput = (action: ControlAction) => {
     if (
       autocompleteActive &&
@@ -183,8 +175,6 @@ export function Controller({
         action === "cursorLeft" ||
         action === "cursorRight" ||
         action === "enter" ||
-        action === "backspace" ||
-        action === "space" ||
         action === "autocomplete" ||
         action === "close")
     ) {
@@ -212,8 +202,8 @@ export function Controller({
       )}
       {autocompleteActive && autocompleteEnabled && (
         <p className="controller-component__mode" role="status">
-          Autocomplete: use the D-pad to choose a suggestion, then press B to
-          select. Press X to return to typing.
+          Keep typing with the sticks. Use the D-pad to choose a suggestion, B
+          to accept it, or X to close selection.
         </p>
       )}
       <div
@@ -235,7 +225,7 @@ export function Controller({
           bindings={bindings}
           deadzone={deadzone}
           showDiagnostics={showDiagnostics}
-          onCharacterInput={handleCharacterInput}
+          onCharacterInput={onCharacterInput}
           onActionInput={handleActionInput}
           onControllerEvent={handleControllerEvent}
         />
