@@ -2,7 +2,7 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
-import { VariantApp } from "./VariantApp";
+import { DemoApp } from "./DemoApp";
 import { defaultBindings, type GamepadSnapshot } from "../typing";
 
 const gamepadState = vi.hoisted(() => ({
@@ -23,11 +23,11 @@ const basePad: GamepadSnapshot = {
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
-describe("demo interfaces", () => {
+describe("demo interface", () => {
   let container: HTMLDivElement;
   let root: Root;
   beforeEach(() => {
-    window.history.replaceState(null, "", "/ui-1");
+    window.history.replaceState(null, "", "/");
     localStorage.clear();
     gamepadState.pads = {};
     vi.stubGlobal(
@@ -57,24 +57,20 @@ describe("demo interfaces", () => {
     act(() => window.dispatchEvent(event));
     return event;
   };
-  const render = async (variant: number) => {
-    await act(async () => root.render(<VariantApp variant={variant} />));
+  const render = async () => {
+    await act(async () => root.render(<DemoApp />));
   };
-  it.each([1, 2, 3, 4, 5])(
-    "renders design %i with writing area and both dials without hardware",
-    async (variant) => {
-      await render(variant);
-      expect(container.querySelector(`.ui-${variant}`)).not.toBeNull();
-      expect(container.querySelectorAll(".dial")).toHaveLength(2);
-      expect(
-        container.querySelector('[aria-label="Controller writing area"]'),
-      ).not.toBeNull();
-
-      expect(container.querySelector('a[href="/original"]')).not.toBeNull();
-    },
-  );
+  it("renders the writing area and both dials without hardware", async () => {
+    await render();
+    expect(container.querySelector(".ui-2")).not.toBeNull();
+    expect(container.querySelectorAll(".dial")).toHaveLength(2);
+    expect(
+      container.querySelector('[aria-label="Controller writing area"]'),
+    ).not.toBeNull();
+    expect(container.querySelector(".variant-switcher")).toBeNull();
+  });
   it("does not treat keyboard input as controller input", async () => {
-    await render(1);
+    await render();
     const initialText = container.querySelector(
       '[aria-label="Controller writing area"]',
     )!.textContent;
@@ -87,7 +83,7 @@ describe("demo interfaces", () => {
   });
   it("submits a timed run with the physical Start binding without changing pages", async () => {
     gamepadState.pads = { 0: basePad };
-    await render(1);
+    await render();
     const speed = Array.from(
       container.querySelectorAll<HTMLButtonElement>(".variant-nav button"),
     ).find((button) => button.textContent?.includes("Speed test"))!;
@@ -104,13 +100,13 @@ describe("demo interfaces", () => {
         ),
       },
     };
-    await render(1);
+    await render();
     expect(container.querySelector(".typing-test-page")).not.toBeNull();
     expect(container.textContent).toContain("Test complete.");
     expect(location.hash).toBe("#test");
   });
   it("leaves normal Tab navigation to the browser", async () => {
-    await render(1);
+    await render();
     const event = key("keydown", "Tab");
     expect(event.defaultPrevented).toBe(false);
     key("keyup", "Tab");

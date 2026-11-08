@@ -55,7 +55,6 @@ type ControllerProps = Readonly<{
   deadzone?: number;
   showDiagnostics?: boolean;
   autocompleteEnabled?: boolean;
-  selectionMode?: "auto" | "manual";
 }>;
 
 export function Controller({
@@ -77,7 +76,6 @@ export function Controller({
   deadzone,
   showDiagnostics,
   autocompleteEnabled = true,
-  selectionMode,
 }: ControllerProps) {
   const [autocompleteRequested, setAutocompleteActive] = useState(false);
   const autocompleteActive = autocompleteEnabled && autocompleteRequested;
@@ -236,7 +234,6 @@ export function Controller({
           onRightMappingChange={onRightMappingChange}
           bindings={bindings}
           deadzone={deadzone}
-          selectionMode={selectionMode}
           showDiagnostics={showDiagnostics}
           onCharacterInput={handleCharacterInput}
           onActionInput={handleActionInput}

@@ -18,7 +18,7 @@ The app has five destinations: Practice for controller-only writing, Typing Test
 
 ## Controls
 
-Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. In manual mode, moving the stick highlights a sector and clicking that stick enters its character.
+Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. Clicking a held stick cancels that selection until it returns to center.
 
 The input module supports customizable action bindings. Config can edit these defaults and saves changes in the current browser:
 
@@ -50,11 +50,11 @@ The letter layout is a heuristic based on [English letter and bigram counts](htt
 
 The 32 punctuation characters follow ASCII code-point order across the two symbol layers.
 
-The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. The original interface keeps its fixed settings. The five alternate interfaces expose automatic/manual selection and deadzone controls, and save those plus axis mappings per controller in the browser.
+The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. The main interface exposes a deadzone control and saves the deadzone and axis mappings per controller in the browser. The original interface remains at `/original`.
 
 ## Project structure
 
-- `src/app/`: Original and alternate app shells, pages, controller composition, autocomplete, timed runs, and configuration.
+- `src/app/`: Main and original app shells, pages, controller composition, autocomplete, timed runs, and configuration.
 - `src/typing/`: Reusable dials, authored layouts, Gamepad API polling, and event decoding.
 - `src/data/`: Source and generated autocomplete dictionaries.
 - `scripts/`: Dictionary and static route preparation.

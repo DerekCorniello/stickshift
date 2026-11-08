@@ -18,7 +18,7 @@ import { ComparisonPage } from "./ComparisonPage";
 import { editorReducer, initialEditorState } from "./practiceEditor";
 import { loadSavedConfig, saveConfig } from "./savedConfig";
 import "./app.css";
-import { VariantApp } from "./VariantApp";
+import { DemoApp } from "./DemoApp";
 
 type PageId = "practice" | "typing-test" | "comparison" | "debug" | "config";
 
@@ -242,10 +242,6 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    {/\/ui-([1-5])\/?$/.test(location.pathname) ? (
-      <VariantApp variant={Number(location.pathname.match(/ui-([1-5])/)![1])} />
-    ) : (
-      <App />
-    )}
+    {/^\/original\/?$/.test(location.pathname) ? <App /> : <DemoApp />}
   </StrictMode>,
 );

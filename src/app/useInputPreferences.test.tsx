@@ -29,7 +29,6 @@ describe("controller input preferences", () => {
     render("one");
     act(() => {
       current.setDeadzone(0.35);
-      current.setSelectionMode("manual");
       current.setRightMapping({
         xAxis: 6,
         yAxis: 7,
@@ -43,7 +42,6 @@ describe("controller input preferences", () => {
     act(() => current.setDeadzone(0.4));
     render("one");
     expect(current.deadzone).toBe(0.35);
-    expect(current.selectionMode).toBe("manual");
     act(() => root.unmount());
     root = createRoot(container);
     render("two");
@@ -65,7 +63,6 @@ describe("controller input preferences", () => {
         leftMapping: { xAxis: 4, yAxis: 5, invertX: false, invertY: true },
         rightMapping: { xAxis: 6, yAxis: 7, invertX: false, invertY: false },
         deadzone: 0.45,
-        selectionMode: "manual",
       }),
     );
     render("one");
@@ -84,7 +81,6 @@ describe("controller input preferences", () => {
       leftMapping: { xAxis: -1, yAxis: 0, invertX: false, invertY: false },
       rightMapping: { xAxis: 2, yAxis: 3, invertX: false, invertY: false },
       deadzone: 0.2,
-      selectionMode: "auto",
     }),
   ])("rejects invalid saved settings", (raw) => {
     vi.spyOn(console, "warn").mockImplementation(() => undefined);

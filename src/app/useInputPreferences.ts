@@ -14,7 +14,6 @@ const defaults: InputPreferences = {
   leftMapping: defaultLeftMapping,
   rightMapping: defaultRightMapping,
   deadzone: 0.2,
-  selectionMode: "auto",
 };
 
 function storageKey(controllerId: string): string {
@@ -47,8 +46,7 @@ function isPreferences(value: unknown): value is InputPreferences {
     typeof value.deadzone === "number" &&
     Number.isFinite(value.deadzone) &&
     value.deadzone > 0 &&
-    value.deadzone < 1 &&
-    (value.selectionMode === "auto" || value.selectionMode === "manual")
+    value.deadzone < 1
   );
 }
 
@@ -117,15 +115,11 @@ export function useInputPreferences(controllerId: string) {
     (value) => update("deadzone", value),
     [update],
   );
-  const setSelectionMode: Dispatch<
-    SetStateAction<InputSettings["selectionMode"]>
-  > = useCallback((value) => update("selectionMode", value), [update]);
 
   return {
     ...preferences,
     setLeftMapping,
     setRightMapping,
     setDeadzone,
-    setSelectionMode,
   };
 }

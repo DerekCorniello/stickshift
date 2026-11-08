@@ -23,47 +23,43 @@ describe("controller dial input", () => {
     container.remove();
   });
 
-  it.each(["auto", "manual"] as const)(
-    "commits once in %s selection mode",
-    (selectionMode) => {
-      const characters: string[] = [];
-      const base: GamepadSnapshot = {
-        id: "Pad",
-        index: 0,
-        connected: true,
-        mapping: "standard",
-        axes: [0, 0, 0, 0],
-        buttons: Array.from({ length: 16 }, () => ({
-          pressed: false,
-          value: 0,
-        })),
-      };
-      const render = (axes: number[], clicked = false) =>
-        act(() =>
-          root.render(
-            <ControllerDials
-              pad={{
-                ...base,
-                axes,
-                buttons: base.buttons.map((button, index) =>
-                  index === 10 && clicked
-                    ? { pressed: true, value: 1 }
-                    : button,
-                ),
-              }}
-              selectionMode={selectionMode}
-              onCharacterInput={(character) => characters.push(character)}
-            />,
-          ),
-        );
-      render([0, 0, 0, 0]);
-      render([0, -1, 0, 0]);
-      render([0, -1, 0, 0], true);
-      expect(characters).toHaveLength(selectionMode === "manual" ? 1 : 0);
-      render([0, 0, 0, 0]);
-      expect(characters).toEqual(["e"]);
-    },
-  );
+  it("clicking a held stick cancels its character until it returns to center", () => {
+    const characters: string[] = [];
+    const base: GamepadSnapshot = {
+      id: "Pad",
+      index: 0,
+      connected: true,
+      mapping: "standard",
+      axes: [0, 0, 0, 0],
+      buttons: Array.from({ length: 16 }, () => ({ pressed: false, value: 0 })),
+    };
+    const render = (axes: number[], clicked: 10 | 11 | null = null) =>
+      act(() =>
+        root.render(
+          <ControllerDials
+            pad={{
+              ...base,
+              axes,
+              buttons: base.buttons.map((button, index) =>
+                index === clicked ? { pressed: true, value: 1 } : button,
+              ),
+            }}
+            onCharacterInput={(character) => characters.push(character)}
+          />,
+        ),
+      );
+    render([0, 0, 0, 0]);
+    render([0, -1, 0, -1]);
+    render([0, -1, 0, -1], 10);
+    expect(characters).toEqual([]);
+    render([0, 0, 0, -1]);
+    expect(characters).toEqual([]);
+    render([0, 0, 0, 0]);
+    expect(characters).toEqual(["t"]);
+    render([0, -1, 0, 0]);
+    render([0, 0, 0, 0]);
+    expect(characters).toEqual(["t", "e"]);
+  });
 
   it("reads the standard axis pairs and a chosen raw axis pair", () => {
     expect(
@@ -202,7 +198,7 @@ describe("controller dial input", () => {
     ).toBe("e");
     expect(
       container.querySelector(".controller-dials__events")?.textContent,
-    ).toContain("B6 (6) press: Previous layer");
+    ).toContain("LT (6) press: Previous layer");
   });
 
   it("keeps the confirmed character through boundary wobble and return", () => {
