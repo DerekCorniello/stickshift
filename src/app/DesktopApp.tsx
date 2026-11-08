@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { defaultBindings, leftDialConfig, rightDialConfig } from "../typing";
 import type { GamepadSnapshot } from "../typing";
 import { ControllerDials } from "./ControllerDials";
 import { useInputPreferences } from "./useInputPreferences";
-import { loadSavedConfig } from "./savedConfig";
+import { loadSavedConfig, saveConfig } from "./savedConfig";
+import { ConfigPage } from "./ConfigPage";
 
 const disconnectedPad: GamepadSnapshot = {
   id: "No controller connected",
@@ -66,14 +67,32 @@ export function DesktopApp() {
   const { pad: connectedPad, keyboardError, autocomplete } = useDesktopPad();
   const pad = connectedPad ?? disconnectedPad;
   const [saved] = useState(loadSavedConfig);
-  const [layout] = useState(
+  const [layout, setLayout] = useState(
     saved?.layout ?? { left: leftDialConfig, right: rightDialConfig },
   );
-  const [bindings] = useState(saved?.bindings ?? defaultBindings);
+  const [bindings, setBindings] = useState(saved?.bindings ?? defaultBindings);
   const [activeLayerId, setActiveLayerId] = useState(layout.left.layers[0].id);
+  const [page, setPage] = useState<"dials" | "config">("dials");
+  const [capturing, setCapturing] = useState(false);
+  const previousStart = useRef(false);
   const { leftMapping, rightMapping, deadzone, setDeadzone } =
     useInputPreferences(pad.id);
   const [error, setError] = useState("");
+  const startPressed = pad.buttons[9]?.pressed ?? false;
+
+  useEffect(() => saveConfig({ layout, bindings }), [layout, bindings]);
+  useEffect(() => {
+    if (startPressed && !previousStart.current && !capturing) {
+      setPage((current) => (current === "dials" ? "config" : "dials"));
+    }
+    previousStart.current = startPressed;
+  }, [startPressed, capturing]);
+
+  const reset = () => {
+    setLayout({ left: leftDialConfig, right: rightDialConfig });
+    setBindings(defaultBindings);
+    setActiveLayerId(leftDialConfig.layers[0].id);
+  };
 
   useEffect(() => {
     void fetch("/api/desktop/config", {
@@ -86,9 +105,18 @@ export function DesktopApp() {
         leftMapping,
         rightMapping,
         deadzone,
+        typingEnabled: page === "dials",
       }),
     }).catch((reason: unknown) => setError(String(reason)));
-  }, [layout, bindings, activeLayerId, leftMapping, rightMapping, deadzone]);
+  }, [
+    layout,
+    bindings,
+    activeLayerId,
+    leftMapping,
+    rightMapping,
+    deadzone,
+    page,
+  ]);
 
   return (
     <div className="desktop-app">
@@ -97,44 +125,78 @@ export function DesktopApp() {
           <div className="desktop-brand">StickShift</div>
           <span>{connectedPad?.id ?? "Connect a controller"}</span>
         </div>
+        <nav aria-label="Desktop pages" className="desktop-nav">
+          <button
+            type="button"
+            aria-current={page === "dials" ? "page" : undefined}
+            onClick={() => setPage("dials")}
+          >
+            Dials
+          </button>
+          <button
+            type="button"
+            aria-current={page === "config" ? "page" : undefined}
+            onClick={() => setPage("config")}
+          >
+            Config
+          </button>
+        </nav>
       </header>
-      <section
-        className="desktop-autocomplete"
-        aria-label="Autocomplete suggestions"
-      >
-        <div>
-          Suggestions for <strong>{autocomplete.word || "…"}</strong>
-          {autocomplete.active && <span> · choose with the D-pad</span>}
-        </div>
-        <ol>
-          {autocomplete.suggestions.map((word, index) => (
-            <li
-              key={word}
-              aria-current={
-                autocomplete.active && index === autocomplete.selectedIndex
-                  ? "true"
-                  : undefined
-              }
-            >
-              {word}
-            </li>
-          ))}
-        </ol>
-        {autocomplete.suggestions.length === 0 && <span>No matches yet</span>}
-      </section>
+      {page === "dials" && (
+        <section
+          className="desktop-autocomplete"
+          aria-label="Autocomplete suggestions"
+        >
+          <div>
+            Suggestions for <strong>{autocomplete.word || "…"}</strong>
+            {autocomplete.active && <span> · choose with the D-pad</span>}
+          </div>
+          <ol>
+            {autocomplete.suggestions.map((word, index) => (
+              <li
+                key={word}
+                aria-current={
+                  autocomplete.active && index === autocomplete.selectedIndex
+                    ? "true"
+                    : undefined
+                }
+              >
+                {word}
+              </li>
+            ))}
+          </ol>
+          {autocomplete.suggestions.length === 0 && <span>No matches yet</span>}
+        </section>
+      )}
       <main>
-        <ControllerDials
-          pad={pad}
-          leftConfig={layout.left}
-          rightConfig={layout.right}
-          activeLayerId={activeLayerId}
-          onActiveLayerChange={setActiveLayerId}
-          leftMapping={leftMapping}
-          rightMapping={rightMapping}
-          bindings={bindings}
-          deadzone={deadzone}
-          showDiagnostics={false}
-        />
+        {page === "dials" ? (
+          <ControllerDials
+            pad={pad}
+            leftConfig={layout.left}
+            rightConfig={layout.right}
+            activeLayerId={activeLayerId}
+            onActiveLayerChange={setActiveLayerId}
+            leftMapping={leftMapping}
+            rightMapping={rightMapping}
+            bindings={bindings}
+            deadzone={deadzone}
+            showDiagnostics={false}
+          />
+        ) : (
+          <ConfigPage
+            pad={pad}
+            layout={layout}
+            onLayoutChange={setLayout}
+            bindings={bindings}
+            onBindingsChange={setBindings}
+            activeLayerId={activeLayerId}
+            onActiveLayerChange={setActiveLayerId}
+            leftMapping={leftMapping}
+            rightMapping={rightMapping}
+            onCaptureChange={setCapturing}
+            onResetDefaults={reset}
+          />
+        )}
       </main>
       <footer className="desktop-footer">
         <span>Focus another app to type with the controller.</span>

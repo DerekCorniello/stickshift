@@ -80,6 +80,31 @@ class InputEngineTests(unittest.TestCase):
         self.assertEqual(self.keyboard.keys, [])
         self.assertTrue(self.keyboard.closed)
 
+    def test_config_page_pauses_typing_and_clears_pending_selection(self):
+        self.engine.process(pad(left_y=-1), 0.1)
+        paused = config()
+        paused["typingEnabled"] = False
+        self.engine.configure(paused)
+        self.engine.process(pad(left_y=-1, pressed=(5,)), 0.2)
+        self.engine.process(pad(), 0.3)
+        self.assertEqual(self.keyboard.keys, [])
+
+        resumed = config()
+        resumed["typingEnabled"] = True
+        self.engine.configure(resumed)
+        self.engine.process(pad(), 0.4)
+        self.engine.process(pad(left_y=-1), 0.5)
+        self.engine.process(pad(), 0.6)
+        self.assertEqual(self.keyboard.keys, ["e"])
+
+    def test_unassigned_slice_does_not_send_an_empty_key(self):
+        incomplete = config()
+        incomplete["layout"]["left"]["layers"][0]["slices"][0]["character"] = ""
+        self.engine.configure(incomplete)
+        self.engine.process(pad(left_y=-1), 0.1)
+        self.engine.process(pad(), 0.2)
+        self.assertEqual(self.keyboard.keys, [])
+
     @unittest.skipUnless(sys.platform == "linux", "Linux evdev test")
     def test_ascii_mapping(self):
         from desktop.linux_devices import key_for_character, normalize_axis

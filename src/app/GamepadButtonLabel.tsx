@@ -2,6 +2,7 @@ import {
   getControllerButtonIcon,
   getControllerButtonName,
 } from "./gamepadLabels";
+import "./gamepadButtonLabel.css";
 
 type Props = Readonly<{
   gamepadId: string;

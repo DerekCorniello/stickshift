@@ -101,10 +101,12 @@ class InputEngine:
             return
 
         buttons = [bool(button["pressed"]) for button in pad["buttons"]]
-        if not self.enabled or self.config is None:
+        if not self.enabled or self.config is None or not self.config.get("typingEnabled", True):
             self.previous_buttons = buttons
             self.candidate = {"left": None, "right": None}
             self.outside = {"left": False, "right": False}
+            self.cancelled = {"left": False, "right": False}
+            self.repeat_after.clear()
             return
 
         bindings = self.config["bindings"]
@@ -253,7 +255,7 @@ class InputEngine:
         if not outside:
             if self.outside[side] and not self.cancelled[side]:
                 candidate = self.candidate[side]
-                if candidate is not None and self.keyboard is not None:
+                if candidate is not None and candidate[1] and self.keyboard is not None:
                     self._type_character(candidate[1])
             self.outside[side] = False
             self.candidate[side] = None

@@ -22,6 +22,7 @@ import {
   updateSlices,
 } from "./configModel";
 import type { DialSide, Layout } from "./configModel";
+import "./pages.css";
 import "./configPage.css";
 
 const keyGroups = [

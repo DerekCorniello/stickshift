@@ -76,9 +76,42 @@ body,
   font-size: 12px;
 }
 
-.desktop-app main {
+.desktop-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.desktop-nav button {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--panel);
+  font: inherit;
+  cursor: pointer;
+}
+
+.desktop-nav button[aria-current="page"] {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.desktop-app > main {
   display: grid;
   align-items: center;
+  min-width: 0;
+}
+
+.desktop-app:has(.config-page) {
+  grid-template-rows: auto 1fr auto;
+}
+
+.desktop-app .config-page {
+  min-width: 0;
+}
+
+.desktop-app .config-page__sections {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .desktop-autocomplete {
