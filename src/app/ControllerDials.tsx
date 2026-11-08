@@ -151,6 +151,10 @@ export function ControllerDials({
     left: false,
     right: false,
   });
+  const [activeSides, setActiveSides] = useState({
+    left: false,
+    right: false,
+  });
   const [localLayerId, setLocalLayerId] = useState(leftConfig.layers[0].id);
   const [localLeftMapping, setLocalLeftMapping] =
     useState<AxisMapping>(defaultLeftMapping);
@@ -238,6 +242,12 @@ export function ControllerDials({
         cancelled.current[event.side] = false;
         setCancelledSides((current) => ({ ...current, [event.side]: false }));
       }
+      if (event.kind === "stick") {
+        setActiveSides((current) => ({
+          ...current,
+          [event.side]: event.phase === "enter",
+        }));
+      }
       if (event.kind === "character" && cancelled.current[event.side]) return;
       reportEvent(event);
       setRecentEvents((current) =>
@@ -309,7 +319,11 @@ export function ControllerDials({
             activeLayerId={activeLayerId}
             position={leftPosition}
             deadzone={deadzone}
-            highlightedIndex={cancelledSides.left ? null : leftSelectedIndex}
+            highlightedIndex={
+              cancelledSides.left || !activeSides.left
+                ? null
+                : leftSelectedIndex
+            }
             showPreview
           />
           {showDiagnostics && (
@@ -330,7 +344,11 @@ export function ControllerDials({
             activeLayerId={activeLayerId}
             position={rightPosition}
             deadzone={deadzone}
-            highlightedIndex={cancelledSides.right ? null : rightSelectedIndex}
+            highlightedIndex={
+              cancelledSides.right || !activeSides.right
+                ? null
+                : rightSelectedIndex
+            }
             showPreview
           />
           {showDiagnostics && (

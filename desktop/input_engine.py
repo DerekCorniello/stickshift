@@ -7,6 +7,8 @@ import csv
 import time
 from typing import Protocol
 
+REARM_MARGIN = 0.2
+
 
 class Keyboard(Protocol):
     def press(self, key: str) -> None: ...
@@ -53,6 +55,7 @@ class InputEngine:
         self.keyboard: Keyboard | None = None
         self.previous_buttons: list[bool] = []
         self.outside = {"left": False, "right": False}
+        self.needs_rearm = {"left": False, "right": False}
         self.candidate: dict[str, tuple[int, str] | None] = {
             "left": None,
             "right": None,
@@ -90,6 +93,7 @@ class InputEngine:
         self.keyboard = keyboard
         self.candidate = {"left": None, "right": None}
         self.cancelled = {"left": False, "right": False}
+        self.needs_rearm = {"left": False, "right": False}
         self.repeat_after.clear()
 
     def process(self, pad: dict | None, now: float | None = None) -> None:
@@ -98,6 +102,7 @@ class InputEngine:
             self.previous_buttons = []
             self.candidate = {"left": None, "right": None}
             self.outside = {"left": False, "right": False}
+            self.needs_rearm = {"left": False, "right": False}
             return
 
         buttons = [bool(button["pressed"]) for button in pad["buttons"]]
@@ -105,6 +110,7 @@ class InputEngine:
             self.previous_buttons = buttons
             self.candidate = {"left": None, "right": None}
             self.outside = {"left": False, "right": False}
+            self.needs_rearm = {"left": False, "right": False}
             self.cancelled = {"left": False, "right": False}
             self.repeat_after.clear()
             return
@@ -255,16 +261,26 @@ class InputEngine:
             x = -x
         if mapping["invertY"]:
             y = -y
-        outside = math.hypot(x, y) > self.config["deadzone"]
+        magnitude = math.hypot(x, y)
+        deadzone = self.config["deadzone"]
+        outside = magnitude > deadzone and (
+            self.outside[side]
+            or not self.needs_rearm[side]
+            or magnitude >= min(1, deadzone + REARM_MARGIN)
+        )
         if not outside:
             if self.outside[side] and not self.cancelled[side]:
                 candidate = self.candidate[side]
                 if candidate is not None and candidate[1] and self.keyboard is not None:
                     self._type_character(candidate[1])
+            if self.outside[side]:
+                self.needs_rearm[side] = True
             self.outside[side] = False
             self.candidate[side] = None
             self.cancelled[side] = False
             return
+
+        self.needs_rearm[side] = False
 
         layers = self.config["layout"][side]["layers"]
         layer = next(

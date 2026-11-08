@@ -26,6 +26,63 @@ function padWithButtons(
 }
 
 describe("controller events", () => {
+  it("still accepts a first selection just beyond the deadzone", () => {
+    const entered = readControllerEvents(
+      initialControllerEventState,
+      padWithButtons(),
+      defaultBindings,
+      { x: 0, y: -0.25 },
+      center,
+      0.2,
+      () => ({ character: "e", layerId: "lowercase" }),
+    );
+    const centered = readControllerEvents(
+      entered.state,
+      padWithButtons(),
+      defaultBindings,
+      center,
+      center,
+      0.2,
+    );
+    expect(centered.events).toContainEqual({
+      kind: "character",
+      side: "left",
+      character: "e",
+      layerId: "lowercase",
+    });
+  });
+  it("ignores a small opposite rebound after a character is entered", () => {
+    let state = initialControllerEventState;
+    const characters: string[] = [];
+    for (const position of [
+      { x: 0, y: -1 },
+      center,
+      { x: 0, y: 0.25 },
+      center,
+      { x: 0, y: 0.6 },
+      center,
+    ]) {
+      const result = readControllerEvents(
+        state,
+        padWithButtons(),
+        defaultBindings,
+        position,
+        center,
+        0.2,
+        (_side, current) => ({
+          character: current.y < 0 ? "e" : "g",
+          layerId: "lowercase",
+        }),
+      );
+      characters.push(
+        ...result.events
+          .filter((event) => event.kind === "character")
+          .map((event) => event.character),
+      );
+      state = result.state;
+    }
+    expect(characters).toEqual(["e", "g"]);
+  });
   it("emits the last highlighted character when each stick returns to center", () => {
     const first = readControllerEvents(
       initialControllerEventState,

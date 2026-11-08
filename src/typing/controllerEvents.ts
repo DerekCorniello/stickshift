@@ -76,6 +76,8 @@ export type ControllerEventState = Readonly<{
   pressedButtons: readonly boolean[];
   leftOutside: boolean;
   rightOutside: boolean;
+  leftNeedsRearm: boolean;
+  rightNeedsRearm: boolean;
   leftCandidate: CharacterSelection | null;
   rightCandidate: CharacterSelection | null;
 }>;
@@ -84,9 +86,28 @@ export const initialControllerEventState: ControllerEventState = {
   pressedButtons: [],
   leftOutside: false,
   rightOutside: false,
+  leftNeedsRearm: false,
+  rightNeedsRearm: false,
   leftCandidate: null,
   rightCandidate: null,
 };
+
+const rearmMargin = 0.2;
+
+function isOutside(
+  position: StickPosition,
+  deadzone: number,
+  wasOutside: boolean,
+  needsRearm: boolean,
+): boolean {
+  const magnitude = Math.hypot(position.x, position.y);
+  return (
+    magnitude > deadzone &&
+    (wasOutside ||
+      !needsRearm ||
+      magnitude >= Math.min(1, deadzone + rearmMargin))
+  );
+}
 
 function actionForButton(
   bindings: ButtonBindings,
@@ -131,8 +152,18 @@ export function readControllerEvents(
     }
   }
 
-  const leftOutside = Math.hypot(leftPosition.x, leftPosition.y) > deadzone;
-  const rightOutside = Math.hypot(rightPosition.x, rightPosition.y) > deadzone;
+  const leftOutside = isOutside(
+    leftPosition,
+    deadzone,
+    previous.leftOutside,
+    previous.leftNeedsRearm,
+  );
+  const rightOutside = isOutside(
+    rightPosition,
+    deadzone,
+    previous.rightOutside,
+    previous.rightNeedsRearm,
+  );
   const leftCandidate = leftOutside
     ? resolveCharacter
       ? resolveCharacter("left", leftPosition)
@@ -179,6 +210,12 @@ export function readControllerEvents(
       pressedButtons,
       leftOutside,
       rightOutside,
+      leftNeedsRearm: leftOutside
+        ? false
+        : previous.leftOutside || previous.leftNeedsRearm,
+      rightNeedsRearm: rightOutside
+        ? false
+        : previous.rightOutside || previous.rightNeedsRearm,
       leftCandidate,
       rightCandidate,
     },

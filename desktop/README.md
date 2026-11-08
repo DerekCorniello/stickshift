@@ -40,6 +40,11 @@ Open Config from the top of the window, or press Start to switch between Dials a
 
 On Linux, the virtual keyboard maps printable ASCII to a US keyboard layout. This version reads common Linux gamepad axes and buttons; raw controllers with different kernel mappings may need an adapter in `desktop/linux_devices.py`. On Windows, printable characters use Unicode keyboard events, while Backspace, Enter, and arrow keys use virtual keys. Controller vibration is browser-only. The Linux keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
 
+After a character is entered, the desktop keyboard waits for the stick to move
+20 percentage points beyond the deadzone before arming another selection. This
+filters small rebounds across center while keeping the release threshold set by
+the deadzone slider.
+
 Run the desktop tests with:
 
 ```sh

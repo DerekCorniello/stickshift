@@ -18,7 +18,7 @@ The app has five destinations: Practice for controller-only writing, Typing Test
 
 ## Controls
 
-Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. Clicking a held stick cancels that selection until it returns to center. The orange stick position marker stays visible, but the slice highlight and highlighted-character display clear until the stick returns to center and is moved out again.
+Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. After that return, a new selection requires a stick movement 20 percentage points beyond the deadzone so a small rebound does not type an opposite character. Clicking a held stick cancels that selection until it returns to center. The orange stick position marker stays visible, but the slice highlight and highlighted-character display clear until the stick returns to center and is moved out again.
 
 The input module supports customizable action bindings. Config can edit these defaults and saves changes in the current browser:
 

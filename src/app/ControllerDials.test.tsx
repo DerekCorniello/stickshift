@@ -114,6 +114,41 @@ describe("controller dial input", () => {
     expect(characters).toEqual(["e", "t", "e"]);
   });
 
+  it("does not highlight or type a small opposite rebound", () => {
+    const characters: string[] = [];
+    const pad: GamepadSnapshot = {
+      id: "Pad",
+      index: 0,
+      connected: true,
+      mapping: "standard",
+      axes: [0, 0, 0, 0],
+      buttons: [],
+    };
+    const render = (y: number) =>
+      act(() =>
+        root.render(
+          <ControllerDials
+            pad={{ ...pad, axes: [0, y, 0, 0] }}
+            onCharacterInput={(character) => characters.push(character)}
+          />,
+        ),
+      );
+    render(-1);
+    render(0);
+    render(0.25);
+    expect(
+      container.querySelector('[data-dial-id="left"] .dial-slice--highlighted'),
+    ).toBeNull();
+    render(0);
+    expect(characters).toEqual(["e"]);
+    render(0.6);
+    expect(
+      container.querySelector('[data-dial-id="left"] .dial-slice--highlighted'),
+    ).not.toBeNull();
+    render(0);
+    expect(characters).toEqual(["e", "f"]);
+  });
+
   it("reads the standard axis pairs and a chosen raw axis pair", () => {
     expect(
       readStickPosition([0.3, -0.4, 0.5, -0.6], defaultRightMapping),

@@ -20,6 +20,11 @@ On the numbers and symbols layer, the five digits on each dial run from upper le
 
 Run `npm install` and `npm run dev` to open the app. Connect a controller to use Practice, Typing Test, Compare, Debug, and Config. Press Start (button 9) to cycle pages without a mouse. A sector changes when the stick moves clearly past its boundary; a small buffer around each boundary prevents minor wobble from switching sectors. Returning to center enters the last selected character. Axis choices can be changed in Debug and last until you switch controllers or reload the page.
 
+The deadzone defaults to 20%. After a character is entered, the stick must move
+another 20 percentage points beyond that threshold before it can start a new
+selection. This ignores small rebounds across center without changing where a
+held selection ends. The orange position marker still follows the raw stick.
+
 ## Desktop app
 
 The Python app is a small controller keyboard for Linux and Windows with the two dials. System typing starts automatically and sends characters to the focused application. See [desktop/README.md](desktop/README.md) for setup. The website continues to use the browser Gamepad API.

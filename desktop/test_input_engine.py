@@ -66,6 +66,16 @@ class InputEngineTests(unittest.TestCase):
         self.engine.process(pad(), 0.3)
         self.assertEqual(self.keyboard.keys, ["t"])
 
+    def test_small_opposite_rebound_does_not_type_again(self):
+        self.engine.process(pad(left_y=-1), 0.1)
+        self.engine.process(pad(), 0.2)
+        self.engine.process(pad(left_y=0.25), 0.3)
+        self.engine.process(pad(), 0.4)
+        self.assertEqual(self.keyboard.keys, ["e"])
+        self.engine.process(pad(left_y=0.6), 0.5)
+        self.engine.process(pad(), 0.6)
+        self.assertEqual(self.keyboard.keys, ["e", "a"])
+
     def test_layer_and_button_mapping(self):
         self.engine.process(pad(), 0)
         self.engine.process(pad(pressed=(7,)), 0.1)
