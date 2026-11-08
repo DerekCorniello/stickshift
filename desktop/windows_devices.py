@@ -90,9 +90,11 @@ def generic_gamepad_snapshot(
         _clamp_axis(axes[index]) if index < len(axes) else 0.0
         for index in range(4)
     ]
+    # SDL's standard joystick order matches the XInput layout for these
+    # controls: LB/RB are indexes 4/5, which are Backspace/Space bindings.
     pressed = [False] * 16
-    for index, value in enumerate(buttons[:16]):
-        pressed[index] = value
+    for index in range(min(len(buttons), 16)):
+        pressed[index] = bool(buttons[index])
     if len(axes) > 4:
         pressed[6] = axes[4] > 0.5
     if len(axes) > 5:
@@ -114,6 +116,59 @@ def generic_gamepad_snapshot(
         ],
         "buttons": [{"pressed": value, "value": int(value)} for value in pressed],
     }
+
+
+def sdl_controller_snapshot(controller, constants) -> dict:
+    del constants
+    # SDL_GameControllerAxis and SDL_GameControllerButton enum values are
+    # stable, but older pygame builds do not export their symbolic constants.
+    left_x, left_y, right_x, right_y, trigger_left, trigger_right = range(6)
+    (
+        button_a,
+        button_b,
+        button_x,
+        button_y,
+        button_back,
+        _button_guide,
+        button_start,
+        button_left_stick,
+        button_right_stick,
+        button_left_shoulder,
+        button_right_shoulder,
+        button_dpad_up,
+        button_dpad_down,
+        button_dpad_left,
+        button_dpad_right,
+    ) = range(15)
+    axis_values = [
+        controller.get_axis(left_x) / 32768,
+        controller.get_axis(left_y) / 32768,
+        controller.get_axis(right_x) / 32768,
+        controller.get_axis(right_y) / 32768,
+    ]
+    buttons = [
+        controller.get_button(button_a),
+        controller.get_button(button_b),
+        controller.get_button(button_x),
+        controller.get_button(button_y),
+        controller.get_button(button_left_shoulder),
+        controller.get_button(button_right_shoulder),
+        controller.get_axis(trigger_left) > 16384,
+        controller.get_axis(trigger_right) > 16384,
+        controller.get_button(button_back),
+        controller.get_button(button_start),
+        controller.get_button(button_left_stick),
+        controller.get_button(button_right_stick),
+        controller.get_button(button_dpad_up),
+        controller.get_button(button_dpad_down),
+        controller.get_button(button_dpad_left),
+        controller.get_button(button_dpad_right),
+    ]
+    return generic_gamepad_snapshot(
+        controller.get_mapping().get("name", "SDL controller"),
+        axis_values,
+        buttons,
+    )
 
 
 def _xinput_get_state():
@@ -205,15 +260,37 @@ class GenericGamepadReader:
         try:
             pygame.init()
             pygame.joystick.init()
+            from pygame._sdl2 import controller as sdl_controller
+
+            sdl_controller.init()
+            self.sdl_controller = sdl_controller
         except pygame.error as error:
             pygame.quit()
             raise OSError("Unable to initialize generic controller support") from error
+        except ImportError:
+            self.sdl_controller = None
         self.device = None
+        self.controller = None
         self.pad: dict | None = None
 
     def poll(self) -> None:
         try:
             self.pygame.event.pump()
+            if self.controller is None and self.sdl_controller is not None:
+                for index in range(self.sdl_controller.get_count()):
+                    if self.sdl_controller.is_controller(index):
+                        self.controller = self.sdl_controller.Controller(index)
+                        break
+            if self.controller is not None:
+                if not self.controller.attached():
+                    self.controller.quit()
+                    self.controller = None
+                else:
+                    self.pad = sdl_controller_snapshot(
+                        self.controller,
+                        self.sdl_controller,
+                    )
+                    return
             if self.device is None:
                 for index in range(self.pygame.joystick.get_count()):
                     device = self.pygame.joystick.Joystick(index)
@@ -246,6 +323,10 @@ class GenericGamepadReader:
         return self.pad
 
     def close(self) -> None:
+        if self.controller is not None:
+            self.controller.quit()
+        if self.sdl_controller is not None:
+            self.sdl_controller.quit()
         if self.device is not None:
             self.device.quit()
         self.device = None
