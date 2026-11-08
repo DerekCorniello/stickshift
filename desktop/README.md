@@ -34,7 +34,7 @@ The window uses pywebview's Windows backend. Install the WebView2 Runtime if the
 
 ## Using it
 
-Connect a controller and open the app. The Dials page shows the two dials, layer controls, and word suggestions. System typing starts automatically. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Suggestions for text typed with the sticks stay visible. Press the autocomplete button to enter selection mode, use the D-pad to choose a word, then press the Enter button to replace the current word and add a space. Press the autocomplete button again to leave selection mode.
+Connect a controller and open the app. The Dials page shows the two dials, layer controls, and word suggestions. System typing starts automatically. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Suggestions for text typed with the sticks stay visible. Press the autocomplete button to enter selection mode, use the D-pad to choose a word, then press the Enter button to replace the current word and add a space. Press the autocomplete button again to leave selection mode. The right face button (button 1) accepts the first suggestion directly without entering selection mode.
 
 Open Config from the top of the window, or press Start to switch between Dials and Config. Config has the same dial, slice, and button editor as the website. Changes are saved in the desktop window and sent to the keyboard service. System typing pauses while Config is open and resumes when you return to Dials. Close StickShift to stop keyboard output. Practice, tests, and diagnostics remain on the website.
 

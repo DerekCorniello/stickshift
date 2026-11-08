@@ -141,6 +141,10 @@ class InputEngine:
             self.autocomplete_active = not self.autocomplete_active
             self.selected_suggestion = 0
             self._refresh_suggestions()
+        elif action == "acceptFirstSuggestion":
+            if self.suggestions:
+                self.selected_suggestion = 0
+                self._accept_suggestion()
         elif action == "close" and self.autocomplete_active:
             self.autocomplete_active = False
         elif self.autocomplete_active and action in (

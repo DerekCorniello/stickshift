@@ -10,11 +10,16 @@ import {
   type GamepadSnapshot,
 } from "../typing";
 import { defaultLeftMapping, defaultRightMapping } from "./axisMapping";
+import { typingTestPrompts } from "./typingTest";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 it("shows no autocomplete, starts on input, times out, and supports early submission", () => {
   vi.useFakeTimers();
+  const random = vi
+    .spyOn(Math, "random")
+    .mockReturnValueOnce(0)
+    .mockReturnValueOnce(0.8);
   const now = vi.spyOn(performance, "now").mockReturnValue(10);
   const container = document.createElement("div");
   const root = createRoot(container);
@@ -44,6 +49,9 @@ it("shows no autocomplete, starts on input, times out, and supports early submis
     );
   try {
     render(base);
+    expect(
+      container.querySelector(".typing-test-page__prompt")?.textContent,
+    ).toBe(typingTestPrompts[0]);
     expect(container.querySelector(".autocomplete")).toBeNull();
     render({
       ...base,
@@ -60,6 +68,9 @@ it("shows no autocomplete, starts on input, times out, and supports early submis
       (button) => button.textContent === "Try again",
     )!;
     act(() => retry.click());
+    expect(
+      container.querySelector(".typing-test-page__prompt")?.textContent,
+    ).toBe(typingTestPrompts[4]);
     const submit = Array.from(container.querySelectorAll("button")).find(
       (button) => button.textContent === "Submit run",
     )!;
@@ -68,6 +79,7 @@ it("shows no autocomplete, starts on input, times out, and supports early submis
   } finally {
     act(() => root.unmount());
     now.mockRestore();
+    random.mockRestore();
     vi.useRealTimers();
   }
 });

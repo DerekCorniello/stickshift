@@ -143,7 +143,10 @@ export function Controller({
       setSuppressEnterRepeat(false);
     }
     if (event.kind === "button" && event.phase === "press") {
-      if (event.action === "autocomplete" && autocompleteEnabled) {
+      if (event.action === "acceptFirstSuggestion" && autocompleteEnabled) {
+        const firstSuggestion = suggestions[0];
+        if (firstSuggestion) selectSuggestion(firstSuggestion);
+      } else if (event.action === "autocomplete" && autocompleteEnabled) {
         setAutocompleteActive((active) => !active);
       } else if (event.action === "close") {
         setAutocompleteActive(false);
@@ -180,6 +183,7 @@ export function Controller({
     ) {
       return;
     }
+    if (action === "acceptFirstSuggestion") return;
     onActionInput(action);
   };
 
@@ -203,7 +207,8 @@ export function Controller({
       {autocompleteActive && autocompleteEnabled && (
         <p className="controller-component__mode" role="status">
           Keep typing with the sticks. Use the D-pad to choose a suggestion, B
-          to accept it, or X to close selection.
+          to accept it, the right face button to accept the first, or X to close
+          selection.
         </p>
       )}
       <div

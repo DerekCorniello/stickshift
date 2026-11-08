@@ -9,8 +9,8 @@ React and TypeScript, using the browser Gamepad API for joystick positions and b
 ## Demo flow
 
 1. **Practice:** Show a controller-only writing area, both dials, and a concise on-screen control guide. Keep autocomplete visible above the dials. X (top) enters suggestion selection. Both sticks keep typing while the D-pad moves the selection, and B (bottom) accepts a suggestion.
-2. **Typing test:** Show the sentence "The quick brown fox jumps over the lazy dog." to transcribe with the two dials. Show time, words per minute (WPM), and character accuracy during and after the run.
-3. **Comparison:** Type that same sentence first with a one-stick on-screen QWERTY keyboard, then with the two dials. Show each mode's time, WPM, and character accuracy side by side, with the differences. The QWERTY grid has letters, digits, punctuation, Shift, Space, and Backspace. Move its focus with the left stick and select a key with A.
+2. **Typing test:** Pick one of five demo sentences for transcription with the two dials. Pick again on reset; repeats are allowed. Show time, words per minute (WPM), and character accuracy during and after the run.
+3. **Comparison:** Type the same randomly chosen sentence first with a one-stick on-screen QWERTY keyboard, then with the two dials. Pick another sentence on reset. Show each mode's time, WPM, and character accuracy side by side, with the differences. The QWERTY grid has letters, digits, punctuation, Shift, Space, and Backspace. Move its focus with the left stick and select a key with A.
 
 The timer starts with the first entered character. A run ends when the text exactly matches the prompt, when the user presses Submit, or after two minutes. An early submission or timeout is scored using the text entered so far. WPM is correctly entered final characters divided by five, then divided by elapsed minutes. Character accuracy uses the minimum edit distance between the current text and any prompt prefix, so one missing space counts once instead of making every following character incorrect. Backspace updates the score as the text is corrected. Autocomplete is off during timed runs. Results are not saved after refresh.
 
@@ -30,6 +30,7 @@ The input module supports customizable action bindings. Config can edit these de
 | Minus                | Leave autocomplete selection                            |
 | X (top)              | Enter or leave autocomplete selection                   |
 | B (bottom)           | Enter while typing; accept a suggestion in autocomplete |
+| Right face button (1) | Accept the first suggestion without selection mode      |
 | D-pad                | Move the text cursor or autocomplete selection          |
 | B                    | Unassigned                                              |
 

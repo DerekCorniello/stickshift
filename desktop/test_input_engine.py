@@ -105,6 +105,20 @@ class InputEngineTests(unittest.TestCase):
         self.engine.process(pad(), 0.2)
         self.assertEqual(self.keyboard.keys, [])
 
+    def test_first_suggestion_shortcut_works_without_selection_mode(self):
+        shortcut = config()
+        shortcut["bindings"]["acceptFirstSuggestion"] = 1
+        self.engine.configure(shortcut)
+        self.engine.word_buffer = "th"
+        self.engine.suggestions = ["there", "then"]
+        self.engine.selected_suggestion = 1
+        self.engine.process(pad(pressed=(1,)), 0.1)
+        self.assertEqual(
+            self.keyboard.keys,
+            ["BACKSPACE", "BACKSPACE", "t", "h", "e", "r", "e", " "],
+        )
+        self.assertFalse(self.engine.autocomplete_active)
+
     @unittest.skipUnless(sys.platform == "linux", "Linux evdev test")
     def test_ascii_mapping(self):
         from desktop.linux_devices import key_for_character, normalize_axis

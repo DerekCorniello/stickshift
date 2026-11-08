@@ -10,7 +10,7 @@ import type {
 import { ControllerDials } from "./ControllerDials";
 import { readStickPosition } from "./axisMapping";
 import type { AxisMapping } from "./axisMapping";
-import { typingTestPrompt } from "./typingTest";
+import { chooseTypingTestPrompt } from "./typingTest";
 import {
   useTimedRun,
   scoreRun,
@@ -202,20 +202,21 @@ export function ComparisonPage({
   deadzone,
 }: Props) {
   const [stage, setStage] = useState<Stage>("one-stick");
+  const [prompt, setPrompt] = useState(chooseTypingTestPrompt);
   const {
     run: oneRun,
     insert: insertOne,
     backspace: backspaceOne,
     finish: finishOne,
     reset: resetOne,
-  } = useTimedRun();
+  } = useTimedRun(prompt);
   const {
     run: twoRun,
     insert: insertTwo,
     backspace: backspaceTwo,
     finish: finishTwo,
     reset: resetTwo,
-  } = useTimedRun();
+  } = useTimedRun(prompt);
   const [focusIndex, setFocusIndex] = useState(0);
   const [shifted, setShifted] = useState(false);
   const leftPosition = readStickPosition(pad.axes, leftMapping);
@@ -261,8 +262,10 @@ export function ComparisonPage({
   );
 
   const reset = useCallback(() => {
-    resetOne();
-    resetTwo();
+    const nextPrompt = chooseTypingTestPrompt();
+    setPrompt(nextPrompt);
+    resetOne(nextPrompt);
+    resetTwo(nextPrompt);
     setFocusIndex(0);
     setShifted(false);
     setStage("one-stick");
@@ -322,7 +325,7 @@ export function ComparisonPage({
 
   const handleDialAction = (action: ControlAction) => {
     if (visibleStage === "ready-two-stick" && action === "enter") {
-      resetTwo();
+      resetTwo(prompt);
       setStage("two-stick");
     } else if (visibleStage === "two-stick" && action === "submit")
       finish("two");
@@ -346,7 +349,7 @@ export function ComparisonPage({
         <span className="connection-badge">{pad.id}</span>
       </header>
       <section className="comparison-page__card" aria-label="Typing comparison">
-        <p className="typing-test-page__prompt">{typingTestPrompt}</p>
+        <p className="typing-test-page__prompt">{oneRun.prompt}</p>
         <div className="comparison-page__runs">
           <RunSummary
             label="One stick"

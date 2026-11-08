@@ -8,12 +8,14 @@ import {
 export const runLimit = 120_000;
 export type RunResult = TypingTestResult & Readonly<{ elapsed: number }>;
 export type TimedRun = Readonly<{
+  prompt: string;
   text: string;
   startedAt: number | null;
   elapsed: number;
   result: RunResult | null;
 }>;
 export const blankRun: TimedRun = {
+  prompt: typingTestPrompt,
   text: "",
   startedAt: null,
   elapsed: 0,
@@ -24,14 +26,14 @@ export type RunAction =
   | { kind: "backspace"; now: number }
   | { kind: "finish"; now: number }
   | { kind: "tick"; now: number }
-  | { kind: "reset" };
+  | { kind: "reset"; prompt: string };
 
 export function scoreRun(run: TimedRun, elapsed = run.elapsed): RunResult {
-  return { ...scoreTypingTest(run.text, elapsed), elapsed };
+  return { ...scoreTypingTest(run.text, elapsed, run.prompt), elapsed };
 }
 
 export function timedRunReducer(run: TimedRun, action: RunAction): TimedRun {
-  if (action.kind === "reset") return blankRun;
+  if (action.kind === "reset") return { ...blankRun, prompt: action.prompt };
   if (run.result) return run;
   const elapsed =
     run.startedAt === null
@@ -50,11 +52,14 @@ export function timedRunReducer(run: TimedRun, action: RunAction): TimedRun {
       : run.text + action.value;
   const startedAt = run.startedAt ?? (text.length > 0 ? action.now : null);
   const next = { ...run, text, startedAt, elapsed };
-  return text === typingTestPrompt ? { ...next, result: scoreRun(next) } : next;
+  return text === run.prompt ? { ...next, result: scoreRun(next) } : next;
 }
 
-export function useTimedRun() {
-  const [run, dispatch] = useReducer(timedRunReducer, blankRun);
+export function useTimedRun(prompt: string) {
+  const [run, dispatch] = useReducer(timedRunReducer, {
+    ...blankRun,
+    prompt,
+  });
   useEffect(() => {
     if (run.startedAt === null || run.result) return;
     const interval = window.setInterval(
@@ -76,7 +81,10 @@ export function useTimedRun() {
     () => dispatch({ kind: "finish", now: performance.now() }),
     [],
   );
-  const reset = useCallback(() => dispatch({ kind: "reset" }), []);
+  const reset = useCallback(
+    (nextPrompt: string) => dispatch({ kind: "reset", prompt: nextPrompt }),
+    [],
+  );
   return { run, insert, backspace, finish, reset };
 }
 

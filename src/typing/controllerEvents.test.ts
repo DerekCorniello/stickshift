@@ -122,6 +122,7 @@ describe("controller events", () => {
 
   it.each([
     [0, "enter"],
+    [1, "acceptFirstSuggestion"],
     [3, "autocomplete"],
     [4, "backspace"],
     [5, "space"],
@@ -198,14 +199,14 @@ describe("controller events", () => {
   it("reports unassigned buttons and stick center crossings", () => {
     const first = readControllerEvents(
       initialControllerEventState,
-      padWithButtons([1]),
+      padWithButtons([2]),
       defaultBindings,
       { x: 0, y: -1 },
       center,
       0.2,
     );
     expect(first.events).toEqual([
-      { kind: "button", buttonIndex: 1, phase: "press", action: null },
+      { kind: "button", buttonIndex: 2, phase: "press", action: null },
       {
         kind: "stick",
         side: "left",
@@ -216,7 +217,7 @@ describe("controller events", () => {
 
     const moved = readControllerEvents(
       first.state,
-      padWithButtons([1]),
+      padWithButtons([2]),
       defaultBindings,
       { x: 1, y: 0 },
       center,
@@ -233,7 +234,7 @@ describe("controller events", () => {
       0.2,
     );
     expect(centered.events).toEqual([
-      { kind: "button", buttonIndex: 1, phase: "release", action: null },
+      { kind: "button", buttonIndex: 2, phase: "release", action: null },
       { kind: "stick", side: "left", phase: "center", position: center },
     ]);
   });

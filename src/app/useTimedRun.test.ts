@@ -27,6 +27,23 @@ describe("timed runs", () => {
       wordsPerMinute: 264,
     });
   });
+  it("resets to a new prompt and completes only that prompt", () => {
+    const prompt = "A small idea can grow into something useful.";
+    const reset = timedRunReducer(blankRun, { kind: "reset", prompt });
+    expect(reset.prompt).toBe(prompt);
+    const oldSentence = timedRunReducer(reset, {
+      kind: "insert",
+      value: typingTestPrompt,
+      now: 10,
+    });
+    expect(oldSentence.result).toBeNull();
+    const newSentence = timedRunReducer(reset, {
+      kind: "insert",
+      value: prompt,
+      now: 10,
+    });
+    expect(newSentence.result?.characterAccuracy).toBe(100);
+  });
   it("scores early submission and ignores subsequent input", () => {
     let run = timedRunReducer(blankRun, {
       kind: "insert",
@@ -42,7 +59,9 @@ describe("timed runs", () => {
     expect(
       timedRunReducer(run, { kind: "insert", value: "x", now: 30020 }),
     ).toBe(run);
-    expect(timedRunReducer(run, { kind: "reset" })).toEqual(blankRun);
+    expect(
+      timedRunReducer(run, { kind: "reset", prompt: typingTestPrompt }),
+    ).toEqual(blankRun);
   });
   it("caps time at two minutes and rejects input after the deadline", () => {
     const run = timedRunReducer(blankRun, {

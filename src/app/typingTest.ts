@@ -1,27 +1,37 @@
-export const typingTestPrompt = "The quick brown fox jumps over the lazy dog.";
+export const typingTestPrompts = [
+  "The quick brown fox jumps over the lazy dog.",
+  "A small idea can grow into something useful.",
+  "Practice makes each movement feel more natural.",
+  "Two hands can share the work of writing a sentence.",
+  "Clear words make a good story easy to follow.",
+] as const;
+
+export const typingTestPrompt = typingTestPrompts[0];
+
+export function chooseTypingTestPrompt(): string {
+  return typingTestPrompts[
+    Math.floor(Math.random() * typingTestPrompts.length)
+  ];
+}
 
 export type TypingTestResult = Readonly<{
   wordsPerMinute: number;
   characterAccuracy: number;
 }>;
 
-function editDistanceToPromptPrefix(typedText: string): number {
+function editDistanceToPromptPrefix(typedText: string, prompt: string): number {
   let previousRow = Array.from(
-    { length: typingTestPrompt.length + 1 },
+    { length: prompt.length + 1 },
     (_, index) => index,
   );
 
   for (let typedIndex = 1; typedIndex <= typedText.length; typedIndex += 1) {
-    const currentRow = new Array<number>(typingTestPrompt.length + 1);
+    const currentRow = new Array<number>(prompt.length + 1);
     currentRow[0] = typedIndex;
 
-    for (
-      let promptIndex = 1;
-      promptIndex <= typingTestPrompt.length;
-      promptIndex += 1
-    ) {
+    for (let promptIndex = 1; promptIndex <= prompt.length; promptIndex += 1) {
       const substitutionCost =
-        typedText[typedIndex - 1] === typingTestPrompt[promptIndex - 1] ? 0 : 1;
+        typedText[typedIndex - 1] === prompt[promptIndex - 1] ? 0 : 1;
       currentRow[promptIndex] = Math.min(
         currentRow[promptIndex - 1] + 1,
         previousRow[promptIndex] + 1,
@@ -38,8 +48,9 @@ function editDistanceToPromptPrefix(typedText: string): number {
 export function scoreTypingTest(
   typedText: string,
   elapsedMilliseconds: number,
+  prompt: string,
 ): TypingTestResult {
-  const errors = editDistanceToPromptPrefix(typedText);
+  const errors = editDistanceToPromptPrefix(typedText, prompt);
   const correctlyEnteredCharacters = Math.max(typedText.length - errors, 0);
   const elapsedMinutes = Math.max(elapsedMilliseconds, 1) / 60_000;
   return {

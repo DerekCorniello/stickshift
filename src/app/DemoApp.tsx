@@ -118,6 +118,7 @@ export function DemoApp() {
           "backspace",
           "enter",
           "autocomplete",
+          "acceptFirstSuggestion",
           "previousLayer",
           "nextLayer",
         ];

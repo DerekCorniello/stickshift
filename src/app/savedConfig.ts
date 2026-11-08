@@ -1,4 +1,4 @@
-import { controlActions } from "../typing/controllerEvents";
+import { controlActions, defaultBindings } from "../typing/controllerEvents";
 import type { ButtonBindings, DialConfig } from "../typing";
 import type { Layout } from "./configModel";
 
@@ -63,7 +63,21 @@ export function loadSavedConfig(): SavedConfig | null {
     const raw = localStorage.getItem(storageKey);
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
-    return savedConfig(parsed) ? parsed : null;
+    if (!record(parsed) || !record(parsed.bindings)) return null;
+    const preferred = defaultBindings.acceptFirstSuggestion;
+    const bindings =
+      parsed.bindings.acceptFirstSuggestion === undefined
+        ? {
+            ...parsed.bindings,
+            acceptFirstSuggestion:
+              preferred !== null &&
+              Object.values(parsed.bindings).includes(preferred)
+                ? null
+                : preferred,
+          }
+        : parsed.bindings;
+    const config = { ...parsed, bindings };
+    return savedConfig(config) ? config : null;
   } catch (error) {
     console.warn("Could not load controller config", error);
     return null;

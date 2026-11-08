@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Controller } from "./Controller";
 import type { AxisMapping } from "./axisMapping";
 import type { ControlAction, DialConfig, GamepadSnapshot } from "../typing";
 import { defaultBindings } from "../typing";
-import { scoreTypingTest, typingTestPrompt } from "./typingTest";
+import { chooseTypingTestPrompt, scoreTypingTest } from "./typingTest";
 import { useTimedRun, formatTime } from "./useTimedRun";
 import "./pages.css";
 
@@ -29,15 +30,22 @@ export function TypingTestPage({
   bindings,
   deadzone,
 }: TypingTestPageProps) {
-  const { run, insert, backspace, finish, reset } = useTimedRun();
+  const [prompt, setPrompt] = useState(chooseTypingTestPrompt);
+  const { run, insert, backspace, finish, reset } = useTimedRun(prompt);
   const { text: typedText, result } = run;
+  const resetRun = () => {
+    const nextPrompt = chooseTypingTestPrompt();
+    setPrompt(nextPrompt);
+    reset(nextPrompt);
+  };
   const handleActionInput = (action: ControlAction) => {
     if (action === "backspace") backspace();
     else if (action === "space") insert(" ");
     else if (action === "submit") finish();
-    else if (action === "close" || (action === "enter" && result)) reset();
+    else if (action === "close" || (action === "enter" && result)) resetRun();
   };
-  const displayedResult = result ?? scoreTypingTest(typedText, run.elapsed);
+  const displayedResult =
+    result ?? scoreTypingTest(typedText, run.elapsed, run.prompt);
 
   return (
     <main className="page-shell typing-test-page">
@@ -54,9 +62,9 @@ export function TypingTestPage({
       </header>
 
       <section className="typing-test-page__card" aria-label="Typing test">
-        <p className="typing-test-page__prompt">{typingTestPrompt}</p>
+        <p className="typing-test-page__prompt">{run.prompt}</p>
         <div className="typing-test-page__progress" aria-live="polite">
-          {typedText.length} / {typingTestPrompt.length} characters
+          {typedText.length} / {run.prompt.length} characters
         </div>
         <div className="typing-test-page__input" aria-label="Your answer">
           {typedText || (
@@ -102,7 +110,7 @@ export function TypingTestPage({
         <button
           className="typing-test-page__reset"
           type="button"
-          onClick={reset}
+          onClick={resetRun}
         >
           {result ? "Try again" : "Reset"}
         </button>
