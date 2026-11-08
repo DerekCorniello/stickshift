@@ -1,0 +1,187 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+.desktop-app {
+  --bg: #eee9de;
+  --panel: #faf7ef;
+  --panel-raised: #e8e2d5;
+  --ink: #343b30;
+  --muted: #77796a;
+  --line: #d4cebf;
+  --accent: #a74428;
+  --accent-ink: #fff9ed;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 16px;
+  padding: 20px;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+}
+
+.desktop-header,
+.desktop-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.desktop-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.desktop-header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.desktop-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font:
+    30px Georgia,
+    serif;
+  letter-spacing: -0.06em;
+}
+
+.desktop-brand::before {
+  content: "";
+  width: 23px;
+  height: 23px;
+  border: 6px solid var(--accent);
+  border-radius: 50%;
+  box-shadow:
+    10px 0 0 -3px var(--bg),
+    14px 0 0 -3px var(--accent);
+  margin-right: 8px;
+}
+
+.desktop-header span,
+.desktop-footer {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.desktop-app main {
+  display: grid;
+  align-items: center;
+}
+
+.desktop-autocomplete {
+  align-self: center;
+  width: min(100%, 700px);
+  margin: 0 auto;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+}
+
+.desktop-autocomplete ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.desktop-autocomplete li {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+}
+
+.desktop-autocomplete li[aria-current="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.desktop-app .controller-dials {
+  padding: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.desktop-app .controller-dials__header,
+.desktop-app .controller-dials__card h2 {
+  display: none;
+}
+
+.desktop-app .controller-dials__layers {
+  justify-content: center;
+  margin: 0 0 14px;
+}
+
+.desktop-app .controller-dials__layers button {
+  color: var(--muted);
+  background: transparent;
+  border-color: var(--line);
+}
+
+.desktop-app .controller-dials__layers button[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.desktop-app .controller-dials__grid {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.desktop-app .controller-dials__card {
+  padding: 12px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+}
+
+.desktop-app .dial {
+  --dial-wedge: var(--panel-raised);
+  --dial-wedge-highlighted: var(--accent);
+  --dial-label: var(--ink);
+  --dial-label-highlighted: var(--accent-ink);
+  --dial-outline: var(--bg);
+}
+
+.desktop-app .dial-slice__label {
+  font-size: 14px;
+}
+
+.desktop-app .dial-layer__hub {
+  fill: none;
+}
+
+.desktop-footer {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.desktop-footer label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.desktop-footer input {
+  accent-color: var(--accent);
+}
+
+.desktop-footer [role="alert"] {
+  color: var(--accent);
+}
