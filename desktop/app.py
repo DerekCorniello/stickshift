@@ -9,7 +9,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Callable
 
-from .input_engine import InputEngine, Keyboard
+from .input_engine import InputEngine, Keyboard, WordTrie
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist-desktop"
 
@@ -35,6 +35,9 @@ class DesktopService:
         self.lock = threading.RLock()
         self.reader = (reader_factory or default_reader)()
         self.engine = InputEngine()
+        dictionary = ROOT / "src" / "data" / "autocomplete.csv"
+        if dictionary.exists():
+            self.engine.set_word_trie(WordTrie(str(dictionary)))
         self.stop_event = threading.Event()
         self.keyboard_error = ""
         try:
@@ -64,6 +67,7 @@ class DesktopService:
             return {
                 "gamepads": {"0": pad} if pad is not None else {},
                 "keyboardError": self.keyboard_error,
+                "autocomplete": self.engine.autocomplete_status(),
             }
 
     def configure(self, config: dict) -> None:

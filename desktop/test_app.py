@@ -27,7 +27,16 @@ class DesktopServerTests(unittest.TestCase):
                 state = json.load(response)
             self.assertEqual(
                 state,
-                {"gamepads": {}, "keyboardError": ""},
+                {
+                    "gamepads": {},
+                    "keyboardError": "",
+                    "autocomplete": {
+                        "active": False,
+                        "word": "",
+                        "suggestions": [],
+                        "selectedIndex": 0,
+                    },
+                },
             )
         finally:
             server.shutdown()

@@ -20,7 +20,7 @@ body,
   --accent-ink: #fff9ed;
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
   gap: 16px;
   padding: 20px;
   color: var(--ink);
@@ -79,6 +79,36 @@ body,
 .desktop-app main {
   display: grid;
   align-items: center;
+}
+
+.desktop-autocomplete {
+  align-self: center;
+  width: min(100%, 700px);
+  margin: 0 auto;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+}
+
+.desktop-autocomplete ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.desktop-autocomplete li {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+}
+
+.desktop-autocomplete li[aria-current="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .desktop-app .controller-dials {

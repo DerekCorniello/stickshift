@@ -34,7 +34,7 @@ The window uses pywebview's Windows backend. Install the WebView2 Runtime if the
 
 ## Using it
 
-Connect a controller and open the app. This window shows the two dials and layer controls. System typing starts automatically. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Close StickShift to stop keyboard output. Practice, tests, and diagnostics remain on the website.
+Connect a controller and open the app. This window shows the two dials, layer controls, and word suggestions. System typing starts automatically. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Suggestions for text typed with the sticks stay visible. Press the autocomplete button to enter selection mode, use the D-pad to choose a word, then press the Enter button to replace the current word and add a space. Press the autocomplete button again to leave selection mode. Close StickShift to stop keyboard output. Practice, tests, and diagnostics remain on the website.
 
 On Linux, the virtual keyboard maps printable ASCII to a US keyboard layout. This version reads common Linux gamepad axes and buttons; raw controllers with different kernel mappings may need an adapter in `desktop/linux_devices.py`. On Windows, printable characters use Unicode keyboard events, while Backspace, Enter, and arrow keys use virtual keys. Controller vibration is browser-only. The Linux keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
 

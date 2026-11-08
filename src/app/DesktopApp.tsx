@@ -17,6 +17,12 @@ const disconnectedPad: GamepadSnapshot = {
 function useDesktopPad() {
   const [pad, setPad] = useState<GamepadSnapshot | null>(null);
   const [keyboardError, setKeyboardError] = useState("");
+  const [autocomplete, setAutocomplete] = useState({
+    active: false,
+    word: "",
+    suggestions: [] as string[],
+    selectedIndex: 0,
+  });
 
   useEffect(() => {
     let active = true;
@@ -28,10 +34,17 @@ function useDesktopPad() {
         const status = (await response.json()) as {
           gamepads: Record<number, GamepadSnapshot>;
           keyboardError: string;
+          autocomplete: {
+            active: boolean;
+            word: string;
+            suggestions: string[];
+            selectedIndex: number;
+          };
         };
         if (active) {
           setPad(Object.values(status.gamepads)[0] ?? null);
           setKeyboardError(status.keyboardError);
+          setAutocomplete(status.autocomplete);
         }
       } catch (error) {
         if (active) console.error("Could not read desktop controller", error);
@@ -46,11 +59,11 @@ function useDesktopPad() {
     };
   }, []);
 
-  return { pad, keyboardError };
+  return { pad, keyboardError, autocomplete };
 }
 
 export function DesktopApp() {
-  const { pad: connectedPad, keyboardError } = useDesktopPad();
+  const { pad: connectedPad, keyboardError, autocomplete } = useDesktopPad();
   const pad = connectedPad ?? disconnectedPad;
   const [saved] = useState(loadSavedConfig);
   const [layout] = useState(
@@ -85,6 +98,30 @@ export function DesktopApp() {
           <span>{connectedPad?.id ?? "Connect a controller"}</span>
         </div>
       </header>
+      <section
+        className="desktop-autocomplete"
+        aria-label="Autocomplete suggestions"
+      >
+        <div>
+          Suggestions for <strong>{autocomplete.word || "…"}</strong>
+          {autocomplete.active && <span> · choose with the D-pad</span>}
+        </div>
+        <ol>
+          {autocomplete.suggestions.map((word, index) => (
+            <li
+              key={word}
+              aria-current={
+                autocomplete.active && index === autocomplete.selectedIndex
+                  ? "true"
+                  : undefined
+              }
+            >
+              {word}
+            </li>
+          ))}
+        </ol>
+        {autocomplete.suggestions.length === 0 && <span>No matches yet</span>}
+      </section>
       <main>
         <ControllerDials
           pad={pad}
