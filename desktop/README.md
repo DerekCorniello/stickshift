@@ -30,7 +30,7 @@ py -m venv .venv
 .venv\Scripts\python.exe -m desktop.app
 ```
 
-The window uses pywebview's Windows backend. Install the WebView2 Runtime if the window cannot open. The controller must support XInput, as Xbox controllers do. The program reads controller state without changing its connection. Windows may block keyboard output to an app running as administrator when StickShift is not running at the same privilege level.
+The window uses pywebview's Windows backend. Install the WebView2 Runtime if the window cannot open. XInput controllers are preferred, and pygame provides a generic SDL fallback for DirectInput and other HID controllers when no XInput controller is connected. The program reads controller state without changing its connection. Windows may block keyboard output to an app running as administrator when StickShift is not running at the same privilege level.
 
 ## Using it
 

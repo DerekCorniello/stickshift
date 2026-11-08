@@ -13,6 +13,7 @@ from desktop.windows_devices import (
     XInputGamepad,
     XInputState,
     gamepad_snapshot,
+    generic_gamepad_snapshot,
 )
 
 
@@ -36,6 +37,42 @@ class WindowsDeviceTests(unittest.TestCase):
             [index for index, button in enumerate(pad["buttons"]) if button["pressed"]],
             [0, 6, 9, 12],
         )
+
+    def test_generic_controller_maps_axes_buttons_and_hat(self):
+        pad = generic_gamepad_snapshot(
+            "DirectInput Controller",
+            [-1.0, 0.5, 0.25, -0.75, 1.0, -1.0],
+            [True, False, True],
+            (1, -1),
+        )
+        self.assertEqual(pad["axes"], [-1.0, 0.5, 0.25, -0.75])
+        self.assertEqual(
+            [index for index, button in enumerate(pad["buttons"]) if button["pressed"]],
+            [0, 2, 6, 13, 15],
+        )
+
+    def test_reader_falls_back_to_generic_controller(self):
+        class FakeGeneric:
+            def __init__(self):
+                self.polled = False
+
+            def poll(self):
+                self.polled = True
+
+            def snapshot(self):
+                return {"id": "Generic", "buttons": [], "axes": []}
+
+            def close(self):
+                pass
+
+        generic = FakeGeneric()
+        reader = GamepadReader(
+            lambda index, pointer: 1167,
+            generic_reader_factory=lambda: generic,
+        )
+        reader.poll()
+        self.assertTrue(generic.polled)
+        self.assertEqual(reader.snapshot()["id"], "Generic")
 
     def test_reader_detects_and_releases_controller_without_changing_it(self):
         connected = True
