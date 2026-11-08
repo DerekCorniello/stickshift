@@ -49,6 +49,20 @@ describe("controller dial input", () => {
         ),
       );
     render([0, 0, 0, 0]);
+    expect(
+      container
+        .querySelector('[data-dial-id="left"] .dial-layer__stick-dot')
+        ?.getAttribute("cy"),
+    ).toBe("100");
+    render([0, -0.3, 0, 0]);
+    expect(
+      container
+        .querySelector('[data-dial-id="left"] .dial-layer__stick-dot')
+        ?.getAttribute("cy"),
+    ).toBe("79");
+    expect(
+      container.querySelector('[data-dial-id="left"] .dial-layer__stick-line'),
+    ).toBeNull();
     render([0, -1, 0, -1]);
     expect(
       container.querySelector('[data-dial-id="left"] .dial-layer__preview')
@@ -58,7 +72,7 @@ describe("controller dial input", () => {
       '[data-dial-id="left"] .dial-layer__stick-line',
     );
     expect(leftLine?.getAttribute("y1")).toBe("86.5");
-    expect(leftLine?.getAttribute("y2")).toBe("30");
+    expect(leftLine?.getAttribute("y2")).toBe("37.5");
     render([0, -1, 0, -1], 10);
     expect(characters).toEqual([]);
     expect(
