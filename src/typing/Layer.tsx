@@ -5,6 +5,7 @@ import type { LayerConfig, StickPosition } from "./types";
 
 const hubRadius = 27;
 const lineStartRadius = hubRadius / 2;
+const lineEndGap = 7.5;
 
 type LayerProps = Readonly<{
   config: LayerConfig;
@@ -38,8 +39,9 @@ export function Layer({
   const stickX = 100 + Math.max(-1, Math.min(1, position.x)) * 70;
   const stickY = 100 + Math.max(-1, Math.min(1, position.y)) * 70;
   const stickDistance = Math.hypot(stickX - 100, stickY - 100);
-  const lineStartRatio =
-    stickDistance > lineStartRadius ? lineStartRadius / stickDistance : 1;
+  const showStickLine = stickDistance > hubRadius + lineEndGap;
+  const directionX = stickDistance === 0 ? 0 : (stickX - 100) / stickDistance;
+  const directionY = stickDistance === 0 ? 0 : (stickY - 100) / stickDistance;
   const renderSlices = (showWedge: boolean, showLabel: boolean) =>
     config.slices.map((slice, index) => (
       <Slice
@@ -80,14 +82,16 @@ export function Layer({
           {highlightedCharacter}
         </text>
       )}
-      <line
-        className="dial-layer__stick-line"
-        x1={100 + (stickX - 100) * lineStartRatio}
-        y1={100 + (stickY - 100) * lineStartRatio}
-        x2={stickX}
-        y2={stickY}
-        aria-hidden="true"
-      />
+      {showStickLine && (
+        <line
+          className="dial-layer__stick-line"
+          x1={100 + directionX * lineStartRadius}
+          y1={100 + directionY * lineStartRadius}
+          x2={100 + directionX * (stickDistance - lineEndGap)}
+          y2={100 + directionY * (stickDistance - lineEndGap)}
+          aria-hidden="true"
+        />
+      )}
       <circle
         className="dial-layer__stick-dot"
         cx={stickX}
