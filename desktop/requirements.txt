@@ -1,0 +1,2 @@
+evdev>=1.9,<2
+pywebview>=5,<7

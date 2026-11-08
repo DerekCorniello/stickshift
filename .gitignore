@@ -1,8 +1,12 @@
 # Dependencies
 node_modules/
+node_modules
+.venv/
+__pycache__/
 
 # Build and test output
 dist/
+dist-desktop/
 build/
 coverage/
 *.tsbuildinfo
