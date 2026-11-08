@@ -52,13 +52,44 @@ describe("controller dial input", () => {
     render([0, -1, 0, -1]);
     render([0, -1, 0, -1], 10);
     expect(characters).toEqual([]);
+    expect(
+      container.querySelector(
+        '[data-dial-id="left"] .dial-slice--highlighted',
+      ) === null,
+    ).toBe(true);
+    expect(
+      container.querySelector('[aria-label="Left highlighted character"]')
+        ?.textContent,
+    ).toBe("-");
+    expect(
+      container
+        .querySelector('[data-dial-id="right"] .dial-slice--highlighted')
+        ?.getAttribute("data-character"),
+    ).toBe("t");
+    expect(
+      container.querySelector('[data-dial-id="left"] .dial-layer__stick-dot'),
+    ).not.toBeNull();
+    render([1, 0, 0, -1]);
+    expect(
+      container.querySelector(
+        '[data-dial-id="left"] .dial-slice--highlighted',
+      ) === null,
+    ).toBe(true);
     render([0, 0, 0, -1]);
     expect(characters).toEqual([]);
+    render([0, -1, 0, -1]);
+    expect(
+      container
+        .querySelector('[data-dial-id="left"] .dial-slice--highlighted')
+        ?.getAttribute("data-character"),
+    ).toBe("e");
+    render([0, 0, 0, -1]);
+    expect(characters).toEqual(["e"]);
     render([0, 0, 0, 0]);
-    expect(characters).toEqual(["t"]);
+    expect(characters).toEqual(["e", "t"]);
     render([0, -1, 0, 0]);
     render([0, 0, 0, 0]);
-    expect(characters).toEqual(["t", "e"]);
+    expect(characters).toEqual(["e", "t", "e"]);
   });
 
   it("reads the standard axis pairs and a chosen raw axis pair", () => {

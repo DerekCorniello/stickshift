@@ -50,16 +50,16 @@ describe("default dial layout", () => {
   it("splits letters, digits, and punctuation across the expected layers", () => {
     expect(
       leftDialConfig.layers[0].slices.map((slice) => slice.character).join(""),
-    ).toBe("ehaiduqfgyvxs");
+    ).toBe("ehaidupfgyvxs");
     expect(
       rightDialConfig.layers[0].slices.map((slice) => slice.character).join(""),
-    ).toBe("tnolcmpwbkjzr");
+    ).toBe("tnolcmqwbkjzr");
     expect(
       leftDialConfig.layers[1].slices.map((slice) => slice.character).join(""),
-    ).toBe("EHAIDUQFGYVXS");
+    ).toBe("EHAIDUPFGYVXS");
     expect(
       rightDialConfig.layers[1].slices.map((slice) => slice.character).join(""),
-    ).toBe("TNOLCMPWBKJZR");
+    ).toBe("TNOLCMQWBKJZR");
     const topIndices = [11, 12, 0, 1, 2];
     expect(
       topIndices
@@ -100,6 +100,7 @@ describe("default dial layout", () => {
     expect(distance(right.indexOf("t"), left.indexOf("h"))).toBe(1);
     expect(distance(left.indexOf("e"), right.indexOf("r"))).toBe(1);
     expect(distance(left.indexOf("a"), right.indexOf("n"))).toBe(1);
+    expect(distance(left.indexOf("u"), right.indexOf("q"))).toBe(1);
     expect(distance(left.indexOf("e"), left.indexOf("s"))).toBe(1);
   });
 });

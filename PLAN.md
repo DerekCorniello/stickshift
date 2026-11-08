@@ -18,7 +18,7 @@ The app has five destinations: Practice for controller-only writing, Typing Test
 
 ## Controls
 
-Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. Clicking a held stick cancels that selection until it returns to center.
+Both sticks control their respective dials. Automatic selection is the default: moving beyond the adjustable deadzone highlights the pointed sector immediately. A small angular buffer around sector boundaries prevents minor stick wobble from changing the highlight or pending character; moving clearly into another sector updates both immediately. Returning to the deadzone clears the highlight and enters the last confirmed character once. Clicking a held stick cancels that selection until it returns to center. The orange stick position marker stays visible, but the slice highlight and highlighted-character display clear until the stick returns to center and is moved out again.
 
 The input module supports customizable action bindings. Config can edit these defaults and saves changes in the current browser:
 
@@ -39,11 +39,11 @@ The D-pad moves the writing caret while typing and changes the active suggestion
 
 The default has four explicit layers for all 94 printable ASCII characters other than Space: 26 lowercase letters, 26 uppercase letters, 10 digits, and 32 symbols (including backtick and backslash). The first three layers have 13 sectors per dial. The final layer has eight wider sectors. Slice zero is at the top, and the rest advance clockwise.
 
-The letter layout is a heuristic based on [English letter and bigram counts](https://www.norvig.com/mayzner.html). Common letters are spread across the two sticks, with E and T at the top. Frequent pairs such as TH, ER, and AN sit at nearby angles. The uppercase layer uses the same positions. It is an authored default, not a measured speed optimum.
+The letter layout is a heuristic based on [English letter and bigram counts](https://www.norvig.com/mayzner.html). Common letters are spread across the two sticks, with E and T at the top. Frequent pairs such as TH, ER, AN, and QU sit on opposite dials at nearby angles. The uppercase layer uses the same positions. It is an authored default, not a measured speed optimum.
 
 | Layer               | Left dial                                       | Right dial                                      |
 | ------------------- | ----------------------------------------------- | ----------------------------------------------- |
-| Lowercase           | `e h a i d u q f g y v x s`, clockwise from top | `t n o l c m p w b k j z r`, clockwise from top |
+| Lowercase           | `e h a i d u p f g y v x s`, clockwise from top | `t n o l c m q w b k j z r`, clockwise from top |
 | Uppercase           | Same positions in uppercase                     | Same positions in uppercase                     |
 | Numbers and symbols | `0-4` across the top, eight symbols elsewhere   | `5-9` across the top, eight symbols elsewhere   |
 | Symbols             | Eight symbols                                   | Eight symbols                                   |

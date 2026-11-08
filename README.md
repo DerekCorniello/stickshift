@@ -41,8 +41,12 @@ The pre-change interface is recoverable from commit `dc31d12919873f26fddd3bbe697
 
 Practice, Speed Test, Head to Head, Customize, and Diagnostics work with a
 connected controller. The layout remains visible when no controller is connected.
-Aim and return a stick to center to type; clicking a held stick cancels its
-selection. Deadzone and axis mappings are saved per controller in the browser.
+Aim and return a stick to center to type. Clicking a held stick cancels its
+selection: the orange position marker remains, while the slice highlight and
+highlighted-character display clear. Move the stick back to center before
+selecting again. The default letter layout places Q and U on opposite dials;
+existing saved layouts keep their assignments until you use Reset to defaults in Config.
+Deadzone and axis mappings are saved per controller in the browser.
 Start cycles pages outside timed runs and submits a timed run.
 
 Timed runs end on an exact match, Submit, or after two minutes. They use the passage

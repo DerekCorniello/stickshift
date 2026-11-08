@@ -147,6 +147,10 @@ export function ControllerDials({
   const settings = useContext(InputSettingsContext);
   const deadzone = externalDeadzone ?? settings.deadzone;
   const cancelled = useRef({ left: false, right: false });
+  const [cancelledSides, setCancelledSides] = useState({
+    left: false,
+    right: false,
+  });
   const [localLayerId, setLocalLayerId] = useState(leftConfig.layers[0].id);
   const [localLeftMapping, setLocalLeftMapping] =
     useState<AxisMapping>(defaultLeftMapping);
@@ -234,6 +238,7 @@ export function ControllerDials({
     (event) => {
       if (event.kind === "stick" && event.phase === "enter") {
         cancelled.current[event.side] = false;
+        setCancelledSides((current) => ({ ...current, [event.side]: false }));
       }
       if (event.kind === "character" && cancelled.current[event.side]) return;
       reportEvent(event);
@@ -246,7 +251,10 @@ export function ControllerDials({
       if (event.action === "commitLeft" || event.action === "commitRight") {
         const side = event.action === "commitLeft" ? "left" : "right";
         const index = side === "left" ? leftSelectedIndex : rightSelectedIndex;
-        if (index !== null) cancelled.current[side] = true;
+        if (index !== null) {
+          cancelled.current[side] = true;
+          setCancelledSides((current) => ({ ...current, [side]: true }));
+        }
         return;
       }
       if (event.action === "previousLayer") {
@@ -306,7 +314,7 @@ export function ControllerDials({
             activeLayerId={activeLayerId}
             position={leftPosition}
             deadzone={deadzone}
-            highlightedIndex={leftSelectedIndex}
+            highlightedIndex={cancelledSides.left ? null : leftSelectedIndex}
             onHighlightChange={setLeftHighlight}
           />
           {showDiagnostics && (
@@ -330,7 +338,7 @@ export function ControllerDials({
             activeLayerId={activeLayerId}
             position={rightPosition}
             deadzone={deadzone}
-            highlightedIndex={rightSelectedIndex}
+            highlightedIndex={cancelledSides.right ? null : rightSelectedIndex}
             onHighlightChange={setRightHighlight}
           />
           {showDiagnostics && (
