@@ -71,6 +71,15 @@ class WindowsDeviceTests(unittest.TestCase):
         engine.process(right_bumper, 0.3)
         self.assertEqual(keyboard.keys, ["BACKSPACE", " "])
 
+    def test_generic_dpad_buttons_are_preserved(self):
+        pad = generic_gamepad_snapshot(
+            "SDL controller",
+            [],
+            [False] * 12 + [True, False, False, True],
+        )
+        self.assertTrue(pad["buttons"][12]["pressed"])
+        self.assertTrue(pad["buttons"][15]["pressed"])
+
     def test_reader_falls_back_to_generic_controller(self):
         class FakeGeneric:
             def __init__(self):

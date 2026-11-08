@@ -84,7 +84,7 @@ def generic_gamepad_snapshot(
     name: str,
     axes: list[float],
     buttons: list[bool],
-    hat: tuple[int, int] = (0, 0),
+    hat: tuple[int, int] | None = None,
 ) -> dict:
     normalized_axes = [
         _clamp_axis(axes[index]) if index < len(axes) else 0.0
@@ -99,10 +99,11 @@ def generic_gamepad_snapshot(
         pressed[6] = axes[4] > 0.5
     if len(axes) > 5:
         pressed[7] = axes[5] > 0.5
-    pressed[12] = hat[1] > 0
-    pressed[13] = hat[1] < 0
-    pressed[14] = hat[0] < 0
-    pressed[15] = hat[0] > 0
+    if hat is not None:
+        pressed[12] = hat[1] > 0
+        pressed[13] = hat[1] < 0
+        pressed[14] = hat[0] < 0
+        pressed[15] = hat[0] > 0
     return {
         "id": name,
         "index": 0,
