@@ -1,7 +1,7 @@
 import unittest
+import sys
 
 from desktop.input_engine import InputEngine
-from desktop.linux_devices import key_for_character, normalize_axis
 
 
 class FakeKeyboard:
@@ -80,7 +80,10 @@ class InputEngineTests(unittest.TestCase):
         self.assertEqual(self.keyboard.keys, [])
         self.assertTrue(self.keyboard.closed)
 
+    @unittest.skipUnless(sys.platform == "linux", "Linux evdev test")
     def test_ascii_mapping(self):
+        from desktop.linux_devices import key_for_character, normalize_axis
+
         for codepoint in range(33, 127):
             key_for_character(chr(codepoint))
         self.assertEqual(key_for_character("a")[1], False)

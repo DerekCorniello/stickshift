@@ -1,4 +1,4 @@
-"""Run the existing StickShift interface as a Linux desktop application."""
+"""Run the StickShift controller keyboard as a desktop application."""
 
 from __future__ import annotations
 
@@ -10,22 +10,35 @@ from pathlib import Path
 from typing import Callable
 
 from .input_engine import InputEngine, Keyboard
-from .linux_devices import GamepadReader, VirtualKeyboard
-
-
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist-desktop"
 
 
+def device_classes(platform: str | None = None):
+    platform = sys.platform if platform is None else platform
+    if platform == "linux":
+        from .linux_devices import GamepadReader, VirtualKeyboard
+    elif platform == "win32":
+        from .windows_devices import GamepadReader, VirtualKeyboard
+    else:
+        raise RuntimeError(f"Unsupported desktop platform: {platform}")
+    return GamepadReader, VirtualKeyboard
+
+
 class DesktopService:
-    def __init__(self, keyboard_factory: Callable[[], Keyboard] = VirtualKeyboard) -> None:
+    def __init__(
+        self,
+        keyboard_factory: Callable[[], Keyboard] | None = None,
+        reader_factory: Callable[[], object] | None = None,
+    ) -> None:
+        default_reader, default_keyboard = device_classes()
         self.lock = threading.RLock()
-        self.reader = GamepadReader()
+        self.reader = (reader_factory or default_reader)()
         self.engine = InputEngine()
         self.stop_event = threading.Event()
         self.keyboard_error = ""
         try:
-            self.engine.set_keyboard(keyboard_factory())
+            self.engine.set_keyboard((keyboard_factory or default_keyboard)())
         except OSError as error:
             self.keyboard_error = f"Virtual keyboard unavailable: {error}"
 
@@ -33,7 +46,11 @@ class DesktopService:
         while not self.stop_event.wait(1 / 60):
             with self.lock:
                 self.reader.poll()
-                self.engine.process(self.reader.snapshot())
+                try:
+                    self.engine.process(self.reader.snapshot())
+                except OSError as error:
+                    self.keyboard_error = f"Keyboard output failed: {error}"
+                    self.engine.set_keyboard(None)
 
     def close(self) -> None:
         self.stop_event.set()
@@ -46,7 +63,6 @@ class DesktopService:
             pad = self.reader.snapshot()
             return {
                 "gamepads": {"0": pad} if pad is not None else {},
-                "typingEnabled": self.engine.enabled,
                 "keyboardError": self.keyboard_error,
             }
 
@@ -100,8 +116,8 @@ def handler_for(service: DesktopService) -> type[SimpleHTTPRequestHandler]:
 
 
 def main() -> int:
-    if sys.platform != "linux":
-        print("The desktop keyboard backend currently supports Linux only.", file=sys.stderr)
+    if sys.platform not in ("linux", "win32"):
+        print("The desktop keyboard backend supports Linux and Windows.", file=sys.stderr)
         return 1
     if not (DIST / "desktop.html").exists():
         print("Build the desktop interface first: npm run build:desktop", file=sys.stderr)

@@ -1,8 +1,8 @@
-# Linux desktop app
+# Desktop app
 
-This version opens the StickShift dials in a compact desktop window. Python reads a Linux gamepad through `evdev` and creates a virtual keyboard through `uinput`, so typed characters go to the application with keyboard focus. The website still uses the browser Gamepad API.
+This version opens the StickShift dials in a compact desktop window. On Linux, Python reads a controller through `evdev` and creates a virtual keyboard through `uinput`. On Windows, it reads an XInput controller and sends keys through the Windows `SendInput` API. Both send characters to the application with keyboard focus. The website still uses the browser Gamepad API.
 
-## Setup
+## Linux setup
 
 From the repository root:
 
@@ -18,11 +18,25 @@ The webview needs your distribution's GTK 3 and WebKit2GTK 4.1 Python bindings. 
 
 Your user needs read access to the controller under `/dev/input/event*` and write access to `/dev/uinput`. If `/dev/uinput` is missing, load the `uinput` kernel module. Configure device permissions through your distribution's input group or a udev rule before starting the app. The window reports an error if the virtual keyboard cannot open.
 
+## Windows setup
+
+Use Python 3.11 or newer and Node.js. From PowerShell in the repository root:
+
+```powershell
+npm install
+npm run build:desktop
+py -m venv .venv
+.venv\Scripts\python.exe -m pip install -r desktop\requirements-windows.txt
+.venv\Scripts\python.exe -m desktop.app
+```
+
+The window uses pywebview's Windows backend. Install the WebView2 Runtime if the window cannot open. The controller must support XInput, as Xbox controllers do. The program reads controller state without changing its connection. Windows may block keyboard output to an app running as administrator when StickShift is not running at the same privilege level.
+
 ## Using it
 
 Connect a controller and open the app. This window shows the two dials and layer controls. System typing starts automatically. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Close StickShift to stop keyboard output. Practice, tests, and diagnostics remain on the website.
 
-The virtual keyboard maps printable ASCII to a US keyboard layout. This version reads common Linux gamepad axes and buttons; raw controllers with different kernel mappings may need an adapter in `desktop/linux_devices.py`. Controller vibration is browser-only. The keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
+On Linux, the virtual keyboard maps printable ASCII to a US keyboard layout. This version reads common Linux gamepad axes and buttons; raw controllers with different kernel mappings may need an adapter in `desktop/linux_devices.py`. On Windows, printable characters use Unicode keyboard events, while Backspace, Enter, and arrow keys use virtual keys. Controller vibration is browser-only. The Linux keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
 
 Run the desktop tests with:
 
