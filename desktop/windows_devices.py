@@ -76,6 +76,46 @@ def gamepad_snapshot(state: XInputState, index: int) -> dict:
     }
 
 
+def _clamp_axis(value: float) -> float:
+    return max(-1.0, min(1.0, value))
+
+
+def generic_gamepad_snapshot(
+    name: str,
+    axes: list[float],
+    buttons: list[bool],
+    hat: tuple[int, int] = (0, 0),
+) -> dict:
+    normalized_axes = [
+        _clamp_axis(axes[index]) if index < len(axes) else 0.0
+        for index in range(4)
+    ]
+    pressed = [False] * 16
+    for index, value in enumerate(buttons[:16]):
+        pressed[index] = value
+    if len(axes) > 4:
+        pressed[6] = axes[4] > 0.5
+    if len(axes) > 5:
+        pressed[7] = axes[5] > 0.5
+    pressed[12] = hat[1] > 0
+    pressed[13] = hat[1] < 0
+    pressed[14] = hat[0] < 0
+    pressed[15] = hat[0] > 0
+    return {
+        "id": name,
+        "index": 0,
+        "connected": True,
+        "mapping": "standard",
+        "axes": [
+            normalized_axes[0],
+            normalized_axes[1],
+            normalized_axes[2],
+            normalized_axes[3],
+        ],
+        "buttons": [{"pressed": value, "value": int(value)} for value in pressed],
+    }
+
+
 def _xinput_get_state():
     for name in ("xinput1_4.dll", "xinput9_1_0.dll", "xinput1_3.dll"):
         try:
@@ -89,15 +129,44 @@ def _xinput_get_state():
 
 
 class GamepadReader:
-    def __init__(self, get_state: Callable | None = None) -> None:
-        self.get_state = get_state or _xinput_get_state()
+    def __init__(
+        self,
+        get_state: Callable | None = None,
+        generic_reader_factory: Callable[[], "GenericGamepadReader"] | None = None,
+    ) -> None:
+        self.get_state = get_state
+        if self.get_state is None:
+            try:
+                self.get_state = _xinput_get_state()
+            except OSError:
+                self.get_state = None
         self.index: int | None = None
         self.pad: dict | None = None
         self.next_scan = 0.0
+        self.generic_reader = (
+            generic_reader_factory() if generic_reader_factory else None
+        )
+
+    def _generic(self) -> "GenericGamepadReader":
+        if self.generic_reader is None:
+            self.generic_reader = GenericGamepadReader()
+        return self.generic_reader
+
+    def _poll_generic(self) -> None:
+        try:
+            generic = self._generic()
+            generic.poll()
+            self.pad = generic.snapshot()
+        except OSError:
+            self.pad = None
 
     def poll(self) -> None:
+        if self.get_state is None:
+            self._poll_generic()
+            return
         if self.index is None:
             if time.monotonic() < self.next_scan:
+                self._poll_generic()
                 return
             self.next_scan = time.monotonic() + 1
             indices = range(4)
@@ -111,7 +180,7 @@ class GamepadReader:
                 self.pad = gamepad_snapshot(state, index)
                 return
         self.index = None
-        self.pad = None
+        self._poll_generic()
         self.next_scan = time.monotonic() + 1
 
     def snapshot(self) -> dict | None:
@@ -120,6 +189,68 @@ class GamepadReader:
     def close(self) -> None:
         self.index = None
         self.pad = None
+        if self.generic_reader is not None:
+            self.generic_reader.close()
+
+
+class GenericGamepadReader:
+    def __init__(self) -> None:
+        try:
+            import pygame
+        except ImportError as error:
+            raise OSError(
+                "Generic Windows controller support requires pygame"
+            ) from error
+        self.pygame = pygame
+        try:
+            pygame.init()
+            pygame.joystick.init()
+        except pygame.error as error:
+            pygame.quit()
+            raise OSError("Unable to initialize generic controller support") from error
+        self.device = None
+        self.pad: dict | None = None
+
+    def poll(self) -> None:
+        try:
+            self.pygame.event.pump()
+            if self.device is None:
+                for index in range(self.pygame.joystick.get_count()):
+                    device = self.pygame.joystick.Joystick(index)
+                    if device.get_init() is False:
+                        device.init()
+                    self.device = device
+                    break
+            if self.device is None:
+                self.pad = None
+                return
+            axes = [
+                self.device.get_axis(index)
+                for index in range(self.device.get_numaxes())
+            ]
+            buttons = [
+                self.device.get_button(index) != 0
+                for index in range(self.device.get_numbuttons())
+            ]
+            hat = self.device.get_hat(0) if self.device.get_numhats() else (0, 0)
+            self.pad = generic_gamepad_snapshot(
+                self.device.get_name(),
+                axes,
+                buttons,
+                hat,
+            )
+        except self.pygame.error:
+            self.close()
+
+    def snapshot(self) -> dict | None:
+        return self.pad
+
+    def close(self) -> None:
+        if self.device is not None:
+            self.device.quit()
+        self.device = None
+        self.pad = None
+        self.pygame.quit()
 
 
 class MouseInput(ctypes.Structure):
