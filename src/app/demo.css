@@ -384,14 +384,6 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
-.variant-app .controller-dials__card output {
-  width: 25px;
-  height: 25px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--panel-raised);
-  font-size: 14px;
-}
 .variant-app .controller-dials__card .dial {
   width: min(100%, var(--dial-size));
   margin: 0 auto;
@@ -409,10 +401,13 @@
 }
 .variant-app .dial-layer__stick-line,
 .variant-app .dial-layer__stick-dot {
-  stroke: var(--accent);
+  stroke: #f97316;
 }
 .variant-app .dial-layer__stick-dot {
-  fill: var(--accent);
+  fill: #f97316;
+}
+.variant-app .controller-dials__card .dial-layer__hub {
+  fill: none;
 }
 .variant-app .typing-test-page__prompt {
   margin-bottom: 7px;

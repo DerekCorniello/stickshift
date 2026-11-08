@@ -50,6 +50,15 @@ describe("controller dial input", () => {
       );
     render([0, 0, 0, 0]);
     render([0, -1, 0, -1]);
+    expect(
+      container.querySelector('[data-dial-id="left"] .dial-layer__preview')
+        ?.textContent,
+    ).toBe("e");
+    const leftLine = container.querySelector(
+      '[data-dial-id="left"] .dial-layer__stick-line',
+    );
+    expect(leftLine?.getAttribute("y1")).toBe("86.5");
+    expect(leftLine?.getAttribute("y2")).toBe("30");
     render([0, -1, 0, -1], 10);
     expect(characters).toEqual([]);
     expect(
@@ -58,9 +67,8 @@ describe("controller dial input", () => {
       ) === null,
     ).toBe(true);
     expect(
-      container.querySelector('[aria-label="Left highlighted character"]')
-        ?.textContent,
-    ).toBe("-");
+      container.querySelector('[data-dial-id="left"] .dial-layer__preview'),
+    ).toBeNull();
     expect(
       container
         .querySelector('[data-dial-id="right"] .dial-slice--highlighted')
@@ -256,12 +264,15 @@ describe("controller dial input", () => {
         .querySelector('[data-dial-id="left"] .dial-slice--highlighted')
         ?.getAttribute("data-character"),
     ).toBe("e");
+    expect(
+      container.querySelector('[data-dial-id="left"] .dial-layer__preview')
+        ?.textContent,
+    ).toBe("e");
 
     renderPad({ ...base, axes: [0, 0, 0, 0] });
     expect(
-      container.querySelector('[aria-label="Left highlighted character"]')
-        ?.textContent,
-    ).toBe("-");
+      container.querySelector('[data-dial-id="left"] .dial-layer__preview'),
+    ).toBeNull();
     expect(
       container.querySelector(".controller-dials__events")?.textContent,
     ).toContain('Left stick would type "e" (lowercase)');

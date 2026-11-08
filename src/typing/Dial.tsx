@@ -8,9 +8,10 @@ export type DialProps = Readonly<{
   position: StickPosition;
   deadzone: number;
   highlightedIndex?: number | null;
+  showPreview?: boolean;
   selectedSliceId?: string | null;
   flaggedSliceIds?: ReadonlySet<string>;
-  onHighlightChange: (character: string | null) => void;
+  onHighlightChange?: (character: string | null) => void;
 }>;
 
 export function Dial({
@@ -19,6 +20,7 @@ export function Dial({
   position,
   deadzone,
   highlightedIndex,
+  showPreview,
   selectedSliceId,
   flaggedSliceIds,
   onHighlightChange,
@@ -37,6 +39,7 @@ export function Dial({
         position={position}
         deadzone={deadzone}
         highlightedIndex={highlightedIndex}
+        showPreview={showPreview}
         selectedSliceId={selectedSliceId}
         flaggedSliceIds={flaggedSliceIds}
         onHighlightChange={onHighlightChange}

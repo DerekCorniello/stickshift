@@ -3,14 +3,18 @@ import { highlightedSliceIndex } from "./geometry";
 import { Slice } from "./Slice";
 import type { LayerConfig, StickPosition } from "./types";
 
+const hubRadius = 27;
+const lineStartRadius = hubRadius / 2;
+
 type LayerProps = Readonly<{
   config: LayerConfig;
   position: StickPosition;
   deadzone: number;
   highlightedIndex?: number | null;
+  showPreview?: boolean;
   selectedSliceId?: string | null;
   flaggedSliceIds?: ReadonlySet<string>;
-  onHighlightChange: (character: string | null) => void;
+  onHighlightChange?: (character: string | null) => void;
 }>;
 
 export function Layer({
@@ -18,6 +22,7 @@ export function Layer({
   position,
   deadzone,
   highlightedIndex: selectedIndex,
+  showPreview,
   selectedSliceId,
   flaggedSliceIds,
   onHighlightChange,
@@ -32,6 +37,9 @@ export function Layer({
       : config.slices[highlightedIndex].character;
   const stickX = 100 + Math.max(-1, Math.min(1, position.x)) * 70;
   const stickY = 100 + Math.max(-1, Math.min(1, position.y)) * 70;
+  const stickDistance = Math.hypot(stickX - 100, stickY - 100);
+  const lineStartRatio =
+    stickDistance > lineStartRadius ? lineStartRadius / stickDistance : 1;
   const renderSlices = (showWedge: boolean, showLabel: boolean) =>
     config.slices.map((slice, index) => (
       <Slice
@@ -49,7 +57,7 @@ export function Layer({
     ));
 
   useEffect(() => {
-    onHighlightChange(highlightedCharacter);
+    onHighlightChange?.(highlightedCharacter);
   }, [highlightedCharacter, onHighlightChange]);
 
   return (
@@ -57,15 +65,25 @@ export function Layer({
       className="dial-layer"
       viewBox="0 0 200 200"
       role="img"
-      aria-label={`${config.id} dial layer`}
+      aria-label={`${config.id} dial layer${showPreview && highlightedCharacter ? `, ${highlightedCharacter} highlighted` : ""}`}
       data-layer-id={config.id}
     >
       {renderSlices(true, false)}
-      <circle className="dial-layer__hub" cx="100" cy="100" r="27" />
+      <circle className="dial-layer__hub" cx="100" cy="100" r={hubRadius} />
+      {showPreview && highlightedCharacter && (
+        <text
+          className="dial-layer__preview"
+          x="100"
+          y="100"
+          aria-hidden="true"
+        >
+          {highlightedCharacter}
+        </text>
+      )}
       <line
         className="dial-layer__stick-line"
-        x1="100"
-        y1="100"
+        x1={100 + (stickX - 100) * lineStartRatio}
+        y1={100 + (stickY - 100) * lineStartRatio}
         x2={stickX}
         y2={stickY}
         aria-hidden="true"

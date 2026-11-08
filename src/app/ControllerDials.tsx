@@ -162,8 +162,6 @@ export function ControllerDials({
   const updateLayer = onActiveLayerChange ?? setLocalLayerId;
   const updateLeftMapping = onLeftMappingChange ?? setLocalLeftMapping;
   const updateRightMapping = onRightMappingChange ?? setLocalRightMapping;
-  const [leftHighlight, setLeftHighlight] = useState<string | null>(null);
-  const [rightHighlight, setRightHighlight] = useState<string | null>(null);
   const [recentEvents, setRecentEvents] = useState<readonly string[]>([]);
   const leftPosition = readStickPosition(pad.axes, leftMapping);
   const rightPosition = readStickPosition(pad.axes, rightMapping);
@@ -305,9 +303,6 @@ export function ControllerDials({
         <div className="controller-dials__card">
           <div className="controller-dials__card-header">
             <h2>Left stick</h2>
-            <output aria-label="Left highlighted character">
-              {leftHighlight ?? "-"}
-            </output>
           </div>
           <Dial
             config={leftConfig}
@@ -315,7 +310,7 @@ export function ControllerDials({
             position={leftPosition}
             deadzone={deadzone}
             highlightedIndex={cancelledSides.left ? null : leftSelectedIndex}
-            onHighlightChange={setLeftHighlight}
+            showPreview
           />
           {showDiagnostics && (
             <AxisControls
@@ -329,9 +324,6 @@ export function ControllerDials({
         <div className="controller-dials__card">
           <div className="controller-dials__card-header">
             <h2>Right stick</h2>
-            <output aria-label="Right highlighted character">
-              {rightHighlight ?? "-"}
-            </output>
           </div>
           <Dial
             config={rightConfig}
@@ -339,7 +331,7 @@ export function ControllerDials({
             position={rightPosition}
             deadzone={deadzone}
             highlightedIndex={cancelledSides.right ? null : rightSelectedIndex}
-            onHighlightChange={setRightHighlight}
+            showPreview
           />
           {showDiagnostics && (
             <AxisControls

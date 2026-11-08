@@ -41,6 +41,17 @@
   fill: var(--dial-outline);
 }
 
+.dial-layer__preview {
+  fill: #000;
+  font:
+    700 30px system-ui,
+    sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
 .dial-layer__stick-line {
   stroke: #f97316;
   stroke-width: 3;

@@ -6,8 +6,7 @@
   font-family: system-ui, sans-serif;
 }
 
-.controller-dials__header,
-.controller-dials__card-header {
+.controller-dials__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,18 +76,6 @@
 .controller-dials__card h2 {
   margin: 0;
   font-size: 18px;
-}
-
-.controller-dials__card output {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border-radius: 8px;
-  color: #355ec2;
-  background: #e7edfb;
-  font-size: 20px;
-  font-weight: 700;
 }
 
 .controller-dials__card .dial {
