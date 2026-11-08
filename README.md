@@ -37,8 +37,7 @@ Controller button icons and artwork are by Zacksly under [CC BY 3.0](https://cre
 
 The Fieldnotes interface is the main app at `/`. It keeps the writing area,
 autocomplete, and both dials together, with controller details in a left rail.
-The original interface remains available at `/original` and its pre-change source
-is recoverable from commit `dc31d12919873f26fddd3bbe697d9eeffaa7cdb4`.
+The pre-change interface is recoverable from commit `dc31d12919873f26fddd3bbe697d9eeffaa7cdb4`.
 
 Practice, Speed Test, Head to Head, Customize, and Diagnostics work with a
 connected controller. The layout remains visible when no controller is connected.

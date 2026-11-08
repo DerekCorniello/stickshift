@@ -18,7 +18,7 @@ import { GamepadButtonLabel } from "./GamepadButtonLabel";
 import { getControllerInfo } from "./gamepadLabels";
 import { InputSettingsContext } from "./inputSettings";
 import { useInputPreferences } from "./useInputPreferences";
-import "./variants.css";
+import "./demo.css";
 
 const pages = [
   { id: "practice", label: "Practice" },
@@ -124,7 +124,7 @@ export function DemoApp() {
 
   return (
     <InputSettingsContext.Provider value={{ deadzone }}>
-      <div className="variant-app ui-2">
+      <div className="variant-app fieldnotes">
         <header className="variant-header">
           <a className="variant-brand" href="/">
             <span aria-hidden="true">((s))</span> StickShift

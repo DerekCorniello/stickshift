@@ -50,14 +50,14 @@ The letter layout is a heuristic based on [English letter and bigram counts](htt
 
 The 32 punctuation characters follow ASCII code-point order across the two symbol layers.
 
-The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. The main interface exposes a deadzone control and saves the deadzone and axis mappings per controller in the browser. The original interface remains at `/original`.
+The current app starts with the authored default layout. Config can add, remove, and reorder layers; resize either dial; move slices; remap their characters; and reassign generic buttons. Dial layers and slices share one editing section. Selecting a slice opens a Remap or Move choice; either change is previewed and requires confirmation before it is applied. Deletions require confirmation. Duplicate and missing characters and counts of 7 or fewer or more than 16 are warnings, not blockers. The main interface exposes a deadzone control and saves the deadzone and axis mappings per controller in the browser.
 
 ## Project structure
 
-- `src/app/`: Main and original app shells, pages, controller composition, autocomplete, timed runs, and configuration.
+- `src/app/`: App shell, pages, controller composition, autocomplete, timed runs, and configuration.
 - `src/typing/`: Reusable dials, authored layouts, Gamepad API polling, and event decoding.
 - `src/data/`: Source and generated autocomplete dictionaries.
-- `scripts/`: Dictionary and static route preparation.
+- `scripts/`: Dictionary preparation.
 
 Keep components and tests beside the feature that uses them. Add more directories only when the code needs them.
 

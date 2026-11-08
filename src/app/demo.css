@@ -663,7 +663,7 @@
 .variant-app .config-page .gamepad-button-label img {
   filter: none;
 }
-.ui-2 {
+.fieldnotes {
   --bg: #eee9de;
   --panel: #faf7ef;
   --panel-raised: #e8e2d5;
@@ -678,48 +678,48 @@
   gap: 12px 36px;
   padding-inline: 4vw;
 }
-.ui-2 .variant-brand {
+.fieldnotes .variant-brand {
   font-family: Georgia, serif;
   font-weight: 500;
   letter-spacing: -0.06em;
   font-size: 30px;
 }
-.ui-2 .variant-nav {
+.fieldnotes .variant-nav {
   border-bottom: 1px solid var(--line);
   padding-bottom: 8px;
 }
-.ui-2 .variant-nav button {
+.fieldnotes .variant-nav button {
   border-radius: 0;
   padding: 8px 22px;
 }
-.ui-2 .variant-sidebar {
+.fieldnotes .variant-sidebar {
   padding: 14px 18px 14px 0;
   border: 0;
   border-right: 1px solid var(--line);
   background: transparent;
 }
-.ui-2 .sidebar-section h2,
-.ui-2 .sidebar-section h3 {
+.fieldnotes .sidebar-section h2,
+.fieldnotes .sidebar-section h3 {
   font-family: Georgia, serif;
   font-size: 18px;
   font-weight: 400;
 }
-.ui-2 .practice-page__editor {
+.fieldnotes .practice-page__editor {
   font-family: Georgia, serif;
   font-size: 24px;
 }
-.ui-2 .controller-dials__card {
+.fieldnotes .controller-dials__card {
   border: 0;
   border-top: 1px solid var(--line);
   background: transparent;
 }
-.ui-2 .dial {
+.fieldnotes .dial {
   --dial-outline: var(--bg);
 }
-.ui-2 .controller-dials__layers {
+.fieldnotes .controller-dials__layers {
   justify-content: flex-start;
 }
-.ui-2 .config-page .gamepad-button-label img {
+.fieldnotes .config-page .gamepad-button-label img {
   filter: invert(1);
 }
 
@@ -747,7 +747,7 @@
     gap: 12px 16px;
     padding: 16px 20px;
   }
-  .ui-2 {
+  .fieldnotes {
     grid-template-columns: 190px minmax(0, 1fr);
   }
   .variant-sidebar {
@@ -762,7 +762,7 @@
 }
 @media (max-width: 760px) {
   .variant-app,
-  .ui-2 {
+  .fieldnotes {
     --dial-size: clamp(130px, 30vw, 200px);
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto auto auto auto auto;
@@ -790,7 +790,7 @@
     text-align: center;
   }
   .variant-sidebar,
-  .ui-2 .variant-sidebar {
+  .fieldnotes .variant-sidebar {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
@@ -929,7 +929,7 @@
   width: 18px;
   height: 18px;
 }
-.ui-2 .quick-controls img {
+.fieldnotes .quick-controls img {
   filter: invert(1);
 }
 .preview-note {
@@ -1062,40 +1062,40 @@
   margin-bottom: 10px;
   color: var(--ink);
 }
-.ui-2 {
+.fieldnotes {
   --dial-size: clamp(210px, 32vh, 260px);
   grid-template-areas: "header header" "nav nav" "sidebar workspace";
   grid-template-rows: auto auto minmax(0, 1fr);
   row-gap: 8px;
 }
-.ui-2 .sidebar-overview p,
-.ui-2 .sidebar-controls h3,
-.ui-2 .practice-page__editor-heading,
-.ui-2 .debug-page__text h2,
-.ui-2 .controller-dials__card h2,
-.ui-2 .demo-next {
+.fieldnotes .sidebar-overview p,
+.fieldnotes .sidebar-controls h3,
+.fieldnotes .practice-page__editor-heading,
+.fieldnotes .debug-page__text h2,
+.fieldnotes .controller-dials__card h2,
+.fieldnotes .demo-next {
   display: none;
 }
-.ui-2 .variant-sidebar {
+.fieldnotes .variant-sidebar {
   max-height: calc(100dvh - 130px);
 }
-.ui-2 .variant-workspace {
+.fieldnotes .variant-workspace {
   min-width: 0;
 }
-.ui-2 .controller-component__autocomplete {
+.fieldnotes .controller-component__autocomplete {
   min-height: 0;
   margin-bottom: 12px;
   padding: 0;
 }
-.ui-2 .autocomplete {
+.fieldnotes .autocomplete {
   display: block;
   min-width: 0;
   min-height: 0;
 }
-.ui-2 .autocomplete__label {
+.fieldnotes .autocomplete__label {
   display: none;
 }
-.ui-2 .autocomplete__suggestions {
+.fieldnotes .autocomplete__suggestions {
   display: flex;
   width: 100%;
   min-width: 0;
@@ -1107,107 +1107,107 @@
   overflow-y: hidden;
   white-space: nowrap;
 }
-.ui-2 .autocomplete__suggestions button {
+.fieldnotes .autocomplete__suggestions button {
   flex: 0 0 auto;
   max-width: none;
   padding: 7px 11px;
 }
-.ui-2 .controller-dials__grid {
+.fieldnotes .controller-dials__grid {
   grid-template-columns: repeat(2, minmax(0, 276px));
   gap: 10px;
 }
-.ui-2 .controller-dials__card {
+.fieldnotes .controller-dials__card {
   padding: 7px 5px 4px;
 }
-.ui-2 .controller-dials__card .dial {
+.fieldnotes .controller-dials__card .dial {
   width: min(100%, var(--dial-size));
 }
-.ui-2 .dial-slice__label {
+.fieldnotes .dial-slice__label {
   font-size: 16px;
   font-weight: 650;
 }
 @media (max-width: 760px) {
-  .ui-2 {
+  .fieldnotes {
     --dial-size: min(43vw, 235px);
     grid-template-areas: "header" "nav" "workspace" "sidebar";
     grid-template-rows: auto auto auto auto;
   }
-  .ui-2 .variant-sidebar {
+  .fieldnotes .variant-sidebar {
     max-height: none;
   }
-  .ui-2 .controller-dials__grid {
+  .fieldnotes .controller-dials__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
   }
-  .ui-2 .dial-slice__label {
+  .fieldnotes .dial-slice__label {
     font-size: 14px;
   }
 }
-.ui-2 .comparison-page__instructions,
-.ui-2 .comparison-page__keyboard-hint,
-.ui-2 .controller-component__mode,
-.ui-2 .comparison-page__difference h2 {
+.fieldnotes .comparison-page__instructions,
+.fieldnotes .comparison-page__keyboard-hint,
+.fieldnotes .controller-component__mode,
+.fieldnotes .comparison-page__difference h2 {
   display: none;
 }
-.ui-2 .variant-sidebar,
-.ui-2 .variant-sidebar label,
-.ui-2 .variant-sidebar summary,
-.ui-2 .quick-controls .quick-control,
-.ui-2 .sidebar-stats span {
+.fieldnotes .variant-sidebar,
+.fieldnotes .variant-sidebar label,
+.fieldnotes .variant-sidebar summary,
+.fieldnotes .quick-controls .quick-control,
+.fieldnotes .sidebar-stats span {
   font-size: 13px;
 }
-.ui-2 .sidebar-stats strong {
+.fieldnotes .sidebar-stats strong {
   font-size: 29px;
 }
-.ui-2 .quick-controls .gamepad-button-label {
+.fieldnotes .quick-controls .gamepad-button-label {
   font-size: 12px;
 }
-.ui-2 .quick-controls .gamepad-button-label img {
+.fieldnotes .quick-controls .gamepad-button-label img {
   width: 24px;
   height: 24px;
 }
-.ui-2 .quick-controls .quick-control {
+.fieldnotes .quick-controls .quick-control {
   min-height: 38px;
   padding: 5px 8px;
 }
-.ui-2 .practice-page__editor-card {
+.fieldnotes .practice-page__editor-card {
   height: 118px;
   overflow: hidden;
 }
-.ui-2 .practice-page__editor {
+.fieldnotes .practice-page__editor {
   height: 86px;
   min-height: 0;
   max-height: none;
   overflow-y: auto;
 }
-.ui-2 .controller-component__autocomplete {
+.fieldnotes .controller-component__autocomplete {
   height: 46px;
   min-height: 46px;
   margin-bottom: 10px;
   overflow: hidden;
 }
-.ui-2 .autocomplete,
-.ui-2 .autocomplete__suggestions {
+.fieldnotes .autocomplete,
+.fieldnotes .autocomplete__suggestions {
   height: 40px;
 }
-.ui-2 .controller-dials__layers {
+.fieldnotes .controller-dials__layers {
   height: 32px;
   min-height: 32px;
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
 }
-.ui-2 .controller-dials__card {
+.fieldnotes .controller-dials__card {
   height: calc(var(--dial-size) + 42px);
   overflow: hidden;
 }
-.ui-2 .typing-test-page__card,
-.ui-2 .comparison-page__card {
+.fieldnotes .typing-test-page__card,
+.fieldnotes .comparison-page__card {
   height: 232px;
   overflow-y: auto;
 }
 @media (max-width: 760px) {
-  .ui-2 .controller-dials__card {
+  .fieldnotes .controller-dials__card {
     height: calc(var(--dial-size) + 34px);
   }
 }

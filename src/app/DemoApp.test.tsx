@@ -62,7 +62,7 @@ describe("demo interface", () => {
   };
   it("renders the writing area and both dials without hardware", async () => {
     await render();
-    expect(container.querySelector(".ui-2")).not.toBeNull();
+    expect(container.querySelector(".fieldnotes")).not.toBeNull();
     expect(container.querySelectorAll(".dial")).toHaveLength(2);
     expect(
       container.querySelector('[aria-label="Controller writing area"]'),
