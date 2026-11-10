@@ -10,9 +10,9 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
-    "format:check": "prettier --check src package.json tsconfig.json index.html",
+    "format:check": "prettier --check src package.json tsconfig.json index.html desktop.html README.md desktop/README.md public/assets/img/gamepads/ATTRIBUTION.md",
     "test": "vitest run",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build && npm run build:desktop"
   },
   "dependencies": {
     "@lizardbyte/gamepad-helper": "^2026.816.4539",

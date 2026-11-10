@@ -1,10 +1,12 @@
-# Desktop app
+# StickShift desktop guide
 
-This version opens the StickShift dials in a compact desktop window. Linux uses `evdev` and `uinput`; Windows uses XInput or pygame and `SendInput`; macOS uses pygame and Quartz keyboard events. All send characters to the application with keyboard focus. The website still uses the browser Gamepad API.
+The desktop app shows the two typing dials in a small window and sends controller typing to the application with keyboard focus. It runs on Linux, Windows, and macOS. The [web app](../README.md) has Practice, Speed test, Head to head, and Diagnostics.
 
-## Linux setup
+## Install and start
 
-From the repository root:
+Build the interface and install the Python dependencies for your operating system. Run these commands from the project directory.
+
+### Linux
 
 ```sh
 npm install
@@ -14,13 +16,11 @@ python3 -m venv --system-site-packages .venv
 .venv/bin/python -m desktop.app
 ```
 
-The webview needs your distribution's GTK 3 and WebKit2GTK 4.1 Python bindings. The virtual environment uses system site packages so it can see those bindings. The program listens only on `127.0.0.1:8765` while its window is open.
+The window needs your distribution's GTK 3 and WebKit2GTK 4.1 Python bindings. The virtual environment includes system site packages so it can use them. Your account also needs read access to the controller under `/dev/input/event*` and write access to `/dev/uinput`. If `/dev/uinput` is missing, load the `uinput` kernel module. Set device permissions through your distribution's input group or a udev rule. The window reports an error if it cannot open the virtual keyboard.
 
-Your user needs read access to the controller under `/dev/input/event*` and write access to `/dev/uinput`. If `/dev/uinput` is missing, load the `uinput` kernel module. Configure device permissions through your distribution's input group or a udev rule before starting the app. The window reports an error if the virtual keyboard cannot open.
+### Windows
 
-## Windows setup
-
-Use Python 3.11 or newer and Node.js. From PowerShell in the repository root:
+Use Python 3.11 or newer and Node.js. In PowerShell:
 
 ```powershell
 npm install
@@ -30,19 +30,11 @@ py -m venv .venv
 .venv\Scripts\python.exe -m desktop.app
 ```
 
-The window uses pywebview's Windows backend. Install the WebView2 Runtime if the window cannot open. XInput controllers are preferred, and pygame provides a generic SDL fallback for DirectInput and other HID controllers when no XInput controller is connected. The program reads controller state without changing its connection. Windows may block keyboard output to an app running as administrator when StickShift is not running at the same privilege level.
+Install the WebView2 Runtime if the window does not open. The app reads XInput controllers first and can use SDL for other controllers. If the program you want to type into runs as administrator, Windows may block keys sent by a non-administrator copy of StickShift.
 
-## Using it
+### macOS
 
-Connect a controller and open the app. A new controller opens a live diagram. Choose Set up for an animated walk through each control. Setup starts with a two-second resting measurement, then asks you to hold each control briefly. It learns right, up, left, and down for each stick, then checks the movement with a circle. The final review shows live input and flags observed controls without a diagram position. At the end, test the live diagram and choose Good, save controller or Redo setup. Individual mappings and extra inputs can be edited before saving. Profiles are saved at the platform's user-data location in `StickShift/controllers.json` and reused after restart. The Dials page shows the two dials, layer controls, word suggestions, and a smaller live diagram. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Suggestions for text typed with the sticks stay visible. Press the autocomplete button to enter selection mode, use the D-pad to choose a word, then press the Enter button to replace the current word and add a space. Press the autocomplete button again to leave selection mode. The same button that accepts a selected suggestion accepts the first suggestion directly when selection mode is closed. Holding a D-pad direction repeats its action after a short delay.
-
-Open Config from the top of the window, or press Start to switch between Dials and Config. Config has the same dial, slice, and button editor as the website. Changes are saved in the desktop window and sent to the keyboard service. System typing pauses while Config is open and resumes when you return to Dials. Close StickShift to stop keyboard output. Practice, tests, and diagnostics remain on the website.
-
-On Linux, the virtual keyboard maps printable ASCII to a US keyboard layout. On Windows and macOS, printable characters use Unicode keyboard events. Controller vibration is browser-only. The Linux keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
-
-## macOS setup
-
-Use Python 3.11 or newer and Node.js. From the repository root:
+Use Python 3.11 or newer and Node.js:
 
 ```sh
 npm install
@@ -52,12 +44,33 @@ python3 -m venv .venv
 .venv/bin/python -m desktop.app
 ```
 
-Grant the Python app Accessibility permission in System Settings so it can send keys to other applications. The macOS backend has unit tests, but it has not yet been run on a Mac with a controller.
+Grant the Python app Accessibility permission in System Settings so it can send keys to other applications. The macOS backend has automated tests, but it has not been tested with a physical controller on a Mac.
 
-After a character is entered, the desktop keyboard waits for the stick to move
-20 percentage points beyond the deadzone before arming another selection. This
-filters small rebounds across center while keeping the release threshold set by
-the deadzone slider.
+## Connect and set up
+
+Connect a controller, then open StickShift. Its name appears at the top of the window. A new controller opens a live diagram. Choose **Set up**, let the controller rest for two seconds, and follow the prompts for each button and stick direction. Make a slow circle with each stick when asked. At the end, test the live diagram and choose **Good, save controller** or **Redo setup**. You can recapture individual controls in the review step or reopen setup from Config later.
+
+## Type in another application
+
+Open **Dials**, then focus a text field in another application. Point either stick at a character and return it to center to type. Use the mapped Space, Backspace, and Enter buttons to edit. The D-pad moves the cursor. The window shows the active layer, suggestions, and a live controller diagram.
+
+To use a suggestion, press the mapped Autocomplete button, choose a word with the D-pad, then press the mapped Enter button. By default, Enter also accepts the first suggestion when the list is closed. Press Autocomplete again to leave selection mode. Holding a D-pad direction repeats its action.
+
+Open **Config** at the top of the window, or use the mapped Submit button to switch between Dials and Config. Config edits dial characters and button bindings. System typing pauses while Config is open and resumes when you return to Dials. Close StickShift to stop keyboard output.
+
+The deadzone slider controls how far the stick must move to select a character. After one character is entered, the stick must move farther before it can start another selection. This filters small rebounds around the center.
+
+## Saved profiles and checks
+
+Controller profiles are saved in `StickShift/controllers.json` under your platform's user-data directory:
+
+| System  | Location                                                                                   |
+| ------- | ------------------------------------------------------------------------------------------ |
+| Linux   | `~/.config/StickShift/controllers.json`, or `$XDG_CONFIG_HOME/StickShift/controllers.json` |
+| Windows | `%APPDATA%\StickShift\controllers.json`                                                    |
+| macOS   | `~/Library/Application Support/StickShift/controllers.json`                                |
+
+The desktop service listens on `127.0.0.1:8765` while its window is open. Linux sends printable ASCII using a US keyboard layout. Windows and macOS use Unicode keyboard events. Controller vibration is available only in the web app.
 
 Run the desktop tests with:
 

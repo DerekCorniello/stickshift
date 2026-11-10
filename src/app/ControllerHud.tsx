@@ -120,7 +120,7 @@ export function ControllerHud({
             </marker>
           </defs>
           <image
-            href="/assets/img/gamepads/controller-wireframe.svg"
+            href={`${import.meta.env.BASE_URL}assets/img/gamepads/controller-wireframe.svg`}
             x="0"
             y="0"
             width="2048"

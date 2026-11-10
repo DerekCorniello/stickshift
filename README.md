@@ -1,65 +1,59 @@
 # StickShift
 
-The typing components are a pair of React dials in `src/typing/`. Each dial renders the slices in its active layer and reports the character under a normalized stick position. `useGamepads` polls connected controllers. `useControllerEvents` reports button press/release events, stick deadzone crossings, and the last highlighted character when a stick returns to center.
+StickShift lets you type with a controller. Each stick points at a character on its own dial; releasing the stick enters that character. The web app has a practice area, timed tests, controller setup, and diagnostics. The desktop app can send typed characters to other programs.
 
-```tsx
-import { Dial, leftDialConfig, rightDialConfig } from "./src/typing";
+## Start the web app
 
-<Dial
-  config={leftDialConfig}
-  activeLayerId="lowercase"
-  position={{ x: 0, y: -1 }}
-  deadzone={0.2}
-  onHighlightChange={(character) => console.log(character)}
-/>;
+From the project directory:
+
+```sh
+npm install
+npm run dev
 ```
 
-Render a second `Dial` with `rightDialConfig` and the same `activeLayerId`. The default layers are `lowercase`, `uppercase`, `numbers-symbols`, and `symbols`. Position `(0, -1)` points up; `(0, 0)` is centered. The callback receives `null` when the stick is inside the deadzone. Override the CSS variables in `dial.css` to restyle the wedges and labels.
+Open the address printed by Vite, then connect a controller. Its name appears at the top of the page. If you connect more than one, use the controller selector there to choose one. The dials remain visible when no controller is connected.
 
-On the numbers and symbols layer, the five digits on each dial run from upper left to upper right.
+## Set up a controller
 
-Run `npm install` and `npm run dev` to open the app. Connect a controller to use Practice, Typing Test, Compare, Debug, and Config. The first time a controller connects, setup opens. It starts with an explicit two-second measurement while all controls are released. Each button action can use either direction of any reported axis, analog button value, or pressed-state change. Each stick learns right, up, left, and down separately, then checks the resulting movement with a circle. Directions may use separate digital controls; they do not need to share an axis pair. The same learned channels and resting values drive the web app after saving. The diagram highlights the target control's area. At the end, test the live diagram and choose Good, save controller or Redo setup. Config can reopen setup later. Profiles are saved locally for each controller ID. Press the right center button (button 9) to cycle pages without a mouse. A sector changes when the stick moves clearly past its boundary; a small buffer around each boundary prevents minor wobble from switching sectors. Returning to center enters the last selected character. Legacy axis choices can also be changed in Debug. Relearn calibrated directions through Controller setup.
+A controller that has not been set up opens the setup dialog when it connects. You can also open **Customize** and choose **Set up controller** later.
 
-The deadzone defaults to 20%. After a character is entered, the stick must move
-another 20 percentage points beyond that threshold before it can start a new
-selection. This ignores small rebounds across center without changing where a
-held selection ends. The orange position marker still follows the raw stick.
+1. Try the live controller diagram. If a control lights up in the wrong place, choose **Set up**.
+2. Release the sticks, triggers, and buttons. Start the resting measurement and leave the controller untouched for two seconds.
+3. Follow each prompt. Hold a requested button for about one second, then release it. For a stick, push it in each requested direction and finish with a slow circle. The highlighted area shows which control to use.
+4. Test the finished mapping on the live diagram. Choose **Good, save controller** if every control lights up in the right place, or **Redo setup** if something is wrong. **Edit individual controls** lets you recapture a control without repeating the whole walk through.
+
+The prompts identify physical positions rather than assuming a particular brand's button names. A stick needs all four directions before its mapping can be saved. A button you do not have can be skipped.
+
+## Type and edit
+
+Move either stick toward a character and return it to center to enter it. The layer controls above the dials switch between lowercase, uppercase, numbers, and symbols. Press a stick while it is held to cancel its pending character. The **Input settings** slider in the left sidebar adjusts how far a stick must move before it selects a character.
+
+In **Practice**, the writing area accepts controller input. The D-pad moves the caret; the mapped Space, Backspace, and Enter buttons edit the text. The left sidebar shows what the currently mapped buttons do. Holding an editing button or D-pad direction repeats its action.
+
+Suggestions appear above the dials as you type. Press the mapped Autocomplete button to select a suggestion, use the D-pad to move through the list, then press the mapped Enter button to insert it. Press Autocomplete again to leave the list. By default, Enter also accepts the first suggestion directly when the list is closed. You can change that binding in Customize.
+
+## Pages
+
+- **Practice** is a controller-only writing area.
+- **Speed test** gives you a sentence to type with both dials. The timer starts with your first character and stops on an exact match, Submit, or the two-minute limit. Autocomplete is off during the test.
+- **Head to head** uses the same sentence twice: first with a one-stick on-screen keyboard, then with both dials. On the keyboard, move with the left stick and press the mapped Enter button to choose a key.
+- **Customize** edits dial layers, character positions, and button bindings. It also opens controller setup. Changes save automatically in this browser.
+- **Diagnostics** shows raw controller readings and dial behavior. Use it when an input does not respond as expected.
+
+The mapped Submit button cycles pages outside timed runs and submits a timed run. **Reset to defaults** in Customize restores the default dial layout and button bindings after confirmation.
 
 ## Desktop app
 
-The Python app is a small controller keyboard for Linux, Windows, and macOS with the two dials. System typing starts after the controller is accepted and sends characters to the focused application. See [desktop/README.md](desktop/README.md) for setup. The website continues to use the browser Gamepad API.
+The desktop app supports Linux, Windows, and macOS. It shows the dials and sends controller typing to the application with keyboard focus. See the [desktop setup and use guide](desktop/README.md) for installation and platform requirements. macOS support has automated tests but has not been tested with a physical controller on a Mac.
 
-## App pages
+## Saved settings and troubleshooting
 
-- **Practice** is a controller-only writing area. Stick selections enter characters on return to center; mapped buttons handle spaces, line breaks, deletion, and caret movement. The on-screen guide names controls by position and uses generic icons.
-- **Typing Test** uses the two dials to transcribe the shared test passage and reports time, WPM, and character accuracy.
-- **Compare** runs that passage twice: first with a one-stick on-screen QWERTY keyboard, then with both dials. Aim with the left stick and press the mapped A / Enter button to select. The keyboard includes letters, digits, punctuation, Shift, Space, and Backspace. Results and the difference between modes are shown together.
-- The autocomplete bar stays above the dials. X (top face button) enters or leaves suggestion selection. The sticks continue typing while the D-pad changes the selection; B (bottom face button) accepts it. The bottom face button also accepts the first suggestion directly when selection mode is closed. Holding Backspace, Enter, Space, or a D-pad direction repeats after a short delay.
-- **Debug** uses the same controller component as Practice, including autocomplete. It also shows the dial event list, axis selectors, typed text, and raw axis and button readings.
-- **Config** edits dial layers, slices, characters, and button bindings, and opens guided controller setup. Setup discovers exposed buttons and axes, maps two sticks and typing actions, and leaves extra inputs available for later assignment. The top face button switches between Dial mappings and Generic mappings. D-pad Up/Down moves through the layer list and its Add/Delete controls. The right face button activates the highlighted row. Triggers choose a dial, bumpers reorder layers, and stick clicks add or delete slices. Point a stick at a slice and press the right face button to choose Remap or Move. Remap uses the on-screen QWERTY keyboard and requires a second press to apply the preview. Move previews the new position with the stick and also requires a second press to confirm. Reset to defaults is available in both sections. Removing a slice, layer, or binding and resetting require confirmation. Current warnings flag duplicates, missing characters, and slice counts outside the recommended range without blocking use. Dial layouts are shared; controller input profiles are saved by controller ID. Generic mappings use position-based names and icons.
+The website saves dial layouts, button bindings, and controller profiles in your browser's local storage. Profiles are associated with the controller ID reported by the browser. Clearing site data removes those saved settings. The desktop app saves its controller profiles separately; its guide lists the location for each operating system.
 
-Run `npm run check` to typecheck, lint, check formatting, test the dials, and build the app.
+If the page still says **Connect a controller**, press a button on the connected controller and check that your browser can see it. If the controller appears but a control lights up in the wrong place, reopen setup from Customize. Use Diagnostics to check whether the browser reports that input at all.
 
-The controller wireframe is adapted from a CC0 diagram by TheHoodieGuy02. Older controller button assets are by Zacksly under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+## Development and credits
 
-## Interface
+Run `npm run check` for type checking, linting, formatting, tests, and both production builds. The builds place minified JavaScript and CSS in `dist/` and `dist-desktop/`.
 
-The Fieldnotes interface is the main app at `/`. It keeps the writing area,
-autocomplete, and both dials together, with controller details in a left rail.
-The pre-change interface is recoverable from commit `dc31d12919873f26fddd3bbe697d9eeffaa7cdb4`.
-
-Practice, Speed Test, Head to Head, Customize, and Diagnostics work with a
-connected controller. The layout remains visible when no controller is connected.
-Aim and return a stick to center to type. Clicking a held stick cancels its
-selection: the orange position marker remains, while the slice highlight and
-highlighted-character display clear. Move the stick back to center before
-selecting again. The default letter layout places Q and U on opposite dials;
-existing saved layouts keep their assignments until you use Reset to defaults in Config.
-Deadzone and axis mappings are saved per controller in the browser.
-Start cycles pages outside timed runs and submits a timed run.
-
-Timed runs end on an exact match, Submit, or after two minutes. Each run picks
-one of five demo sentences at random, and Reset or Try again picks another;
-repeats are possible. Head to Head uses the same sentence for both modes in a
-comparison. Autocomplete is disabled during timed runs. The bundled autocomplete word list is generated from the full source CSV by
-`scripts/prepare-dictionary.py`; the browser downloads the smaller top-100,000 list.
+The controller wireframe is adapted from a [CC0 diagram by TheHoodieGuy02](https://opengameart.org/content/8th-gen-console-vector-gamepad-collection). See [asset attribution](public/assets/img/gamepads/ATTRIBUTION.md).

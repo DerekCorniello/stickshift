@@ -1,0 +1,107 @@
+.gamepad-visualizer {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+}
+
+.gamepad-visualizer h2,
+.gamepad-visualizer h3 {
+  margin: 0 0 12px;
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+
+.gamepad-visualizer h2 {
+  font-size: 20px;
+}
+
+.gamepad-visualizer h3 {
+  font-size: 17px;
+}
+
+.gamepad-visualizer__pad + .gamepad-visualizer__pad {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.gamepad-visualizer__info {
+  margin-bottom: 16px;
+}
+
+.gamepad-visualizer__raw-id {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.gamepad-visualizer__grid {
+  display: grid;
+  gap: 20px;
+}
+
+.gamepad-visualizer__axes,
+.gamepad-visualizer__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.gamepad-visualizer__axis,
+.gamepad-visualizer__button {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 6px;
+  min-width: 80px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.gamepad-visualizer__plot {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel-raised);
+}
+
+.gamepad-visualizer__plot--axis {
+  width: 100px;
+  height: 100px;
+}
+
+.gamepad-visualizer__plot--button {
+  width: 60px;
+  height: 60px;
+}
+
+.gamepad-visualizer__frame,
+.gamepad-visualizer__crosshair {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 0.05;
+}
+
+.gamepad-visualizer__point,
+.gamepad-visualizer__meter {
+  fill: var(--accent);
+}
+
+.gamepad-visualizer__axis-value,
+.gamepad-visualizer__button-value {
+  fill: var(--ink);
+  font-family: ui-monospace, monospace;
+  font-size: 0.6px;
+}
+
+.gamepad-visualizer__button-value {
+  font-size: 0.8px;
+}
+
+.gamepad-visualizer__meter.is-pressed {
+  fill: var(--input-active);
+}

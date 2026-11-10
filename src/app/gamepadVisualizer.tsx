@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
 import type { GamepadSnapshot } from "../typing";
 import { GamepadButtonLabel } from "./GamepadButtonLabel";
 import { getControllerAxisName, getControllerInfo } from "./gamepadLabels";
+import "./gamepadVisualizer.css";
 
 type GamepadVisualizerProps = Readonly<{
   gamepads: Readonly<Record<number, GamepadSnapshot>>;
@@ -13,67 +13,60 @@ export default function GamepadVisualizer({
   const gamepadsArray = Object.values(gamepads);
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Gamepad Visualizer</h1>
+    <section className="gamepad-visualizer" aria-label="Raw gamepad inputs">
+      <h2>Raw inputs</h2>
       {gamepadsArray.length === 0 ? (
-        <p>
-          No gamepads connected. Press any button on your controller to connect.
-        </p>
+        <p>Connect a controller and press a button to see its inputs.</p>
       ) : (
         gamepadsArray.map((pad) => (
-          <div key={pad.index} style={styles.gamepadBox}>
-            <div style={styles.info}>
+          <section className="gamepad-visualizer__pad" key={pad.index}>
+            <div className="gamepad-visualizer__info">
               <strong>{getControllerInfo(pad.id).name}</strong>
               <span> (Gamepad {pad.index})</span>
-              <div style={styles.rawId}>{pad.id}</div>
+              <div className="gamepad-visualizer__raw-id">{pad.id}</div>
             </div>
 
-            <div style={styles.grid}>
-              <div style={styles.section}>
-                <h3 style={styles.subhead}>Axes</h3>
-                <div style={styles.axesContainer}>
+            <div className="gamepad-visualizer__grid">
+              <div>
+                <h3>Axes</h3>
+                <div className="gamepad-visualizer__axes">
                   {Array.from({ length: Math.floor(pad.axes.length / 2) }).map(
-                    (_, i) => {
-                      const x = pad.axes[i * 2];
-                      const y = pad.axes[i * 2 + 1];
+                    (_, index) => {
+                      const x = pad.axes[index * 2];
+                      const y = pad.axes[index * 2 + 1];
                       return (
-                        <div key={i} style={styles.axisPair}>
+                        <div className="gamepad-visualizer__axis" key={index}>
                           <span>
-                            {getControllerAxisName(pad.id, i * 2)} /{" "}
-                            {getControllerAxisName(pad.id, i * 2 + 1)}
+                            {getControllerAxisName(pad.id, index * 2)} /{" "}
+                            {getControllerAxisName(pad.id, index * 2 + 1)}
                           </span>
                           <svg
+                            className="gamepad-visualizer__plot gamepad-visualizer__plot--axis"
                             viewBox="-2.2 -2.2 4.4 4.4"
-                            width="100"
-                            height="100"
-                            style={styles.svg}
+                            aria-label={`Axis ${index * 2}: ${x.toFixed(2)}, axis ${index * 2 + 1}: ${y.toFixed(2)}`}
+                            role="img"
                           >
                             <circle
+                              className="gamepad-visualizer__frame"
                               cx="0"
                               cy="0"
                               r="2"
-                              fill="none"
-                              stroke="#555"
-                              strokeWidth="0.05"
                             />
                             <path
+                              className="gamepad-visualizer__crosshair"
                               d="M0,-2L0,2M-2,0L2,0"
-                              stroke="#555"
-                              strokeWidth="0.05"
                             />
                             <circle
+                              className="gamepad-visualizer__point"
                               cx={x * 2}
                               cy={y * 2}
                               r="0.25"
-                              fill="#fff"
                             />
                             <text
+                              className="gamepad-visualizer__axis-value"
                               textAnchor="middle"
                               x="0"
                               y="2"
-                              fill="#fff"
-                              fontSize="0.6px"
-                              fontFamily="monospace"
                             >
                               {x.toFixed(2)},{y.toFixed(2)}
                             </text>
@@ -84,100 +77,51 @@ export default function GamepadVisualizer({
                   )}
                 </div>
               </div>
-
-              <div style={styles.section}>
-                <h3 style={styles.subhead}>Buttons</h3>
-                <div style={styles.buttonsContainer}>
-                  {pad.buttons.map((btn, i) => (
-                    <div key={i} style={styles.buttonCell}>
+              <div>
+                <h3>Buttons</h3>
+                <div className="gamepad-visualizer__buttons">
+                  {pad.buttons.map((button, index) => (
+                    <div className="gamepad-visualizer__button" key={index}>
                       <svg
+                        className="gamepad-visualizer__plot gamepad-visualizer__plot--button"
                         viewBox="-2.2 -2.2 4.4 4.4"
-                        width="60"
-                        height="60"
-                        style={styles.svg}
                         aria-hidden="true"
                       >
                         <circle
+                          className="gamepad-visualizer__frame"
                           cx="0"
                           cy="0"
                           r="2"
-                          fill="none"
-                          stroke="#555"
-                          strokeWidth="0.1"
                         />
                         <circle
+                          className={`gamepad-visualizer__meter${button.pressed ? " is-pressed" : ""}`}
                           cx="0"
                           cy="0"
-                          r={btn.value * 2}
-                          fill={btn.pressed ? "#000" : "#fff"}
+                          r={button.value * 2}
                         />
                         <text
+                          className="gamepad-visualizer__button-value"
                           dominantBaseline="middle"
                           textAnchor="middle"
                           x="0"
                           y="0"
-                          fill={btn.pressed ? "#fff" : "#888"}
-                          fontSize="0.8px"
-                          fontFamily="monospace"
                         >
-                          {btn.value.toFixed(2)}
+                          {button.value.toFixed(2)}
                         </text>
                       </svg>
                       <GamepadButtonLabel
                         gamepadId={pad.id}
-                        buttonIndex={i}
-                        color="White"
+                        buttonIndex={index}
+                        pad={pad}
                       />
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         ))
       )}
-    </div>
+    </section>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  container: {
-    backgroundColor: "#000",
-    color: "#fff",
-    fontFamily: "monospace",
-    padding: "20px",
-    minHeight: "100vh",
-    boxSizing: "border-box",
-  },
-  header: {
-    fontSize: "1.5rem",
-    borderBottom: "1px solid #333",
-    paddingBottom: "10px",
-    marginTop: 0,
-  },
-  subhead: { fontSize: "1.1rem", color: "#aaa", marginBottom: "10px" },
-  gamepadBox: {
-    marginBottom: "20px",
-    padding: "15px",
-    border: "1px solid #333",
-    borderRadius: "4px",
-  },
-  info: { marginBottom: "15px", fontSize: "1.2rem" },
-  rawId: { color: "#aaa", fontSize: "0.75rem", marginTop: "4px" },
-  grid: { display: "flex", flexDirection: "column", gap: "20px" },
-  section: { display: "flex", flexDirection: "column" },
-  axesContainer: { display: "flex", flexWrap: "wrap", gap: "10px" },
-  axisPair: { display: "grid", justifyItems: "center", gap: "4px" },
-  buttonsContainer: { display: "flex", flexWrap: "wrap", gap: "10px" },
-  buttonCell: {
-    display: "grid",
-    justifyItems: "center",
-    gap: "4px",
-    minWidth: "72px",
-  },
-  svg: {
-    backgroundColor: "#111",
-    border: "1px solid #222",
-    borderRadius: "4px",
-  },
-};
