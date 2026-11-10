@@ -61,6 +61,7 @@ describe("Config page controller navigation", () => {
     const render = (pad: GamepadSnapshot) =>
       act(() => root.render(<Harness pad={pad} />));
     render(base);
+    expect(container.textContent).not.toContain("is assigned to 2 actions");
     render(pressed(10)); // Left stick click adds a slice
     expect(
       container.querySelector(".config-page__dial--active h3")?.textContent,

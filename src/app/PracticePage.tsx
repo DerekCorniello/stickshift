@@ -176,7 +176,8 @@ export function PracticePage({
             Suggestions stay visible above the dials. Press the top face button
             to focus them, use the D-pad to choose one, then press the bottom
             face button to replace the word at the caret and return to typing.
-            The right face button accepts the first suggestion directly.
+            The bottom face button also accepts the first suggestion directly
+            when the suggestion list is closed.
           </p>
         </aside>
       </div>

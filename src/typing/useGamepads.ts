@@ -18,11 +18,13 @@ export function useGamepads(): Readonly<Record<number, GamepadSnapshot>> {
   useEffect(() => {
     let frameId = 0;
 
-    const updateGamepads = () => {
+    const updateGamepads = (connectedPad?: Gamepad) => {
       const nextState: Record<number, GamepadSnapshot> = {};
 
-      for (const pad of navigator.getGamepads?.() ?? []) {
-        if (pad) {
+      const available = [...(navigator.getGamepads?.() ?? [])];
+      if (connectedPad) available[connectedPad.index] = connectedPad;
+      for (const pad of available) {
+        if (pad?.connected) {
           nextState[pad.index] = {
             id: pad.id,
             index: pad.index,
@@ -38,11 +40,23 @@ export function useGamepads(): Readonly<Record<number, GamepadSnapshot>> {
       }
 
       setGamepads(nextState);
-      frameId = requestAnimationFrame(updateGamepads);
     };
 
-    frameId = requestAnimationFrame(updateGamepads);
-    return () => cancelAnimationFrame(frameId);
+    const poll = () => {
+      updateGamepads();
+      frameId = requestAnimationFrame(poll);
+    };
+    const onConnected = (event: GamepadEvent) => updateGamepads(event.gamepad);
+    const onDisconnected = () => updateGamepads();
+    window.addEventListener("gamepadconnected", onConnected);
+    window.addEventListener("gamepaddisconnected", onDisconnected);
+    updateGamepads();
+    frameId = requestAnimationFrame(poll);
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("gamepadconnected", onConnected);
+      window.removeEventListener("gamepaddisconnected", onDisconnected);
+    };
   }, []);
 
   return gamepads;

@@ -3,7 +3,6 @@ import type { GamepadSnapshot } from "../typing";
 import {
   beginCapture,
   sampleButton,
-  sampleCircle,
   sampleDirection,
   sampleRest,
 } from "./controllerCapture";
@@ -29,30 +28,6 @@ it("captures a sustained change from a stable baseline, not a stray pulse", () =
   for (const time of [800, 1000, 1200, 1400, 1600])
     expect(sampleButton(state, pad([17]), time)).toBeNull();
   expect(sampleButton(state, pad([17]), 1800)).toBe(17);
-});
-
-it("finds both stick axes after a full circle while ignoring other axes", () => {
-  const state = beginCapture(pad(), 0);
-  sampleCircle(state, pad(), 500);
-  const positions = [
-    [0, 0, 0, 0.9],
-    [0, 0, 0.9, 0.9],
-    [0, 0, 0.9, 0],
-    [0, 0, 0.9, -0.9],
-    [0, 0, 0, -0.9],
-    [0, 0, -0.9, -0.9],
-    [0, 0, -0.9, 0],
-    [0, 0, -0.9, 0.9],
-  ];
-  positions.forEach((axes, index) =>
-    sampleCircle(state, pad([], axes), 600 + index * 220),
-  );
-  expect(sampleCircle(state, pad([], [0, 0, 0, 0]), 2400)).toEqual({
-    xAxis: 3,
-    yAxis: 2,
-    invertX: false,
-    invertY: false,
-  });
 });
 
 it("accepts a digital press without an analog value and a negative resting axis", () => {
@@ -84,32 +59,6 @@ it("accepts a digital press without an analog value and a negative resting axis"
   sampleButton(axis, moved, 800);
   sampleButton(axis, moved, 1100);
   expect(sampleButton(axis, moved, 1500)).toBeNull();
-});
-
-it("maps a right stick on later axes even when its first movement is diagonal", () => {
-  const resting = pad([], [0, 0, 0, 0, 0, 0, 0, 0]);
-  const state = beginCapture(resting, 0);
-  sampleCircle(state, resting, 500, [0, 1]);
-  const positions = [
-    [0.85, 0.7],
-    [0.9, 0.9],
-    [0, 0.9],
-    [-0.9, 0.9],
-    [-0.9, 0],
-    [-0.9, -0.9],
-    [0, -0.9],
-    [0.9, -0.9],
-  ];
-  positions.forEach(([x, y], index) => {
-    const axes = [0, 0, 0, 0, 0, 0, x, y];
-    sampleCircle(state, pad([], axes), 600 + index * 250, [0, 1]);
-  });
-  expect(sampleCircle(state, resting, 2600, [0, 1])).toEqual({
-    xAxis: 6,
-    yAxis: 7,
-    invertX: false,
-    invertY: false,
-  });
 });
 
 it("captures trigger axes as buttons even when the default right-stick axes point at them", () => {

@@ -1,33 +1,13 @@
 .controller-hud {
-  --ink: #343b30;
-  --muted: #77796a;
-  --line: #d4cebf;
-  --accent: #a74428;
   width: min(100%, 500px);
-  margin: 16px auto 0;
+  margin: 8px auto 0;
   color: var(--ink);
 }
 
-.controller-hud__caption {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 6px;
-  font-size: 12px;
-}
-
-.controller-hud__caption span,
-.controller-hud__raw {
-  color: var(--muted);
-  font-size: 11px;
-}
-
 .controller-hud__stage {
-  padding: 5px 18px;
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  background: #faf7ef;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .controller-hud svg {
@@ -52,8 +32,8 @@
 }
 
 .controller-hud__button.is-active {
-  fill: #71564388;
-  stroke: #715643;
+  fill: color-mix(in srgb, var(--input-active) 53%, transparent);
+  stroke: var(--input-active);
 }
 
 .controller-hud__stick {
@@ -66,12 +46,12 @@
 }
 
 .controller-hud__stick.is-active {
-  fill: #71564388;
-  stroke: #715643;
+  fill: color-mix(in srgb, var(--input-active) 53%, transparent);
+  stroke: var(--input-active);
 }
 
 .controller-hud__target {
-  fill: #a7442844;
+  fill: color-mix(in srgb, var(--accent) 27%, transparent);
   stroke: var(--accent);
   stroke-width: 9;
   transform-box: fill-box;
@@ -81,8 +61,8 @@
 }
 
 .controller-hud__target.is-complete {
-  fill: #5e826a88;
-  stroke: #5e826a;
+  fill: color-mix(in srgb, var(--input-captured) 53%, transparent);
+  stroke: var(--input-captured);
   animation: hud-target-done 450ms ease-out both;
 }
 .controller-hud__orbit {
@@ -94,52 +74,15 @@
   fill: var(--accent);
 }
 .controller-hud__orbit.is-complete {
-  stroke: #5e826a;
+  stroke: var(--input-captured);
   animation: none;
 }
 .controller-hud__orbit.is-complete .controller-hud__orbit-dot {
-  fill: #5e826a;
+  fill: var(--input-captured);
 }
-.controller-hud__key {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 7px;
-  color: var(--muted);
-  font-size: 10px;
-}
-.controller-hud__key span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.controller-hud__key i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-.controller-hud__key .is-active {
-  background: #715643;
-}
-.controller-hud__key .is-done {
-  background: #5e826a;
-}
-.controller-hud__key .is-unmapped {
-  background: #c58b3f;
-}
-
-.controller-hud__raw {
-  display: block;
-  min-height: 1.5em;
-  margin-top: 5px;
-  text-align: center;
-}
-
 .controller-hud--compact {
   width: min(100%, 570px);
-  margin: 8px auto 16px;
+  margin: 8px auto 12px;
 }
 
 .controller-hud--compact svg {

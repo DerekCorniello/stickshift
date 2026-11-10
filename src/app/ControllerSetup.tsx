@@ -20,7 +20,6 @@ import {
 } from "./controllerSetup";
 import type { ControllerProfile } from "./controllerSetup";
 import "./controllerSetup.css";
-import { ControllerSetupTrace } from "./controllerSetupTrace";
 
 const actions = Object.keys(actionLabels) as ControlAction[];
 
@@ -66,11 +65,7 @@ const stickStep = (
 });
 
 export const guideSteps: readonly GuideStep[] = [
-  buttonStep(
-    "Press the rightmost button on the right side.",
-    1,
-    "acceptFirstSuggestion",
-  ),
+  buttonStep("Press the rightmost button on the right side.", 1),
   buttonStep("Press the bottom button on the right side.", 0, "enter"),
   buttonStep("Press the leftmost button on the right side.", 2),
   buttonStep("Press the top button on the right side.", 3, "autocomplete"),
@@ -157,18 +152,23 @@ export function ControllerSetup({
 }: Props) {
   const pad = useMemo(() => withButtonAxes(rawPad), [rawPad]);
   const [page, setPage] = useState<"check" | "neutral" | "guide" | "review">(
-    newController ? "check" : "neutral",
+    "check",
   );
   const [initialSnapshot, setInitialSnapshot] = useState(pad);
   const [measuringRest, setMeasuringRest] = useState(false);
-  const [draft, setDraft] = useState({ ...initial, axisRest: [...pad.axes] });
+  const [draft, setDraft] = useState({
+    ...initial,
+    axisRest: [...(initial.axisRest ?? pad.axes)],
+  });
   const [guideIndex, setGuideIndex] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [capture, setCapture] = useState<ControlAction | null>(null);
   const [capturedAxes, setCapturedAxes] = useState<readonly number[]>([]);
   const [discovered, setDiscovered] = useState(initial.discovered);
   const [measurement, setMeasurement] = useState(0);
-  const [restingAxes, setRestingAxes] = useState<readonly number[]>(pad.axes);
+  const [restingAxes, setRestingAxes] = useState<readonly number[]>(
+    initial.axisRest ?? pad.axes,
+  );
   const expanded = useMemo(
     () => withAxisButtons(pad, restingAxes),
     [pad, restingAxes],
@@ -178,7 +178,6 @@ export function ControllerSetup({
     null,
   );
   const advanceTimer = useRef<number | null>(null);
-  const trace = useRef(new ControllerSetupTrace());
   const live = changedInputs(pad, initialSnapshot);
   const liveKey = live.join("|");
 
@@ -304,7 +303,13 @@ export function ControllerSetup({
           visualButtons,
           visualSignals,
           bindings: currentStep.action
-            ? { ...current.bindings, [currentStep.action]: index }
+            ? {
+                ...current.bindings,
+                [currentStep.action]: index,
+                ...(currentStep.action === "enter"
+                  ? { acceptFirstSuggestion: index }
+                  : {}),
+              }
             : current.bindings,
         };
       });
@@ -384,30 +389,6 @@ export function ControllerSetup({
     measuringRest,
   ]);
 
-  useEffect(() => {
-    trace.current.record(
-      Date.now(),
-      page === "guide"
-        ? `${guideIndex}: ${guideSteps[guideIndex].prompt}`
-        : page,
-      rawPad,
-      captureWindow.current?.value ?? null,
-      feedback,
-    );
-  }, [rawPad, page, guideIndex, feedback]);
-
-  const downloadReport = () => {
-    const report = trace.current.report(rawPad, draft, navigator.userAgent);
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(report)], { type: "application/json" }),
-    );
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "stickshift-setup-report.json";
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
-
   const sticksReady = [draft.leftMapping, draft.rightMapping].every((mapping) =>
     ["right", "left", "up", "down"].every((direction) => {
       const binding =
@@ -428,12 +409,21 @@ export function ControllerSetup({
   const unassigned = actions.filter(
     (action) => draft.bindings[action] === null,
   );
-  const bindingCounts = new Map<number, number>();
-  for (const index of Object.values(draft.bindings)) {
+  const bindingCounts = new Map<number, ControlAction[]>();
+  for (const action of actions) {
+    const index = draft.bindings[action];
     if (index !== null)
-      bindingCounts.set(index, (bindingCounts.get(index) ?? 0) + 1);
+      bindingCounts.set(index, [...(bindingCounts.get(index) ?? []), action]);
   }
-  const duplicates = [...bindingCounts].filter(([, count]) => count > 1);
+  const duplicates = [...bindingCounts].filter(
+    ([, assigned]) =>
+      assigned.length > 1 &&
+      !(
+        assigned.length === 2 &&
+        assigned.includes("enter") &&
+        assigned.includes("acceptFirstSuggestion")
+      ),
+  );
   const buttonPositions =
     draft.visualButtons ?? Array.from({ length: 16 }, (_, index) => index);
   const mappedButtons = new Set(
@@ -496,7 +486,13 @@ export function ControllerSetup({
         visualButtons,
         visualSignals,
         bindings: currentStep.action
-          ? { ...current.bindings, [currentStep.action]: null }
+          ? {
+              ...current.bindings,
+              [currentStep.action]: null,
+              ...(currentStep.action === "enter"
+                ? { acceptFirstSuggestion: null }
+                : {}),
+            }
           : current.bindings,
       };
     });
@@ -530,9 +526,11 @@ export function ControllerSetup({
             <h2>
               {page === "check"
                 ? "New controller?"
-                : page === "guide"
-                  ? "Identify each control"
-                  : "Check your controls"}
+                : page === "neutral"
+                  ? "Find the resting state"
+                  : page === "guide"
+                    ? "Identify each control"
+                    : "Check your controls"}
             </h2>
             <p>{pad.id}</p>
           </div>
@@ -547,17 +545,6 @@ export function ControllerSetup({
           )}
         </header>
 
-        <details>
-          <summary>Setup not working?</summary>
-          <p>
-            Download a report after trying the control that fails. It includes
-            controller readings, setup decisions, and browser information.
-            Nothing is uploaded automatically.
-          </p>
-          <button type="button" onClick={downloadReport}>
-            Download setup report
-          </button>
-        </details>
         {page === "neutral" && (
           <div className="controller-setup__prompt" aria-live="polite">
             <h3>Let the controller rest with no buttons pressed.</h3>
@@ -600,13 +587,11 @@ export function ControllerSetup({
           </div>
         )}
         {page === "guide" && (
-          <div
-            className="controller-setup__prompt"
-            key={guideIndex}
-            aria-live="polite"
-          >
-            <span>Do this on your controller</span>
-            <h3>{currentStep.prompt}</h3>
+          <div className="controller-setup__prompt">
+            <div className="controller-setup__prompt-copy" key={guideIndex}>
+              <span>Do this on your controller</span>
+              <h3 aria-live="polite">{currentStep.prompt}</h3>
+            </div>
             <p>
               {feedback
                 ? "Control captured. Moving to the next control..."
@@ -637,7 +622,7 @@ export function ControllerSetup({
           target={page === "guide" ? currentStep.target : null}
           targetComplete={Boolean(feedback)}
           compact
-          instructionOnly={page !== "review"}
+          instructionOnly={page === "guide" || page === "neutral"}
           unmappedSticks={
             page === "guide"
               ? capturedAxes.length < 2
@@ -652,12 +637,18 @@ export function ControllerSetup({
         {page === "check" && (
           <>
             <p>
-              Set up will first measure the controller at rest, then identify
-              each control and verify the stick directions.
+              {newController
+                ? "Try the controller above. This is an unverified mapping; setup will identify each control."
+                : "Move the sticks and press each control. If anything lights up in the wrong place, run setup again."}
             </p>
             <div className="controller-setup__actions">
+              {!newController && (
+                <button type="button" onClick={onClose}>
+                  Keep current mapping
+                </button>
+              )}
               <button type="button" onClick={() => setPage("neutral")}>
-                Set up
+                {newController ? "Set up" : "Redo setup"}
               </button>
             </div>
           </>
@@ -670,8 +661,7 @@ export function ControllerSetup({
               onClick={() => {
                 captureWindow.current = null;
                 if (guideIndex > 0) setGuideIndex(guideIndex - 1);
-                else if (newController) setPage("check");
-                else onClose();
+                else setPage("check");
               }}
             >
               Back
@@ -706,18 +696,15 @@ export function ControllerSetup({
               )}
               {unmatchedDiscovered.length > 0 && (
                 <p className="controller-setup__verification-note" role="alert">
-                  These inputs changed during setup but have no position on the
-                  diagram: {unmatchedDiscovered.join(", ")}. Check them before
-                  saving or redo setup.
+                  Some inputs changed during setup but have no position on the
+                  diagram. Test each control above and redo any that did not
+                  light up correctly.
                 </p>
               )}
               {visualDuplicates.length > 0 && (
                 <p className="controller-setup__verification-note" role="alert">
-                  The same input is shown in more than one position:{" "}
-                  {visualDuplicates
-                    .map((index) => `Button ${index}`)
-                    .join(", ")}
-                  . Redo those controls before saving.
+                  One input is shown in more than one position. Redo those
+                  controls before saving.
                 </p>
               )}
               <div className="controller-setup__actions">
@@ -801,27 +788,6 @@ export function ControllerSetup({
                     .join(", ")}
                 </p>
               )}
-              <details className="controller-setup__inventory">
-                <summary>
-                  All exposed inputs ({pad.axes.length} axes,{" "}
-                  {pad.buttons.length} buttons)
-                </summary>
-                <p>Detected: {discovered.join(", ") || "None yet"}</p>
-                <div className="controller-setup__buttons">
-                  {pad.buttons.map((button, index) => (
-                    <span
-                      key={index}
-                      className={
-                        button.pressed || button.value >= 0.55
-                          ? "is-active"
-                          : ""
-                      }
-                    >
-                      B{index}
-                    </span>
-                  ))}
-                </div>
-              </details>
             </details>
           </>
         )}

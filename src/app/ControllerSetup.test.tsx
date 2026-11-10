@@ -30,6 +30,63 @@ const initial: ControllerProfile = {
 };
 
 describe("guided controller setup", () => {
+  it("shows live controls before remapping an existing controller", () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    const root = createRoot(container);
+    const onClose = vi.fn();
+    const render = (current: GamepadSnapshot) =>
+      act(() =>
+        root.render(
+          <ControllerSetup
+            pad={current}
+            initial={{
+              ...initial,
+              accepted: true,
+              calibrationVersion: 2,
+              axisRest: pad.axes,
+              visualButtons: Array.from({ length: 16 }, (_, index) =>
+                index === 6 ? 23 : index,
+              ),
+            }}
+            newController={false}
+            onSave={() => undefined}
+            onClose={onClose}
+          />,
+        ),
+      );
+    try {
+      render({
+        ...pad,
+        axes: pad.axes.map((value, index) => (index === 2 ? 1 : value)),
+      });
+      expect(container.textContent).toContain(
+        "Move the sticks and press each control",
+      );
+      expect(
+        container.querySelector(".controller-hud__button.is-active"),
+      ).not.toBeNull();
+      render(pad);
+      render({
+        ...pad,
+        buttons: pad.buttons.map((button, index) =>
+          index === 0 ? { pressed: true, value: 1 } : button,
+        ),
+      });
+      expect(
+        container.querySelector(".controller-hud__button.is-active"),
+      ).not.toBeNull();
+      const keep = Array.from(container.querySelectorAll("button")).find(
+        (button) => button.textContent?.includes("Keep current mapping"),
+      );
+      act(() => keep?.click());
+      expect(onClose).toHaveBeenCalledOnce();
+    } finally {
+      act(() => root.unmount());
+      container.remove();
+    }
+  });
+
   it.each(["axes", "buttons", "digital"])(
     "animates each target and saves sticks reported through %s",
     (source) => {
@@ -65,12 +122,12 @@ describe("guided controller setup", () => {
           index === 17 ? { pressed: true, value: 1 } : button,
         ),
       };
-      const holdButton = () => {
+      const holdButton = (heldPad: GamepadSnapshot = buttonPad) => {
         wait(500);
         render(pad);
         for (let i = 0; i < 6; i++) {
           wait(200);
-          render(buttonPad);
+          render(heldPad);
         }
         expect(container.textContent).toContain("Control captured.");
         expect(
@@ -180,14 +237,21 @@ describe("guided controller setup", () => {
         expect(
           container.querySelector(".controller-hud__target"),
         ).not.toBeNull();
+        const prompt = container.querySelector(".controller-setup__prompt");
         render(buttonPad);
+        expect(container.querySelector(".controller-setup__prompt")).toBe(
+          prompt,
+        );
         expect(container.textContent).not.toContain("Control captured.");
-        expect(
-          container.querySelector(".controller-setup__raw-inputs"),
-        ).toBeNull();
         render(pad);
         holdButton();
-        for (let index = 0; index < 3; index++) click("Skip this control");
+        holdButton({
+          ...pad,
+          buttons: pad.buttons.map((button, index) =>
+            index === 0 ? { pressed: true, value: 1 } : button,
+          ),
+        });
+        for (let index = 0; index < 2; index++) click("Skip this control");
 
         expect(container.textContent).toContain("Push the left stick right");
         direction(0, 1);
@@ -212,6 +276,18 @@ describe("guided controller setup", () => {
         expect(
           container.querySelector('[aria-label="Close controller setup"]'),
         ).toBeNull();
+        expect(
+          container.querySelector(".controller-hud__button.is-active"),
+        ).toBeNull();
+        render({
+          ...pad,
+          buttons: pad.buttons.map((button, index) =>
+            index === 0 ? { pressed: true, value: 1 } : button,
+          ),
+        });
+        expect(
+          container.querySelector(".controller-hud__button.is-active"),
+        ).not.toBeNull();
         click("Set up");
         expect(
           container
@@ -223,15 +299,21 @@ describe("guided controller setup", () => {
           "Do the controls look right now?",
         );
         expect(container.textContent).not.toContain(
-          "These inputs changed during setup but have no position",
+          "Some inputs changed during setup but have no position",
         );
         expect(container.querySelector(".controller-hud__target")).toBeNull();
+        render(buttonPad);
+        expect(
+          container.querySelector(".controller-hud__button.is-active"),
+        ).not.toBeNull();
+        render(pad);
         click("Redo setup");
         expect(saved).toHaveLength(0);
         completeGuide();
         click("Good, save controller");
         expect(saved).toHaveLength(1);
-        expect(saved[0].bindings.acceptFirstSuggestion).toBe(17);
+        expect(saved[0].bindings.acceptFirstSuggestion).toBe(0);
+        expect(saved[0].bindings.enter).toBe(0);
         expect(saved[0].visualButtons?.[1]).toBe(17);
         expect(saved[0].visualSignals?.[1]).toEqual([
           "Button 17",

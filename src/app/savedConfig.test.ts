@@ -20,11 +20,23 @@ it("keeps an existing layout when adding the new suggestion binding", () => {
   expect(loadSavedConfig()).toEqual({ layout, bindings: defaultBindings });
 });
 
-it("leaves the new action unassigned if button 1 is already in use", () => {
+it("shares Enter with the first suggestion when older settings have another action on button 1", () => {
   const layout = { left: leftDialConfig, right: rightDialConfig };
   localStorage.setItem(
     "stickshift.config.v1",
     JSON.stringify({ layout, bindings: { ...previousBindings(), space: 1 } }),
   );
-  expect(loadSavedConfig()?.bindings.acceptFirstSuggestion).toBeNull();
+  expect(loadSavedConfig()?.bindings.acceptFirstSuggestion).toBe(0);
+});
+
+it("follows an older custom Enter binding when adding the first-suggestion action", () => {
+  const layout = { left: leftDialConfig, right: rightDialConfig };
+  localStorage.setItem(
+    "stickshift.config.v1",
+    JSON.stringify({
+      layout,
+      bindings: { ...previousBindings(), enter: 17 },
+    }),
+  );
+  expect(loadSavedConfig()?.bindings.acceptFirstSuggestion).toBe(17);
 });

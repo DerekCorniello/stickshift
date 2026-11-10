@@ -329,14 +329,23 @@ export function ConfigPage({
     },
   );
   const warnings = [...layoutWarnings(layout)];
-  const bindingCounts = new Map<number, number>();
-  for (const index of Object.values(bindings))
+  const bindingCounts = new Map<number, ControlAction[]>();
+  for (const action of Object.keys(bindings) as ControlAction[]) {
+    const index = bindings[action];
     if (index !== null)
-      bindingCounts.set(index, (bindingCounts.get(index) ?? 0) + 1);
-  for (const [index, count] of bindingCounts)
-    if (count > 1)
+      bindingCounts.set(index, [...(bindingCounts.get(index) ?? []), action]);
+  }
+  for (const [index, assigned] of bindingCounts)
+    if (
+      assigned.length > 1 &&
+      !(
+        assigned.length === 2 &&
+        assigned.includes("enter") &&
+        assigned.includes("acceptFirstSuggestion")
+      )
+    )
       warnings.push(
-        `${index < 16 ? getControllerButtonName(pad.id, index) : inputName(pad, index)} is assigned to ${count} actions.`,
+        `${index < 16 ? getControllerButtonName(pad.id, index) : inputName(pad, index)} is assigned to ${assigned.length} actions.`,
       );
   const currentWarnings = [...new Set(warnings)].sort();
   return (

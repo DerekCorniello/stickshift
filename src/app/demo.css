@@ -656,14 +656,6 @@
   background: var(--panel-raised);
 }
 .fieldnotes {
-  --bg: #eee9de;
-  --panel: #faf7ef;
-  --panel-raised: #e8e2d5;
-  --ink: #343b30;
-  --muted: #77796a;
-  --line: #d4cebf;
-  --accent: #a74428;
-  --accent-ink: #fff9ed;
   --radius: 3px;
   grid-template-columns: 230px minmax(0, 1fr);
   grid-template-areas: "header header" "nav nav" "sidebar intro" "sidebar workspace" "footer footer";
@@ -1157,13 +1149,11 @@
   padding: 5px 8px;
 }
 .fieldnotes .practice-page__editor-card {
-  height: 118px;
-  overflow: hidden;
+  min-height: 118px;
 }
 .fieldnotes .practice-page__editor {
-  height: 86px;
-  min-height: 0;
-  max-height: none;
+  min-height: 86px;
+  max-height: min(50vh, 520px);
   overflow-y: auto;
 }
 .fieldnotes .controller-component__autocomplete {
@@ -1189,11 +1179,48 @@
 }
 .fieldnotes .typing-test-page__card,
 .fieldnotes .comparison-page__card {
-  height: 232px;
+  height: auto;
+  overflow: visible;
+}
+.fieldnotes .typing-test-page__input,
+.fieldnotes .comparison-page__progress {
+  max-height: min(50vh, 520px);
   overflow-y: auto;
 }
 @media (max-width: 760px) {
   .fieldnotes .controller-dials__card {
     height: calc(var(--dial-size) + 34px);
+  }
+}
+.variant-app.fieldnotes .variant-sidebar {
+  padding: 4px 18px 16px 0;
+}
+.fieldnotes .quick-controls {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+.fieldnotes .quick-controls .quick-control {
+  justify-content: space-between;
+  min-height: 40px;
+  gap: 12px;
+}
+.fieldnotes .quick-control__action {
+  min-width: 0;
+}
+.fieldnotes .quick-controls .gamepad-button-label > span {
+  display: none;
+}
+.variant-app.fieldnotes .sidebar-section + .input-tuning {
+  margin-top: 24px;
+  padding-top: 18px;
+}
+@media (max-width: 760px) {
+  .variant-app.fieldnotes .variant-sidebar {
+    display: block;
+    padding: 16px;
+  }
+  .variant-app.fieldnotes .sidebar-section + .input-tuning {
+    margin-top: 16px;
+    padding-top: 16px;
   }
 }

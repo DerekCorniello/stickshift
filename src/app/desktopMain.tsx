@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { DesktopApp } from "./DesktopApp";
+import "./fieldnotesTheme.css";
 import "./desktop.css";
 
 const root = document.getElementById("root");

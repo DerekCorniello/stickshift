@@ -64,16 +64,14 @@ export function loadSavedConfig(): SavedConfig | null {
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
     if (!record(parsed) || !record(parsed.bindings)) return null;
-    const preferred = defaultBindings.acceptFirstSuggestion;
     const bindings =
       parsed.bindings.acceptFirstSuggestion === undefined
         ? {
             ...parsed.bindings,
             acceptFirstSuggestion:
-              preferred !== null &&
-              Object.values(parsed.bindings).includes(preferred)
-                ? null
-                : preferred,
+              parsed.bindings.enter === undefined
+                ? defaultBindings.enter
+                : parsed.bindings.enter,
           }
         : parsed.bindings;
     const config = { ...parsed, bindings };

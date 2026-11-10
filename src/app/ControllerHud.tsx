@@ -100,12 +100,6 @@ export function ControllerHud({
       className={`controller-hud${compact ? " controller-hud--compact" : ""}`}
       aria-label="Live controller HUD"
     >
-      <div className="controller-hud__caption">
-        <strong>Controller</strong>
-        <span>
-          {instructionOnly ? "Follow the highlighted control" : "Live input"}
-        </span>
-      </div>
       <div className="controller-hud__stage">
         <svg
           viewBox="280 500 1500 1160"
@@ -122,7 +116,7 @@ export function ControllerHud({
               markerHeight="7"
               orient="auto"
             >
-              <path d="M0 0 L10 5 L0 10 Z" fill="#a74428" />
+              <path d="M0 0 L10 5 L0 10 Z" fill="var(--accent)" />
             </marker>
           </defs>
           <image
@@ -228,28 +222,6 @@ export function ControllerHud({
             </g>
           )}
         </svg>
-      </div>
-      <div className="controller-hud__key" aria-label="Controller colors">
-        <span>
-          <i className="is-target" />
-          Next control
-        </span>
-        {!instructionOnly && (
-          <span>
-            <i className="is-active" />
-            Input moving
-          </span>
-        )}
-        <span>
-          <i className="is-done" />
-          Captured
-        </span>
-        {!instructionOnly && (
-          <span>
-            <i className="is-unmapped" />
-            Unmapped input
-          </span>
-        )}
       </div>
     </section>
   );

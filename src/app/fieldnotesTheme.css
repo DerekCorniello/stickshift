@@ -1,0 +1,14 @@
+.variant-app.fieldnotes,
+.desktop-app {
+  --bg: #eee9de;
+  --panel: #faf7ef;
+  --panel-raised: #e8e2d5;
+  --ink: #343b30;
+  --muted: #77796a;
+  --line: #d4cebf;
+  --accent: #a74428;
+  --accent-ink: #fff9ed;
+  --input-active: #715643;
+  --input-captured: #5e826a;
+  --input-unmapped: #c58b3f;
+}

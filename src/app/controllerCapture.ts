@@ -8,14 +8,6 @@ const CIRCLE_MS = 1700;
 const CHANGE = 0.55;
 const STICK_CHANGE = 0.35;
 
-type AxisTravel = {
-  min: number;
-  max: number;
-  firstSign: number;
-  firstAt: number;
-  firstMagnitude: number;
-};
-
 export type CaptureWindow = {
   startedAt: number;
   ready: boolean;
@@ -26,7 +18,6 @@ export type CaptureWindow = {
   candidate: number | null;
   candidateSince: number;
   candidateSamples: number;
-  travel: AxisTravel[];
   motionStartedAt: number | null;
   directionPeak: number;
   stableSince: number;
@@ -50,13 +41,6 @@ export function beginCapture(pad: GamepadSnapshot, now: number): CaptureWindow {
     candidate: null,
     candidateSince: now,
     candidateSamples: 0,
-    travel: pad.axes.map(() => ({
-      min: 0,
-      max: 0,
-      firstSign: 0,
-      firstAt: 0,
-      firstMagnitude: 0,
-    })),
     motionStartedAt: null,
     directionPeak: 0,
     stableSince: now,
@@ -114,13 +98,6 @@ export function sampleButton(
     ? candidate
     : null;
 }
-
-export type CircleResult = Readonly<{
-  xAxis: number;
-  yAxis: number;
-  invertX: boolean;
-  invertY: boolean;
-}>;
 
 export function sampleDirection(
   state: CaptureWindow,
@@ -183,56 +160,6 @@ export function sampleDirection(
     invert: state.directionPeak < 0,
     center: state.baselineAxes[strongest.index] ?? 0,
     range: Math.abs(state.directionPeak),
-  };
-}
-
-export function sampleCircle(
-  state: CaptureWindow,
-  pad: GamepadSnapshot,
-  now: number,
-  excluded: readonly number[] = [],
-): CircleResult | null {
-  if (!settle(state, now)) return null;
-  pad.axes.forEach((value, index) => {
-    if (excluded.includes(index)) return;
-    const delta = value - (state.baselineAxes[index] ?? 0);
-    const travel = state.travel[index];
-    if (!travel) return;
-    travel.min = Math.min(travel.min, delta);
-    travel.max = Math.max(travel.max, delta);
-    if (!travel.firstSign && Math.abs(delta) >= STICK_CHANGE) {
-      travel.firstSign = Math.sign(delta);
-      travel.firstAt = now;
-      travel.firstMagnitude = Math.abs(delta);
-      state.motionStartedAt ??= now;
-    }
-  });
-  if (state.motionStartedAt === null || now - state.motionStartedAt < CIRCLE_MS)
-    return null;
-  const complete = state.travel
-    .map((travel, index) => ({ ...travel, index }))
-    .filter(
-      ({ min, max, index }) =>
-        !excluded.includes(index) &&
-        min <= -STICK_CHANGE &&
-        max >= STICK_CHANGE &&
-        max - min >= 1,
-    )
-    .sort((a, b) => b.max - b.min - (a.max - a.min));
-  if (complete.length < 2) return null;
-  const [first, second] = complete
-    .slice(0, 2)
-    .sort(
-      (a, b) =>
-        a.firstAt - b.firstAt ||
-        b.firstMagnitude - a.firstMagnitude ||
-        a.index - b.index,
-    );
-  return {
-    xAxis: first.index,
-    yAxis: second.index,
-    invertX: first.firstSign < 0,
-    invertY: second.firstSign < 0,
   };
 }
 

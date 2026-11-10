@@ -105,11 +105,22 @@ class InputEngine:
             self.needs_rearm = {"left": False, "right": False}
             return
 
-        buttons = [bool(button["pressed"]) for button in pad["buttons"]]
+        physical_buttons = pad["buttons"]
+        axes = list(pad["axes"])
+        axes.extend(button["value"] * 2 - 1 for button in physical_buttons)
+        axes.extend(1 if button["pressed"] else -1 for button in physical_buttons)
+        buttons = [
+            bool(button["pressed"]) or button["value"] >= 0.5
+            for button in physical_buttons
+        ]
         buttons.extend([False] * max(0, 16 - len(buttons)))
         resting = (self.config or {}).get("axisRest", [])
-        for index, axis in enumerate(pad["axes"]):
-            rest = resting[index] if index < len(resting) else 0
+        for index, axis in enumerate(axes):
+            rest = (
+                resting[index]
+                if index < len(resting)
+                else 0 if index < len(pad["axes"]) else -1
+            )
             negative = (rest - axis) / max(0.01, rest + 1)
             positive = (axis - rest) / max(0.01, 1 - rest)
             buttons.extend((negative > 0.55, positive > 0.55))
@@ -123,6 +134,11 @@ class InputEngine:
             return
 
         bindings = self.config["bindings"]
+        shared_accept = (
+            bindings.get("enter") is not None
+            and bindings.get("enter") == bindings.get("acceptFirstSuggestion")
+        )
+        selection_was_active = self.autocomplete_active
         for action, index in bindings.items():
             if not isinstance(index, int) or index >= len(buttons):
                 continue
@@ -133,21 +149,41 @@ class InputEngine:
                 else False
             )
             if pressed and not was_pressed:
-                self._button_press(action, now)
+                first_suggestion_uses_enter = (
+                    shared_accept
+                    and action == "enter"
+                    and not selection_was_active
+                    and bool(self.suggestions)
+                )
+                selected_suggestion_uses_enter = (
+                    shared_accept
+                    and action == "acceptFirstSuggestion"
+                    and selection_was_active
+                )
+                if not (first_suggestion_uses_enter or selected_suggestion_uses_enter):
+                    self._button_press(action, now)
             if not pressed:
                 self.repeat_after.pop(action, None)
 
-        for action in ("backspace", "space", "enter"):
+        for action in (
+            "backspace", "space", "enter",
+            "cursorUp", "cursorDown", "cursorLeft", "cursorRight",
+        ):
             index = bindings.get(action)
             if isinstance(index, int) and index < len(buttons) and buttons[index]:
                 deadline = self.repeat_after.get(action)
                 if deadline is not None and now >= deadline:
-                    self._write_action(action)
+                    if self.autocomplete_active and action.startswith("cursor"):
+                        self._move_suggestion(
+                            -1 if action in ("cursorUp", "cursorLeft") else 1
+                        )
+                    else:
+                        self._write_action(action)
                     self.repeat_after[action] = now + 0.09
 
         self.previous_buttons = buttons
         for side in ("left", "right"):
-            self._update_stick(side, pad["axes"])
+            self._update_stick(side, axes)
 
     def _button_press(self, action: str, now: float) -> None:
         if action == "autocomplete":
@@ -164,10 +200,12 @@ class InputEngine:
             "cursorUp", "cursorLeft"
         ):
             self._move_suggestion(-1)
+            self.repeat_after[action] = now + 0.4
         elif self.autocomplete_active and action in (
             "cursorDown", "cursorRight"
         ):
             self._move_suggestion(1)
+            self.repeat_after[action] = now + 0.4
         elif self.autocomplete_active and action in ("enter", "submit"):
             self._accept_suggestion()
         elif action in ("previousLayer", "nextLayer"):
@@ -183,7 +221,10 @@ class InputEngine:
                 self.cancelled[side] = True
         else:
             self._write_action(action)
-            if action in ("backspace", "space", "enter"):
+            if action in (
+                "backspace", "space", "enter",
+                "cursorUp", "cursorDown", "cursorLeft", "cursorRight",
+            ):
                 self.repeat_after[action] = now + 0.4
 
     def _write_action(self, action: str) -> None:
@@ -262,14 +303,31 @@ class InputEngine:
 
     def _update_stick(self, side: str, axes: list[float]) -> None:
         mapping = self.config[f"{side}Mapping"]
-        x = axes[mapping["xAxis"]] if mapping["xAxis"] < len(axes) else 0
-        y = axes[mapping["yAxis"]] if mapping["yAxis"] < len(axes) else 0
-        x = (x - mapping.get("centerX", 0)) / max(0.01, mapping.get("rangeX", 1))
-        y = (y - mapping.get("centerY", 0)) / max(0.01, mapping.get("rangeY", 1))
-        if mapping["invertX"]:
-            x = -x
-        if mapping["invertY"]:
-            y = -y
+        if mapping.get("directions"):
+            directions = mapping["directions"]
+
+            def amount(name: str) -> float:
+                binding = directions.get(name)
+                if not binding:
+                    return 0.0
+                index = binding["index"]
+                value = axes[index] if index < len(axes) else binding["center"]
+                delta = value - binding["center"]
+                if binding["invert"]:
+                    delta = -delta
+                return max(0.0, min(1.0, delta / binding["range"]))
+
+            x = amount("right") - amount("left")
+            y = amount("down") - amount("up")
+        else:
+            x = axes[mapping["xAxis"]] if mapping["xAxis"] < len(axes) else 0
+            y = axes[mapping["yAxis"]] if mapping["yAxis"] < len(axes) else 0
+            x = (x - mapping.get("centerX", 0)) / max(0.01, mapping.get("rangeX", 1))
+            y = (y - mapping.get("centerY", 0)) / max(0.01, mapping.get("rangeY", 1))
+            if mapping["invertX"]:
+                x = -x
+            if mapping["invertY"]:
+                y = -y
         magnitude = math.hypot(x, y)
         deadzone = self.config["deadzone"]
         outside = magnitude > deadzone and (

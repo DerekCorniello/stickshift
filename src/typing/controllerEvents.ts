@@ -31,7 +31,7 @@ export const defaultBindings: ButtonBindings = {
   submit: 9,
   close: 8,
   autocomplete: 3,
-  acceptFirstSuggestion: 1,
+  acceptFirstSuggestion: 0,
   cursorUp: 12,
   cursorDown: 13,
   cursorLeft: 14,

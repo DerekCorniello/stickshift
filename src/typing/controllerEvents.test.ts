@@ -179,7 +179,7 @@ describe("controller events", () => {
 
   it.each([
     [0, "enter"],
-    [1, "acceptFirstSuggestion"],
+    [1, null],
     [3, "autocomplete"],
     [4, "backspace"],
     [5, "space"],

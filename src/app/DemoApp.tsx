@@ -22,6 +22,7 @@ import { ControllerSetup } from "./ControllerSetup";
 import { ControllerHud } from "./ControllerHud";
 import { loadProfile, saveProfile, withAxisButtons } from "./controllerSetup";
 import type { ControllerProfile } from "./controllerSetup";
+import "./fieldnotesTheme.css";
 import "./demo.css";
 
 const pages = [
@@ -47,6 +48,16 @@ export function DemoApp() {
   const gamepads = useGamepads();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const connected = Object.values(gamepads);
+  const connectedIndices = connected.map((pad) => pad.index).join(",");
+  const previousIndices = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    const current = new Set(connected.map((pad) => pad.index));
+    const newlyConnected = connected.find(
+      (pad) => !previousIndices.current.has(pad.index),
+    );
+    previousIndices.current = current;
+    if (newlyConnected) setSelectedIndex(newlyConnected.index);
+  }, [connected, connectedIndices]);
   const realPad =
     connected.find((pad) => pad.index === selectedIndex) ?? connected[0];
   const rawPad = realPad ?? disconnectedPad;
@@ -270,26 +281,14 @@ export function DemoApp() {
           )}
         </div>
         <aside className="variant-sidebar" aria-label="Session controls">
-          <section className="sidebar-section sidebar-overview">
-            <div className="sidebar-stats">
-              <div>
-                <strong>
-                  {page === "practice" ? editorState.text.length : "2:00"}
-                </strong>
-                <span>{page === "practice" ? "characters" : "run limit"}</span>
-              </div>
-              <div>
-                <strong>{layout.left.layers.length}</strong>
-                <span>layers</span>
-              </div>
-            </div>
-          </section>
           <section className="sidebar-section sidebar-controls">
             <h3>Controls</h3>
             <div className="quick-controls">
               {actions.slice(0, 4).map((action) => (
                 <div className="quick-control" key={action}>
-                  <span>{actionLabels[action]}</span>
+                  <span className="quick-control__action">
+                    {actionLabels[action]}
+                  </span>
                   {bindings[action] !== null && (
                     <GamepadButtonLabel
                       pad={pad}

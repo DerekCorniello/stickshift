@@ -70,6 +70,26 @@ describe("demo interface", () => {
       container.querySelector('[aria-label="Controller writing area"]'),
     ).not.toBeNull();
     expect(container.querySelector(".variant-switcher")).toBeNull();
+    expect(container.querySelector(".sidebar-stats")).toBeNull();
+    expect(container.querySelector(".controller-hud__caption")).toBeNull();
+    expect(container.querySelector(".controller-hud__key")).toBeNull();
+    expect(container.querySelector(".quick-control__action")?.textContent).toBe(
+      "Space",
+    );
+  });
+  it("selects a controller that connects after another one", async () => {
+    gamepadState.pads = { 0: basePad };
+    await render();
+    gamepadState.pads = {
+      0: basePad,
+      2: { ...basePad, id: "New controller", index: 2 },
+    };
+    await render();
+    expect(
+      container.querySelector<HTMLSelectElement>(
+        'select[aria-label="Controller"]',
+      )?.value,
+    ).toBe("2");
   });
   it("does not treat keyboard input as controller input", async () => {
     await render();

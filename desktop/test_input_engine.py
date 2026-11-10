@@ -74,6 +74,59 @@ class InputEngineTests(unittest.TestCase):
         self.engine.process(resting, 0.2)
         self.assertEqual(self.keyboard.keys, ["t"])
 
+    def test_learned_stick_directions_use_analog_button_channels(self):
+        settings = config()
+        directions = {
+            "right": {"index": 10, "center": 0, "range": 1, "invert": False},
+            "left": {"index": 10, "center": 0, "range": 1, "invert": True},
+            "up": {"index": 11, "center": 0, "range": 1, "invert": True},
+            "down": {"index": 11, "center": 0, "range": 1, "invert": False},
+        }
+        settings["rightMapping"]["directions"] = directions
+        settings["bindings"]["nextLayer"] = None
+        settings["axisRest"] = [0] * 4 + [-1] * 6 + [0, 0] + [-1] * 4 + [-1] * 16
+        self.engine.configure(settings)
+
+        resting = pad()
+        resting["buttons"][6] = {"pressed": True, "value": 0.5}
+        resting["buttons"][7] = {"pressed": True, "value": 0.5}
+        up = {**resting, "buttons": [button.copy() for button in resting["buttons"]]}
+        up["buttons"][7] = {"pressed": False, "value": 0}
+        self.engine.process(resting, 0)
+        self.engine.process(up, 0.1)
+        self.engine.process(resting, 0.2)
+        self.assertEqual(self.keyboard.keys, ["t"])
+
+    def test_learned_stick_directions_use_four_separate_digital_buttons(self):
+        settings = config()
+        settings["rightMapping"]["directions"] = {
+            name: {
+                "index": 30 + offset,
+                "center": -1,
+                "range": 2,
+                "invert": False,
+            }
+            for offset, name in enumerate(("right", "left", "up", "down"))
+        }
+        self.engine.configure(settings)
+        self.engine.process(pad(), 0)
+        self.engine.process(pad(pressed=(12,)), 0.1)
+        self.engine.process(pad(), 0.2)
+        self.assertEqual(self.keyboard.keys, ["t"])
+
+    def test_axis_backed_action_uses_learned_analog_button_rest(self):
+        settings = config()
+        settings["bindings"]["space"] = 36
+        settings["axisRest"] = [0] * 4 + [-1] * 6 + [0] + [-1] * 5 + [-1] * 16
+        self.engine.configure(settings)
+        resting = pad()
+        resting["buttons"][6] = {"pressed": True, "value": 0.5}
+        moved = {**resting, "buttons": [button.copy() for button in resting["buttons"]]}
+        moved["buttons"][6] = {"pressed": False, "value": 0}
+        self.engine.process(resting, 0)
+        self.engine.process(moved, 0.1)
+        self.assertEqual(self.keyboard.keys, [" "])
+
     def test_stick_click_cancels_only_that_stick(self):
         self.engine.process(pad(), 0)
         self.engine.process(pad(left_y=-1, right_y=-1), 0.1)
@@ -155,6 +208,45 @@ class InputEngineTests(unittest.TestCase):
             ["BACKSPACE", "BACKSPACE", "t", "h", "e", "r", "e", " "],
         )
         self.assertFalse(self.engine.autocomplete_active)
+
+    def test_enter_and_first_suggestion_share_a_button(self):
+        settings = config()
+        settings["bindings"].update({"enter": 0, "acceptFirstSuggestion": 0})
+        self.engine.configure(settings)
+        self.engine.word_buffer = "th"
+        self.engine.suggestions = ["there", "then"]
+        self.engine.process(pad(pressed=(0,)), 0.1)
+        self.assertEqual(
+            self.keyboard.keys,
+            ["BACKSPACE", "BACKSPACE", "t", "h", "e", "r", "e", " "],
+        )
+
+        self.engine.process(pad(), 0.2)
+        self.engine.word_buffer = "th"
+        self.engine.suggestions = ["there", "then"]
+        self.engine.autocomplete_active = True
+        self.engine.selected_suggestion = 1
+        self.keyboard.keys.clear()
+        self.engine.process(pad(pressed=(0,)), 0.3)
+        self.assertEqual(
+            self.keyboard.keys,
+            ["BACKSPACE", "BACKSPACE", "t", "h", "e", "n", " "],
+        )
+
+    def test_dpad_repeats_after_delay_and_stops_when_released(self):
+        settings = config()
+        settings["bindings"]["cursorLeft"] = 14
+        self.engine.configure(settings)
+        self.engine.process(pad(pressed=(14,)), 0)
+        self.assertEqual(self.keyboard.keys, ["LEFT"])
+        self.engine.process(pad(pressed=(14,)), 0.39)
+        self.assertEqual(self.keyboard.keys, ["LEFT"])
+        self.engine.process(pad(pressed=(14,)), 0.4)
+        self.engine.process(pad(pressed=(14,)), 0.5)
+        self.assertEqual(self.keyboard.keys, ["LEFT", "LEFT", "LEFT"])
+        self.engine.process(pad(), 0.6)
+        self.engine.process(pad(), 1.0)
+        self.assertEqual(self.keyboard.keys, ["LEFT", "LEFT", "LEFT"])
 
     @unittest.skipUnless(sys.platform == "linux", "Linux evdev test")
     def test_ascii_mapping(self):

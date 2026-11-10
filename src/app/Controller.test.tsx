@@ -3,7 +3,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Controller } from "./Controller";
-import type { GamepadSnapshot } from "../typing";
+import { defaultBindings, type GamepadSnapshot } from "../typing";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -109,7 +109,7 @@ describe("combined controller", () => {
     );
   });
 
-  it("accepts the first suggestion with the right face button without entering selection mode", async () => {
+  it("uses the selected-suggestion button to accept the first suggestion outside selection mode", async () => {
     const onValueChange = vi.fn();
     const onActionInput = vi.fn();
     const render = (pad: GamepadSnapshot) =>
@@ -128,13 +128,43 @@ describe("combined controller", () => {
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
     });
-    render(pressed(1));
+    expect(defaultBindings.enter).toBe(defaultBindings.acceptFirstSuggestion);
+    render(pressed(0));
     expect(onValueChange).toHaveBeenCalledExactlyOnceWith("there ");
     expect(container.querySelector('[aria-selected="true"]')).toBeNull();
     expect(document.activeElement).not.toBe(
       container.querySelector<HTMLInputElement>("#word-autocomplete"),
     );
     expect(onActionInput).not.toHaveBeenCalled();
+  });
+
+  it("repeats a held D-pad direction and stops on release", () => {
+    vi.useFakeTimers();
+    const onActionInput = vi.fn();
+    const render = (pad: GamepadSnapshot) =>
+      act(() =>
+        root.render(
+          <Controller
+            pad={pad}
+            value=""
+            autocompleteEnabled={false}
+            onValueChange={() => undefined}
+            onCharacterInput={() => undefined}
+            onActionInput={onActionInput}
+          />,
+        ),
+      );
+    render(base);
+    render(pressed(12));
+    expect(onActionInput).toHaveBeenCalledExactlyOnceWith("cursorUp");
+    act(() => vi.advanceTimersByTime(399));
+    expect(onActionInput).toHaveBeenCalledTimes(1);
+    act(() => vi.advanceTimersByTime(181));
+    expect(onActionInput.mock.calls.length).toBeGreaterThanOrEqual(3);
+    render(base);
+    const count = onActionInput.mock.calls.length;
+    act(() => vi.advanceTimersByTime(600));
+    expect(onActionInput).toHaveBeenCalledTimes(count);
   });
 
   it("types stick characters while autocomplete selection stays active", async () => {

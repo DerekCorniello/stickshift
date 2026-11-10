@@ -97,7 +97,13 @@ export function Controller({
   );
   useButtonRepeat(
     buttonHeld("enter"),
-    !autocompleteActive && !suppressEnterRepeat,
+    !autocompleteActive &&
+      !suppressEnterRepeat &&
+      !(
+        autocompleteEnabled &&
+        actionBindings.enter === actionBindings.acceptFirstSuggestion &&
+        suggestions.length > 0
+      ),
     () => onActionInput("enter"),
   );
   useButtonRepeat(buttonHeld("space"), true, () => onActionInput("space"));
@@ -143,7 +149,14 @@ export function Controller({
       setSuppressEnterRepeat(false);
     }
     if (event.kind === "button" && event.phase === "press") {
-      if (event.action === "acceptFirstSuggestion" && autocompleteEnabled) {
+      if (
+        autocompleteEnabled &&
+        !autocompleteActive &&
+        suggestions.length > 0 &&
+        (event.action === "acceptFirstSuggestion" ||
+          (event.action === "enter" &&
+            actionBindings.enter === actionBindings.acceptFirstSuggestion))
+      ) {
         const firstSuggestion = suggestions[0];
         if (firstSuggestion) selectSuggestion(firstSuggestion);
       } else if (event.action === "autocomplete" && autocompleteEnabled) {
@@ -184,6 +197,14 @@ export function Controller({
       return;
     }
     if (action === "acceptFirstSuggestion") return;
+    if (
+      action === "enter" &&
+      autocompleteEnabled &&
+      !autocompleteActive &&
+      suggestions.length > 0 &&
+      actionBindings.enter === actionBindings.acceptFirstSuggestion
+    )
+      return;
     onActionInput(action);
   };
 
@@ -206,9 +227,9 @@ export function Controller({
       )}
       {autocompleteActive && autocompleteEnabled && (
         <p className="controller-component__mode" role="status">
-          Keep typing with the sticks. Use the D-pad to choose a suggestion, B
-          to accept it, the right face button to accept the first, or X to close
-          selection.
+          Keep typing with the sticks. Use the D-pad to choose a suggestion,
+          then press the bottom face button to accept it. The same button
+          accepts the first suggestion when selection is closed.
         </p>
       )}
       <div
