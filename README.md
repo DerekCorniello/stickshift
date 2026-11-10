@@ -60,4 +60,6 @@ If the page still says **Connect a controller**, press a button on the connected
 
 Run `npm run check` for type checking, linting, formatting, tests, and both production builds. The builds place minified JavaScript and CSS in `dist/` and `dist-desktop/`.
 
+GitHub Actions runs these checks and the desktop Python tests on pull requests before a change can deploy to GitHub Pages.
+
 The controller wireframe is adapted from a [CC0 diagram by TheHoodieGuy02](https://opengameart.org/content/8th-gen-console-vector-gamepad-collection). See [asset attribution](public/assets/img/gamepads/ATTRIBUTION.md).
