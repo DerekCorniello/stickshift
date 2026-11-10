@@ -2,6 +2,8 @@
 
 StickShift lets you type with a controller. Each stick points at a character on its own dial; releasing the stick enters that character. The web app has a practice area, timed tests, controller setup, and diagnostics. The desktop app can send typed characters to other programs.
 
+![StickShift preview](public/preview.jpg)
+
 ## Start the web app
 
 From the project directory:

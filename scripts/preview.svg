@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#eee9de"/>
+  <rect x="661" width="539" height="630" fill="#faf7ef"/>
+  <rect x="0" width="12" height="630" fill="#a74428"/>
+  <path d="M68 91H1132" stroke="#d4cebf" stroke-width="2"/>
+  <g transform="translate(76 49)" fill="none" stroke="#a74428" stroke-width="7">
+    <circle cx="0" cy="0" r="17"/>
+    <path d="M15 -14A18 18 0 0 1 15 14"/>
+  </g>
+  <text x="111" y="60" fill="#343b30" font-family="Georgia,serif" font-size="32">StickShift</text>
+  <text x="69" y="178" fill="#a74428" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="4">CONTROLLER TYPING</text>
+  <text x="67" y="286" fill="#343b30" font-family="Georgia,serif" font-size="91">Type with</text>
+  <text x="67" y="383" fill="#343b30" font-family="Georgia,serif" font-size="91">your controller.</text>
+  <path d="M69 421H567" stroke="#a74428" stroke-width="7"/>
+  <text x="70" y="529" fill="#666a5c" font-family="Arial,sans-serif" font-size="25">Two sticks. A full keyboard.</text>
+  <path d="M788.75 297.37 L769.85 220.66 A126 126 0 0 1 830.15 220.66 L811.25 297.37 A47 47 0 0 0 788.75 297.37 Z" fill="#a74428" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M811.25 297.37 L830.15 220.66 A126 126 0 0 1 883.55 248.69 L831.17 307.82 A47 47 0 0 0 811.25 297.37 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M831.17 307.82 L883.55 248.69 A126 126 0 0 1 917.81 298.32 L843.95 326.33 A47 47 0 0 0 831.17 307.82 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M843.95 326.33 L917.81 298.32 A126 126 0 0 1 925.08 358.19 L846.66 348.67 A47 47 0 0 0 843.95 326.33 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M846.66 348.67 L925.08 358.19 A126 126 0 0 1 903.70 414.58 L838.68 369.70 A47 47 0 0 0 846.66 348.67 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M838.68 369.70 L903.70 414.58 A126 126 0 0 1 858.56 454.57 L821.84 384.62 A47 47 0 0 0 838.68 369.70 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M821.84 384.62 L858.56 454.57 A126 126 0 0 1 800.00 469.00 L800.00 390.00 A47 47 0 0 0 821.84 384.62 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M800.00 390.00 L800.00 469.00 A126 126 0 0 1 741.44 454.57 L778.16 384.62 A47 47 0 0 0 800.00 390.00 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M778.16 384.62 L741.44 454.57 A126 126 0 0 1 696.30 414.58 L761.32 369.70 A47 47 0 0 0 778.16 384.62 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M761.32 369.70 L696.30 414.58 A126 126 0 0 1 674.92 358.19 L753.34 348.67 A47 47 0 0 0 761.32 369.70 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M753.34 348.67 L674.92 358.19 A126 126 0 0 1 682.19 298.32 L756.05 326.33 A47 47 0 0 0 753.34 348.67 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M756.05 326.33 L682.19 298.32 A126 126 0 0 1 716.45 248.69 L768.83 307.82 A47 47 0 0 0 756.05 326.33 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M768.83 307.82 L716.45 248.69 A126 126 0 0 1 769.85 220.66 L788.75 297.37 A47 47 0 0 0 768.83 307.82 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <circle cx="800" cy="343" r="40" fill="#faf7ef" stroke="#d4cebf" stroke-width="2"/>
+  <circle cx="800" cy="343" r="12" fill="#a74428"/>
+  <text x="800" y="260" text-anchor="middle" font-family="Georgia,serif" font-size="30" fill="#fff9ed">E</text>
+  <path d="M1041.75 297.37 L1022.85 220.66 A126 126 0 0 1 1083.15 220.66 L1064.25 297.37 A47 47 0 0 0 1041.75 297.37 Z" fill="#a74428" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1064.25 297.37 L1083.15 220.66 A126 126 0 0 1 1136.55 248.69 L1084.17 307.82 A47 47 0 0 0 1064.25 297.37 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1084.17 307.82 L1136.55 248.69 A126 126 0 0 1 1170.81 298.32 L1096.95 326.33 A47 47 0 0 0 1084.17 307.82 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1096.95 326.33 L1170.81 298.32 A126 126 0 0 1 1178.08 358.19 L1099.66 348.67 A47 47 0 0 0 1096.95 326.33 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1099.66 348.67 L1178.08 358.19 A126 126 0 0 1 1156.70 414.58 L1091.68 369.70 A47 47 0 0 0 1099.66 348.67 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1091.68 369.70 L1156.70 414.58 A126 126 0 0 1 1111.56 454.57 L1074.84 384.62 A47 47 0 0 0 1091.68 369.70 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1074.84 384.62 L1111.56 454.57 A126 126 0 0 1 1053.00 469.00 L1053.00 390.00 A47 47 0 0 0 1074.84 384.62 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1053.00 390.00 L1053.00 469.00 A126 126 0 0 1 994.44 454.57 L1031.16 384.62 A47 47 0 0 0 1053.00 390.00 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1031.16 384.62 L994.44 454.57 A126 126 0 0 1 949.30 414.58 L1014.32 369.70 A47 47 0 0 0 1031.16 384.62 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1014.32 369.70 L949.30 414.58 A126 126 0 0 1 927.92 358.19 L1006.34 348.67 A47 47 0 0 0 1014.32 369.70 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1006.34 348.67 L927.92 358.19 A126 126 0 0 1 935.19 298.32 L1009.05 326.33 A47 47 0 0 0 1006.34 348.67 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1009.05 326.33 L935.19 298.32 A126 126 0 0 1 969.45 248.69 L1021.83 307.82 A47 47 0 0 0 1009.05 326.33 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <path d="M1021.83 307.82 L969.45 248.69 A126 126 0 0 1 1022.85 220.66 L1041.75 297.37 A47 47 0 0 0 1021.83 307.82 Z" fill="#e8e2d5" stroke="#faf7ef" stroke-width="3"/>
+  <circle cx="1053" cy="343" r="40" fill="#faf7ef" stroke="#d4cebf" stroke-width="2"/>
+  <circle cx="1053" cy="343" r="12" fill="#a74428"/>
+  <text x="1053" y="260" text-anchor="middle" font-family="Georgia,serif" font-size="30" fill="#fff9ed">T</text>
+  <text x="800" y="512" text-anchor="middle" fill="#77796a" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">LEFT</text>
+  <text x="1053" y="512" text-anchor="middle" fill="#77796a" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">RIGHT</text>
+</svg>
