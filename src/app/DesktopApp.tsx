@@ -7,6 +7,9 @@ import { loadSavedConfig, saveConfig } from "./savedConfig";
 import { ConfigPage } from "./ConfigPage";
 import { ControllerSetup } from "./ControllerSetup";
 import { ControllerHud } from "./ControllerHud";
+import { ThemePicker } from "./ThemePicker";
+import { loadTheme, saveTheme } from "./themes";
+import type { ThemeId } from "./themes";
 import {
   isControllerProfile,
   loadProfile,
@@ -81,6 +84,11 @@ function useDesktopPad() {
 }
 
 export function DesktopApp() {
+  const [theme, setTheme] = useState(loadTheme);
+  const changeTheme = (next: ThemeId) => {
+    setTheme(next);
+    saveTheme(next);
+  };
   const {
     pad: connectedPad,
     keyboardError,
@@ -201,7 +209,7 @@ export function DesktopApp() {
   ]);
 
   return (
-    <div className="desktop-app">
+    <div className="desktop-app" data-theme={theme}>
       <header className="desktop-header">
         <div>
           <div className="desktop-brand">StickShift</div>
@@ -222,6 +230,7 @@ export function DesktopApp() {
           >
             Config
           </button>
+          <ThemePicker theme={theme} onChange={changeTheme} />
         </nav>
       </header>
       {page === "dials" && (

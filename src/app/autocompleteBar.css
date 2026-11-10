@@ -3,8 +3,8 @@
   max-width: 520px;
   margin: 24px auto;
   padding: 20px;
-  color: #17243a;
-  background: #f5f7fb;
+  color: var(--ink);
+  background: var(--panel-raised);
   border-radius: 12px;
   font-family: system-ui, sans-serif;
 }
@@ -19,14 +19,16 @@
   width: 100%;
   box-sizing: border-box;
   padding: 10px 12px;
-  border: 1px solid #cbd5e5;
+  border: 1px solid var(--line);
   border-radius: 8px;
+  color: var(--ink);
+  background: var(--panel);
   font: inherit;
 }
 
 .autocomplete__input:focus-visible,
 .autocomplete__suggestions button:focus-visible {
-  outline: 3px solid #8ba5e5;
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -42,9 +44,9 @@
   flex: 1 0 auto;
   min-width: 88px;
   padding: 8px 12px;
-  border: 1px solid #cbd5e5;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: white;
+  background: var(--panel);
   color: inherit;
   cursor: pointer;
   font: inherit;
@@ -52,16 +54,16 @@
 }
 
 .autocomplete__suggestions button:hover {
-  border-color: #355ec2;
-  background: #e7edfb;
+  border-color: var(--accent);
+  background: var(--panel-raised);
 }
 
 .autocomplete__suggestions button[aria-selected="true"] {
-  border-color: #355ec2;
-  color: white;
-  background: #355ec2;
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent);
 }
 
 .autocomplete__message {
-  color: #53627b;
+  color: var(--muted);
 }

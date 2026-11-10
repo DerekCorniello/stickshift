@@ -4,38 +4,38 @@
   gap: 18px;
 }
 .config-page__dial-mappings {
-  border: 1px solid #dce3ee;
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: white;
+  background: var(--panel);
   overflow: hidden;
 }
 .config-page__dial-mappings--active {
-  border-color: #355ec2;
-  box-shadow: 0 0 0 3px #dfe8ff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .config-page__dial-mappings > .config-panel {
   margin: 0;
   border: 0;
   border-radius: 0;
-  border-bottom: 1px solid #dce3ee;
+  border-bottom: 1px solid var(--line);
 }
 .config-panel {
   padding: 20px;
   margin-bottom: 18px;
-  border: 1px solid #dce3ee;
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: white;
+  background: var(--panel);
 }
 .config-panel--active {
-  border-color: #355ec2;
-  box-shadow: 0 0 0 3px #dfe8ff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .config-panel h2 {
   margin: 0 0 10px;
   font-size: 19px;
 }
 .config-panel p {
-  color: #53627b;
+  color: var(--muted);
   line-height: 1.5;
 }
 .config-page__layers {
@@ -65,18 +65,18 @@
 .config-page__layer-actions button {
   min-height: 42px;
   padding: 9px 14px;
-  border: 1px solid #cbd5e5;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #24324a;
-  background: white;
+  color: var(--ink);
+  background: var(--panel);
   font: inherit;
   font-weight: 650;
   cursor: pointer;
 }
 .config-page__tabs button[aria-pressed="true"] {
-  border-color: #355ec2;
-  color: white;
-  background: #355ec2;
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent);
 }
 .config-page__tabs .config-page__reset {
   margin-left: auto;
@@ -97,11 +97,11 @@
 .config-row--selected,
 .config-keyboard__selected,
 .config-confirm__selected {
-  background: #355ec2 !important;
-  color: white !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
 }
 .config-row--selected button {
-  color: white;
+  color: var(--accent-ink);
 }
 .config-page__dials {
   display: grid;
@@ -110,11 +110,11 @@
 }
 .config-page__dial {
   padding: 10px;
-  border: 1px solid #dce3ee;
+  border: 1px solid var(--line);
   border-radius: 10px;
 }
 .config-page__dial--active {
-  border-color: #355ec2;
+  border-color: var(--accent);
 }
 .config-page__dial h3 {
   margin: 0;
@@ -135,18 +135,18 @@
   transition: transform 180ms ease-out;
 }
 .config-page .dial-wedge--duplicate .dial-slice__wedge {
-  fill: #c93642;
-  stroke: #941f2a;
+  fill: var(--danger);
+  stroke: color-mix(in srgb, var(--danger) 80%, var(--ink));
 }
 .config-page .dial-slice--duplicate .dial-slice__label {
-  fill: white;
+  fill: var(--accent-ink);
 }
 .config-page .dial-wedge--unassigned .dial-slice__wedge {
-  fill: #c88418;
-  stroke: #87540b;
+  fill: var(--warning);
+  stroke: color-mix(in srgb, var(--warning) 80%, var(--ink));
 }
 .config-page .dial-slice--unassigned .dial-slice__label {
-  fill: white;
+  fill: var(--accent-ink);
 }
 .config-page__slice-actions {
   display: grid;
@@ -157,16 +157,16 @@
 .config-page__slice-actions button {
   min-height: 42px;
   padding: 9px 14px;
-  border: 1px solid #cbd5e5;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #24324a;
-  background: white;
+  color: var(--ink);
+  background: var(--panel);
   font: inherit;
   font-weight: 650;
   cursor: pointer;
 }
 .config-warning--duplicate {
-  color: #b42332;
+  color: var(--danger);
   font-weight: 700;
 }
 .config-panel table {
@@ -176,7 +176,7 @@
 .config-panel th,
 .config-panel td {
   padding: 8px;
-  border-bottom: 1px solid #dce3ee;
+  border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
 }
@@ -186,10 +186,10 @@
   inset: 10% max(5%, calc((100% - 650px) / 2));
   padding: 24px;
   overflow: auto;
-  border: 2px solid #355ec2;
+  border: 2px solid var(--accent);
   border-radius: 16px;
-  background: white;
-  box-shadow: 0 20px 80px #17243a66;
+  background: var(--panel);
+  box-shadow: 0 20px 80px color-mix(in srgb, var(--ink) 40%, transparent);
 }
 .config-keyboard {
   display: grid;
@@ -208,9 +208,9 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: white;
-  background: #355ec2;
-  box-shadow: 0 8px 16px #17243a55;
+  color: var(--accent-ink);
+  background: var(--accent);
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--ink) 33%, transparent);
   transform: translateX(-50%) scale(1.15);
   transition:
     left 160ms ease,
@@ -228,8 +228,8 @@
 .config-remap-preview span:first-child {
   padding: 12px 18px;
   border-radius: 12px;
-  color: white;
-  background: #355ec2;
+  color: var(--accent-ink);
+  background: var(--accent);
   box-shadow: none;
 }
 .config-overlay--move {
@@ -239,9 +239,9 @@
 .config-keyboard button,
 .config-confirm button {
   min-height: 40px;
-  border: 1px solid #cbd5e5;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: white;
+  background: var(--panel);
   cursor: pointer;
 }
 .config-confirm {

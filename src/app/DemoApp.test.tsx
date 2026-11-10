@@ -77,6 +77,23 @@ describe("demo interface", () => {
       "Space",
     );
   });
+  it("changes the theme and remembers the selection", async () => {
+    await render();
+    const select = container.querySelector<HTMLSelectElement>(
+      'select[aria-label="Theme"]',
+    )!;
+    expect(select.options).toHaveLength(8);
+    await act(async () => {
+      select.value = "playstation-dark";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(
+      container.querySelector(".variant-app")?.getAttribute("data-theme"),
+    ).toBe("playstation-dark");
+    expect(localStorage.getItem("stickshift.theme.v1")).toBe(
+      "playstation-dark",
+    );
+  });
   it("selects a controller that connects after another one", async () => {
     gamepadState.pads = { 0: basePad };
     await render();

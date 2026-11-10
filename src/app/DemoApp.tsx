@@ -20,6 +20,9 @@ import { InputSettingsContext } from "./inputSettings";
 import { useInputPreferences } from "./useInputPreferences";
 import { ControllerSetup } from "./ControllerSetup";
 import { ControllerHud } from "./ControllerHud";
+import { ThemePicker } from "./ThemePicker";
+import { loadTheme, saveTheme } from "./themes";
+import type { ThemeId } from "./themes";
 import { loadProfile, saveProfile, withAxisButtons } from "./controllerSetup";
 import type { ControllerProfile } from "./controllerSetup";
 import "./fieldnotesTheme.css";
@@ -45,6 +48,11 @@ const initialPage = (): Page =>
   pages.find((page) => page.id === location.hash.slice(1))?.id ?? "practice";
 
 export function DemoApp() {
+  const [theme, setTheme] = useState(loadTheme);
+  const changeTheme = (next: ThemeId) => {
+    setTheme(next);
+    saveTheme(next);
+  };
   const gamepads = useGamepads();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const connected = Object.values(gamepads);
@@ -190,11 +198,12 @@ export function DemoApp() {
 
   return (
     <InputSettingsContext.Provider value={{ deadzone }}>
-      <div className="variant-app fieldnotes">
+      <div className="variant-app fieldnotes" data-theme={theme}>
         <header className="variant-header">
           <a className="variant-brand" href="/">
             <span aria-hidden="true">((s))</span> StickShift
           </a>
+          <ThemePicker theme={theme} onChange={changeTheme} />
           <div className="variant-status">
             {realPad ? (
               <>

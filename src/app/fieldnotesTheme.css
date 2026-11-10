@@ -1,14 +1,168 @@
 .variant-app.fieldnotes,
 .desktop-app {
+  color-scheme: light;
   --bg: #eee9de;
   --panel: #faf7ef;
   --panel-raised: #e8e2d5;
   --ink: #343b30;
-  --muted: #77796a;
+  --muted: #666a5c;
   --line: #d4cebf;
   --accent: #a74428;
   --accent-ink: #fff9ed;
   --input-active: #715643;
   --input-captured: #5e826a;
   --input-unmapped: #c58b3f;
+  --danger: #aa3838;
+  --warning: #98631f;
+}
+
+.variant-app.fieldnotes[data-theme="stickshift-dark"],
+.desktop-app[data-theme="stickshift-dark"] {
+  color-scheme: dark;
+  --bg: #181d19;
+  --panel: #232b24;
+  --panel-raised: #2d382e;
+  --ink: #eee9de;
+  --muted: #aeb7a8;
+  --line: #465246;
+  --accent: #d48a68;
+  --accent-ink: #211912;
+  --input-active: #e0ad83;
+  --input-captured: #8bb99a;
+  --input-unmapped: #ddb16a;
+  --danger: #f0877e;
+  --warning: #e2ac62;
+}
+
+.variant-app.fieldnotes[data-theme="xbox-light"],
+.desktop-app[data-theme="xbox-light"] {
+  --bg: #edf3eb;
+  --panel: #fafcf8;
+  --panel-raised: #dfeadc;
+  --ink: #243b2b;
+  --muted: #586b5b;
+  --line: #c3d4c4;
+  --accent: #267a40;
+  --accent-ink: #fff;
+  --input-active: #3d8e55;
+  --input-captured: #268c74;
+  --input-unmapped: #b27830;
+  --danger: #b94140;
+  --warning: #a4671f;
+}
+
+.variant-app.fieldnotes[data-theme="xbox-dark"],
+.desktop-app[data-theme="xbox-dark"] {
+  color-scheme: dark;
+  --bg: #111d16;
+  --panel: #1c2a20;
+  --panel-raised: #27382c;
+  --ink: #edf6eb;
+  --muted: #acc7ae;
+  --line: #3b5340;
+  --accent: #73d18b;
+  --accent-ink: #102115;
+  --input-active: #9ce4ab;
+  --input-captured: #74c6aa;
+  --input-unmapped: #e8b96e;
+  --danger: #ef908b;
+  --warning: #e6bc72;
+}
+
+.variant-app.fieldnotes[data-theme="playstation-light"],
+.desktop-app[data-theme="playstation-light"] {
+  --bg: #eef1f8;
+  --panel: #fbfcff;
+  --panel-raised: #e2e8f3;
+  --ink: #24314c;
+  --muted: #5c6b85;
+  --line: #c7d1e4;
+  --accent: #315cb6;
+  --accent-ink: #fff;
+  --input-active: #4d73c5;
+  --input-captured: #4f918a;
+  --input-unmapped: #b98035;
+  --danger: #bf4950;
+  --warning: #a36b24;
+}
+
+.variant-app.fieldnotes[data-theme="playstation-dark"],
+.desktop-app[data-theme="playstation-dark"] {
+  color-scheme: dark;
+  --bg: #121925;
+  --panel: #1e283a;
+  --panel-raised: #28364d;
+  --ink: #eef3ff;
+  --muted: #aebbd0;
+  --line: #42536e;
+  --accent: #8badfb;
+  --accent-ink: #111b30;
+  --input-active: #b3c9ff;
+  --input-captured: #8dc8c0;
+  --input-unmapped: #e6b977;
+  --danger: #f28c95;
+  --warning: #e6ba73;
+}
+
+.variant-app.fieldnotes[data-theme="switch-light"],
+.desktop-app[data-theme="switch-light"] {
+  --bg: #f7f1ef;
+  --panel: #fffaf7;
+  --panel-raised: #eee2df;
+  --ink: #3d2b2a;
+  --muted: #74615f;
+  --line: #dfc9c4;
+  --accent: #b7443f;
+  --accent-ink: #fff;
+  --input-active: #c75b51;
+  --input-captured: #368d9c;
+  --input-unmapped: #b47a39;
+  --danger: #b53643;
+  --warning: #99611f;
+}
+
+.variant-app.fieldnotes[data-theme="switch-dark"],
+.desktop-app[data-theme="switch-dark"] {
+  color-scheme: dark;
+  --bg: #241e20;
+  --panel: #30272a;
+  --panel-raised: #413337;
+  --ink: #f8ece8;
+  --muted: #c9b0ae;
+  --line: #5d464b;
+  --accent: #fa7d70;
+  --accent-ink: #27191b;
+  --input-active: #f99a88;
+  --input-captured: #74c1cf;
+  --input-unmapped: #eabc80;
+  --danger: #f4939b;
+  --warning: #e6b374;
+}
+
+.theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.theme-picker select {
+  max-width: 190px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--panel);
+  font: inherit;
+}
+
+.theme-picker select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.variant-app.fieldnotes[data-theme$="-dark"] .controller-hud__art,
+.desktop-app[data-theme$="-dark"] .controller-hud__art {
+  filter: brightness(1.6);
 }

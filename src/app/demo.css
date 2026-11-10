@@ -1,12 +1,4 @@
 .variant-app {
-  --bg: #101d25;
-  --panel: #182a34;
-  --panel-raised: #1e333e;
-  --ink: #edf6f5;
-  --muted: #a1b8c0;
-  --line: #304650;
-  --accent: #9cf3d0;
-  --accent-ink: #102c25;
   --radius: 14px;
   --dial-size: clamp(152px, 26vh, 224px);
   min-height: 100dvh;
@@ -401,10 +393,10 @@
 }
 .variant-app .dial-layer__stick-line,
 .variant-app .dial-layer__stick-dot {
-  stroke: #f97316;
+  stroke: var(--accent);
 }
 .variant-app .dial-layer__stick-dot {
-  fill: #f97316;
+  fill: var(--accent);
 }
 .variant-app .controller-dials__card .dial-layer__hub {
   fill: none;

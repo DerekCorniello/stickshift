@@ -13,6 +13,8 @@ npm run dev
 
 Open the address printed by Vite, then connect a controller. Its name appears at the top of the page. If you connect more than one, use the controller selector there to choose one. The dials remain visible when no controller is connected.
 
+Use the Theme menu in the header to choose StickShift, Xbox, PlayStation, or Switch colors in light or dark mode. The menu changes colors; controller labels and icons still refer to physical positions. Your choice is saved in this browser.
+
 ## Set up a controller
 
 A controller that has not been set up opens the setup dialog when it connects. You can also open **Customize** and choose **Set up controller** later.
