@@ -36,6 +36,7 @@ class DesktopServerTests(unittest.TestCase):
                         "suggestions": [],
                         "selectedIndex": 0,
                     },
+                    "profiles": {},
                 },
             )
         finally:

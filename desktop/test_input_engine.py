@@ -59,6 +59,21 @@ class InputEngineTests(unittest.TestCase):
         self.engine.process(pad(), 0.2)
         self.assertEqual(self.keyboard.keys, ["e", "t"])
 
+    def test_calibrated_right_stick_uses_measured_center_and_later_axes(self):
+        settings = config()
+        settings["rightMapping"] = {
+            "xAxis": 6, "yAxis": 7, "invertX": False, "invertY": False,
+            "centerX": 0.2, "centerY": -0.15,
+            "rangeX": 0.7, "rangeY": 0.65,
+        }
+        self.engine.configure(settings)
+        resting = {"axes": [0, 0, 0, 0, 0, 0, 0.2, -0.15], "buttons": pad()["buttons"]}
+        up = {**resting, "axes": [0, 0, 0, 0, 0, 0, 0.2, -0.8]}
+        self.engine.process(resting, 0)
+        self.engine.process(up, 0.1)
+        self.engine.process(resting, 0.2)
+        self.assertEqual(self.keyboard.keys, ["t"])
+
     def test_stick_click_cancels_only_that_stick(self):
         self.engine.process(pad(), 0)
         self.engine.process(pad(left_y=-1, right_y=-1), 0.1)
@@ -82,6 +97,18 @@ class InputEngineTests(unittest.TestCase):
         self.engine.process(pad(left_y=-1, pressed=(5,)), 0.2)
         self.engine.process(pad(), 0.3)
         self.assertEqual(self.keyboard.keys, [" ", "E"])
+
+    def test_extra_axis_direction_can_trigger_an_action(self):
+        mapped = config()
+        mapped["bindings"]["space"] = 25  # axis 4 positive, after 16 buttons
+        self.engine.configure(mapped)
+        neutral = pad()
+        neutral["axes"].append(0)
+        moved = pad()
+        moved["axes"].append(1)
+        self.engine.process(neutral, 0)
+        self.engine.process(moved, 0.1)
+        self.assertEqual(self.keyboard.keys, [" "])
 
     def test_disabled_engine_emits_nothing(self):
         self.engine.set_keyboard(None)

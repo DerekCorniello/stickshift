@@ -106,6 +106,13 @@ class InputEngine:
             return
 
         buttons = [bool(button["pressed"]) for button in pad["buttons"]]
+        buttons.extend([False] * max(0, 16 - len(buttons)))
+        resting = (self.config or {}).get("axisRest", [])
+        for index, axis in enumerate(pad["axes"]):
+            rest = resting[index] if index < len(resting) else 0
+            negative = (rest - axis) / max(0.01, rest + 1)
+            positive = (axis - rest) / max(0.01, 1 - rest)
+            buttons.extend((negative > 0.55, positive > 0.55))
         if not self.enabled or self.config is None or not self.config.get("typingEnabled", True):
             self.previous_buttons = buttons
             self.candidate = {"left": None, "right": None}
@@ -257,6 +264,8 @@ class InputEngine:
         mapping = self.config[f"{side}Mapping"]
         x = axes[mapping["xAxis"]] if mapping["xAxis"] < len(axes) else 0
         y = axes[mapping["yAxis"]] if mapping["yAxis"] < len(axes) else 0
+        x = (x - mapping.get("centerX", 0)) / max(0.01, mapping.get("rangeX", 1))
+        y = (y - mapping.get("centerY", 0)) / max(0.01, mapping.get("rangeY", 1))
         if mapping["invertX"]:
             x = -x
         if mapping["invertY"]:

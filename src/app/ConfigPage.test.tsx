@@ -146,7 +146,7 @@ describe("Config page controller navigation", () => {
     expect(
       container.querySelector("tbody tr:first-child td:last-child")
         ?.textContent,
-    ).toBe("Y");
+    ).toBe("Left face button");
     act(() => root.unmount());
     container.remove();
   });

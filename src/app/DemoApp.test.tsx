@@ -4,6 +4,8 @@ import { createRoot, type Root } from "react-dom/client";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import { DemoApp } from "./DemoApp";
 import { defaultBindings, type GamepadSnapshot } from "../typing";
+import { defaultLeftMapping, defaultRightMapping } from "./axisMapping";
+import { profileKey } from "./controllerSetup";
 
 const gamepadState = vi.hoisted(() => ({
   pads: {} as Record<number, GamepadSnapshot>,
@@ -82,6 +84,19 @@ describe("demo interface", () => {
     ).toBe(initialText);
   });
   it("submits a timed run with the physical Start binding without changing pages", async () => {
+    localStorage.setItem(
+      profileKey(basePad.id),
+      JSON.stringify({
+        accepted: true,
+        calibrationVersion: 2,
+        bindings: defaultBindings,
+        leftMapping: defaultLeftMapping,
+        rightMapping: defaultRightMapping,
+        deadzone: 0.2,
+        discovered: [],
+        axisRest: basePad.axes,
+      }),
+    );
     gamepadState.pads = { 0: basePad };
     await render();
     const speed = Array.from(

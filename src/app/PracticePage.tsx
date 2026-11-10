@@ -173,10 +173,10 @@ export function PracticePage({
             ))}
           </ul>
           <p>
-            Suggestions stay visible above the dials. Press X (top) to focus
-            them, use the D-pad to choose one, then press B (bottom) to replace
-            the word at the caret and return to typing. The right face button
-            accepts the first suggestion directly.
+            Suggestions stay visible above the dials. Press the top face button
+            to focus them, use the D-pad to choose one, then press the bottom
+            face button to replace the word at the caret and return to typing.
+            The right face button accepts the first suggestion directly.
           </p>
         </aside>
       </div>

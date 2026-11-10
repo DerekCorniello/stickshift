@@ -51,10 +51,6 @@
   box-shadow: 0 8px 26px rgb(30 51 85 / 4%);
 }
 
-.practice-page .gamepad-button-label img {
-  filter: invert(1);
-}
-
 .practice-page__editor-heading {
   display: flex;
   align-items: center;

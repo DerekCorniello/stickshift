@@ -8,6 +8,7 @@ import {
 import type { ButtonBindings, ControlAction, GamepadSnapshot } from "../typing";
 import { GamepadButtonLabel } from "./GamepadButtonLabel";
 import { getControllerButtonName } from "./gamepadLabels";
+import { inputName } from "./controllerSetup";
 import { highlightedSliceIndex } from "../typing/geometry";
 import { readStickPosition } from "./axisMapping";
 import type { AxisMapping } from "./axisMapping";
@@ -47,6 +48,7 @@ type Props = Readonly<{
   rightMapping: AxisMapping;
   onCaptureChange: (capturing: boolean) => void;
   onResetDefaults: () => void;
+  onOpenControllerSetup?: () => void;
 }>;
 
 export function ConfigPage({
@@ -61,6 +63,7 @@ export function ConfigPage({
   rightMapping,
   onCaptureChange,
   onResetDefaults,
+  onOpenControllerSetup,
 }: Props) {
   const [section, setSection] = useState<Section>("dial");
   const [layerCursor, setLayerCursor] = useState(0);
@@ -270,10 +273,8 @@ export function ConfigPage({
       else if (index === 5) moveLayer(1);
       else if (index === 6) setSide("left");
       else if (index === 7) setSide("right");
-      else if (bindings.commitLeft !== null && index === bindings.commitLeft)
-        addSlice();
-      else if (bindings.commitRight !== null && index === bindings.commitRight)
-        deleteSlice();
+      else if (bindings.commitLeft !== null && index === 10) addSlice();
+      else if (bindings.commitRight !== null && index === 11) deleteSlice();
       else if (index === 0 && layerCursor === layerIds.length) addActiveLayer();
       else if (index === 0 && layerCursor === layerIds.length + 1)
         deleteActiveLayer();
@@ -300,6 +301,13 @@ export function ConfigPage({
         );
     }
   };
+  const navigationIndex = (physicalIndex: number) => {
+    if (capturing) return physicalIndex;
+    const action = (Object.keys(defaultBindings) as ControlAction[]).find(
+      (name) => bindings[name] === physicalIndex,
+    );
+    return action ? (defaultBindings[action] ?? physicalIndex) : physicalIndex;
+  };
   useControllerEvents(
     pad,
     defaultBindings,
@@ -308,7 +316,7 @@ export function ConfigPage({
     0.2,
     (event) => {
       if (event.kind === "button" && event.phase === "press")
-        handleButton(event.buttonIndex);
+        handleButton(navigationIndex(event.buttonIndex));
       if (
         event.kind === "stick" &&
         event.phase === "center" &&
@@ -328,7 +336,7 @@ export function ConfigPage({
   for (const [index, count] of bindingCounts)
     if (count > 1)
       warnings.push(
-        `${getControllerButtonName(pad.id, index)} is assigned to ${count} actions.`,
+        `${index < 16 ? getControllerButtonName(pad.id, index) : inputName(pad, index)} is assigned to ${count} actions.`,
       );
   const currentWarnings = [...new Set(warnings)].sort();
   return (
@@ -338,25 +346,31 @@ export function ConfigPage({
           <p className="page-eyebrow">Config</p>
           <h1>Controller setup</h1>
           <p>
-            Press X (top) to switch sections or use the tabs below. Press Start
-            to switch pages. All setup actions work with the controller.
+            Press the top face button to switch sections or use the tabs below.
+            Press the right center button to switch pages. All setup actions
+            work with the controller.
           </p>
         </div>
       </header>
       <nav className="config-page__tabs" aria-label="Configuration sections">
+        {onOpenControllerSetup && (
+          <button type="button" onClick={onOpenControllerSetup}>
+            Set up controller
+          </button>
+        )}
         <button
           type="button"
           aria-pressed={section === "dial"}
           onClick={() => setSection("dial")}
         >
-          Dial mappings (X)
+          Dial mappings
         </button>
         <button
           type="button"
           aria-pressed={section === "bindings"}
           onClick={() => setSection("bindings")}
         >
-          Generic mappings (X)
+          Generic mappings
         </button>
         <button
           type="button"
@@ -368,7 +382,7 @@ export function ConfigPage({
             )
           }
         >
-          Reset to defaults (Minus)
+          Reset to defaults
         </button>
       </nav>
       <div className="config-page__sections">
@@ -384,8 +398,8 @@ export function ConfigPage({
             <h2>Layers</h2>
             <p>
               D-pad Up/Down moves through layers, then the Add and Delete
-              buttons below. Press B to activate the highlighted row. The
-              bumpers reorder layers.
+              buttons below. Press the right face button to activate the
+              highlighted row. The bumpers reorder layers.
             </p>
             <ul className="config-page__layers">
               {layerIds.map((id, index) => (
@@ -477,6 +491,7 @@ export function ConfigPage({
                   <>
                     {", "}
                     <GamepadButtonLabel
+                      pad={pad}
                       gamepadId={pad.id}
                       buttonIndex={bindings.commitLeft}
                     />
@@ -492,6 +507,7 @@ export function ConfigPage({
                   <>
                     {", "}
                     <GamepadButtonLabel
+                      pad={pad}
                       gamepadId={pad.id}
                       buttonIndex={bindings.commitRight}
                     />
@@ -553,8 +569,8 @@ export function ConfigPage({
         >
           <h2>Generic mappings</h2>
           <p>
-            D-pad Up/Down chooses an action. Press B, then press the button to
-            assign. Backspace clears after confirmation.
+            D-pad Up/Down chooses an action. Press the right face button, then
+            press the button to assign. Backspace clears after confirmation.
           </p>
           <table>
             <thead>
@@ -579,6 +595,7 @@ export function ConfigPage({
                       "Unassigned"
                     ) : (
                       <GamepadButtonLabel
+                        pad={pad}
                         gamepadId={pad.id}
                         buttonIndex={bindings[action]}
                       />
@@ -676,8 +693,8 @@ export function ConfigPage({
           <h2>Remap slice</h2>
           <p>
             D-pad moves the lifted slice across the QWERTY keys. X changes key
-            group. B previews the new character; press B again to confirm. Minus
-            cancels.
+            group. The right face button previews the new character; press it
+            again to confirm. The close button cancels.
           </p>
           <div className="config-keyboard-wrap">
             <div
@@ -724,8 +741,9 @@ export function ConfigPage({
             <span>{candidateCharacter}</span>
           </div>
           <p>
-            The dial has not changed yet. Press B to apply, X to return to the
-            keyboard, or Minus to cancel.
+            The dial has not changed yet. Press the right face button to apply,
+            the top face button to return to the keyboard, or the close button
+            to cancel.
           </p>
           <button type="button" onClick={confirmRemap}>
             Apply {candidateCharacter}

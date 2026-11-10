@@ -7,6 +7,9 @@ export type GamepadSnapshot = Readonly<{
   mapping: Gamepad["mapping"];
   axes: readonly number[];
   buttons: readonly Readonly<{ pressed: boolean; value: number }>[];
+  physicalButtonCount?: number;
+  physicalAxisCount?: number;
+  availableAxes?: readonly number[];
 }>;
 
 export function useGamepads(): Readonly<Record<number, GamepadSnapshot>> {

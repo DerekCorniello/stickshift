@@ -3,6 +3,9 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DesktopApp } from "./DesktopApp";
+import { defaultBindings } from "../typing";
+import { defaultLeftMapping, defaultRightMapping } from "./axisMapping";
+import { profileKey } from "./controllerSetup";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
@@ -25,6 +28,19 @@ describe("desktop configuration", () => {
         value: 0,
       })),
     };
+    localStorage.setItem(
+      profileKey(pad.id),
+      JSON.stringify({
+        accepted: true,
+        calibrationVersion: 2,
+        bindings: defaultBindings,
+        leftMapping: defaultLeftMapping,
+        rightMapping: defaultRightMapping,
+        deadzone: 0.2,
+        discovered: [],
+        axisRest: pad.axes,
+      }),
+    );
     vi.stubGlobal("fetch", async (url: string, options?: RequestInit) => {
       if (url === "/api/desktop/config") {
         requests.push(JSON.parse(String(options?.body)));

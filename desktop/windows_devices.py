@@ -71,7 +71,10 @@ def gamepad_snapshot(state: XInputState, index: int) -> dict:
             _axis(gamepad.left_y, invert=True),
             _axis(gamepad.right_x),
             _axis(gamepad.right_y, invert=True),
+            gamepad.left_trigger / 255,
+            gamepad.right_trigger / 255,
         ],
+        "availableAxes": [0, 1, 2, 3, 4, 5],
         "buttons": [{"pressed": value, "value": int(value)} for value in pressed],
     }
 
@@ -88,33 +91,27 @@ def generic_gamepad_snapshot(
 ) -> dict:
     normalized_axes = [
         _clamp_axis(axes[index]) if index < len(axes) else 0.0
-        for index in range(4)
+        for index in range(max(4, len(axes)))
     ]
     # SDL's standard joystick order matches the XInput layout for these
     # controls: LB/RB are indexes 4/5, which are Backspace/Space bindings.
-    pressed = [False] * 16
-    for index in range(min(len(buttons), 16)):
+    pressed = [False] * max(16, len(buttons))
+    for index in range(len(buttons)):
         pressed[index] = bool(buttons[index])
-    if len(axes) > 4:
-        pressed[6] = axes[4] > 0.5
-    if len(axes) > 5:
-        pressed[7] = axes[5] > 0.5
     if hat is not None:
         pressed[12] = hat[1] > 0
         pressed[13] = hat[1] < 0
         pressed[14] = hat[0] < 0
         pressed[15] = hat[0] > 0
+        pressed.extend(bool(button) for button in buttons)
+        pressed.extend((hat[1] > 0, hat[1] < 0, hat[0] < 0, hat[0] > 0))
     return {
         "id": name,
         "index": 0,
         "connected": True,
         "mapping": "standard",
-        "axes": [
-            normalized_axes[0],
-            normalized_axes[1],
-            normalized_axes[2],
-            normalized_axes[3],
-        ],
+        "axes": normalized_axes,
+        "availableAxes": list(range(len(axes))),
         "buttons": [{"pressed": value, "value": int(value)} for value in pressed],
     }
 
@@ -146,6 +143,8 @@ def sdl_controller_snapshot(controller, constants) -> dict:
         controller.get_axis(left_y) / 32768,
         controller.get_axis(right_x) / 32768,
         controller.get_axis(right_y) / 32768,
+        controller.get_axis(trigger_left) / 32768,
+        controller.get_axis(trigger_right) / 32768,
     ]
     buttons = [
         controller.get_button(button_a),
@@ -170,6 +169,22 @@ def sdl_controller_snapshot(controller, constants) -> dict:
         axis_values,
         buttons,
     )
+
+
+def append_raw_controls(pad: dict, joystick) -> None:
+    pad["axes"].extend(
+        joystick.get_axis(index) for index in range(joystick.get_numaxes())
+    )
+    pad["availableAxes"] = list(range(len(pad["axes"])))
+    for index in range(joystick.get_numbuttons()):
+        pressed = bool(joystick.get_button(index))
+        pad["buttons"].append({"pressed": pressed, "value": int(pressed)})
+    for index in range(joystick.get_numhats()):
+        x, y = joystick.get_hat(index)
+        pad["buttons"].extend(
+            {"pressed": value, "value": int(value)}
+            for value in (y > 0, y < 0, x < 0, x > 0)
+        )
 
 
 def _xinput_get_state():
@@ -255,7 +270,7 @@ class GenericGamepadReader:
             import pygame
         except ImportError as error:
             raise OSError(
-                "Generic Windows controller support requires pygame"
+                "Generic controller support requires pygame"
             ) from error
         self.pygame = pygame
         try:
@@ -272,6 +287,7 @@ class GenericGamepadReader:
             self.sdl_controller = None
         self.device = None
         self.controller = None
+        self.raw_controller = None
         self.pad: dict | None = None
 
     def poll(self) -> None:
@@ -281,16 +297,23 @@ class GenericGamepadReader:
                 for index in range(self.sdl_controller.get_count()):
                     if self.sdl_controller.is_controller(index):
                         self.controller = self.sdl_controller.Controller(index)
+                        self.raw_controller = self.pygame.joystick.Joystick(index)
+                        if not self.raw_controller.get_init():
+                            self.raw_controller.init()
                         break
             if self.controller is not None:
                 if not self.controller.attached():
                     self.controller.quit()
                     self.controller = None
+                    if self.raw_controller is not None:
+                        self.raw_controller.quit()
+                    self.raw_controller = None
                 else:
                     self.pad = sdl_controller_snapshot(
                         self.controller,
                         self.sdl_controller,
                     )
+                    append_raw_controls(self.pad, self.raw_controller)
                     return
             if self.device is None:
                 for index in range(self.pygame.joystick.get_count()):
@@ -310,13 +333,19 @@ class GenericGamepadReader:
                 self.device.get_button(index) != 0
                 for index in range(self.device.get_numbuttons())
             ]
-            hat = self.device.get_hat(0) if self.device.get_numhats() else (0, 0)
+            hat = self.device.get_hat(0) if self.device.get_numhats() else None
             self.pad = generic_gamepad_snapshot(
                 self.device.get_name(),
                 axes,
                 buttons,
                 hat,
             )
+            for index in range(1, self.device.get_numhats()):
+                x, y = self.device.get_hat(index)
+                self.pad["buttons"].extend(
+                    {"pressed": value, "value": int(value)}
+                    for value in (y > 0, y < 0, x < 0, x > 0)
+                )
         except self.pygame.error:
             self.close()
 
@@ -326,11 +355,15 @@ class GenericGamepadReader:
     def close(self) -> None:
         if self.controller is not None:
             self.controller.quit()
+        if self.raw_controller is not None:
+            self.raw_controller.quit()
         if self.sdl_controller is not None:
             self.sdl_controller.quit()
         if self.device is not None:
             self.device.quit()
         self.device = None
+        self.controller = None
+        self.raw_controller = None
         self.pad = None
         self.pygame.quit()
 

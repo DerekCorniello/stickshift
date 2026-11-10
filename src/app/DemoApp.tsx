@@ -18,6 +18,10 @@ import { GamepadButtonLabel } from "./GamepadButtonLabel";
 import { getControllerInfo } from "./gamepadLabels";
 import { InputSettingsContext } from "./inputSettings";
 import { useInputPreferences } from "./useInputPreferences";
+import { ControllerSetup } from "./ControllerSetup";
+import { ControllerHud } from "./ControllerHud";
+import { loadProfile, saveProfile, withAxisButtons } from "./controllerSetup";
+import type { ControllerProfile } from "./controllerSetup";
 import "./demo.css";
 
 const pages = [
@@ -45,28 +49,69 @@ export function DemoApp() {
   const connected = Object.values(gamepads);
   const realPad =
     connected.find((pad) => pad.index === selectedIndex) ?? connected[0];
-  const pad = realPad ?? disconnectedPad;
+  const rawPad = realPad ?? disconnectedPad;
   const [page, setPage] = useState<Page>(initialPage);
   const [saved] = useState(loadSavedConfig);
   const [layout, setLayout] = useState(
     saved?.layout ?? { left: leftDialConfig, right: rightDialConfig },
   );
-  const [bindings, setBindings] = useState(saved?.bindings ?? defaultBindings);
+  const [legacyBindings, setLegacyBindings] = useState(
+    saved?.bindings ?? defaultBindings,
+  );
+  const [profiles, setProfiles] = useState<Record<string, ControllerProfile>>(
+    {},
+  );
+  const profile = profiles[rawPad.id] ?? loadProfile(rawPad.id);
+  const pad = withAxisButtons(rawPad, profile?.axisRest);
+  const bindings = profile?.bindings ?? legacyBindings;
   const [activeLayerId, setActiveLayerId] = useState(layout.left.layers[0].id);
-  const {
-    leftMapping,
-    setLeftMapping,
-    rightMapping,
-    setRightMapping,
-    deadzone,
-    setDeadzone,
-  } = useInputPreferences(pad.id);
+  const preferences = useInputPreferences(pad.id);
+  const leftMapping = profile?.leftMapping ?? preferences.leftMapping;
+  const rightMapping = profile?.rightMapping ?? preferences.rightMapping;
+  const deadzone = profile?.deadzone ?? preferences.deadzone;
+  const [setupId, setSetupId] = useState<string | null>(null);
+  const setupOpen = Boolean(
+    realPad && (setupId === pad.id || !profile?.accepted),
+  );
+  const profileBase = (): ControllerProfile =>
+    profile ?? {
+      accepted: false,
+      bindings,
+      leftMapping,
+      rightMapping,
+      deadzone,
+      discovered: [],
+    };
+  const updateProfile = (next: ControllerProfile) => {
+    saveProfile(pad.id, next);
+    setProfiles((current) => ({ ...current, [pad.id]: next }));
+  };
+  const setBindings = (next: typeof bindings) => {
+    setLegacyBindings(next);
+    if (realPad)
+      updateProfile({ ...profileBase(), accepted: true, bindings: next });
+  };
+  const setLeftMapping = (next: typeof leftMapping) => {
+    preferences.setLeftMapping(next);
+    if (realPad) updateProfile({ ...profileBase(), leftMapping: next });
+  };
+  const setRightMapping = (next: typeof rightMapping) => {
+    preferences.setRightMapping(next);
+    if (realPad) updateProfile({ ...profileBase(), rightMapping: next });
+  };
+  const setDeadzone = (next: number) => {
+    preferences.setDeadzone(next);
+    if (realPad) updateProfile({ ...profileBase(), deadzone: next });
+  };
   const [editorState, onEditorAction] = useReducer(
     editorReducer,
     initialEditorState,
   );
   const [capturing, setCapturing] = useState(false);
-  useEffect(() => saveConfig({ layout, bindings }), [layout, bindings]);
+  useEffect(
+    () => saveConfig({ layout, bindings: legacyBindings }),
+    [layout, legacyBindings],
+  );
   useEffect(() => {
     const change = () => setPage(initialPage());
     window.addEventListener("hashchange", change);
@@ -81,11 +126,20 @@ export function DemoApp() {
     setPage(next);
   };
   const previousStart = useRef(false);
-  const start = pad.buttons[9]?.pressed ?? false;
+  const startIndex = bindings.submit;
+  const start =
+    startIndex === null ? false : (pad.buttons[startIndex]?.pressed ?? false);
   useEffect(() => {
     const pressed = start && !previousStart.current;
     previousStart.current = start;
-    if (!pressed || capturing || page === "test" || page === "compare") return;
+    if (
+      !pressed ||
+      capturing ||
+      setupOpen ||
+      page === "test" ||
+      page === "compare"
+    )
+      return;
     const timer = setTimeout(() => {
       navigate(
         pages[(pages.findIndex((item) => item.id === page) + 1) % pages.length]
@@ -93,14 +147,14 @@ export function DemoApp() {
       );
     }, 0);
     return () => clearTimeout(timer);
-  }, [start, capturing, page]);
+  }, [start, capturing, setupOpen, page]);
   const reset = () => {
     setLayout({ left: leftDialConfig, right: rightDialConfig });
     setBindings(defaultBindings);
     setActiveLayerId(leftDialConfig.layers[0].id);
   };
   const common = {
-    pad,
+    pad: setupOpen ? disconnectedPad : pad,
     leftConfig: layout.left,
     rightConfig: layout.right,
     activeLayerId,
@@ -189,7 +243,7 @@ export function DemoApp() {
           )}
           {page === "config" && (
             <ConfigPage
-              pad={pad}
+              pad={setupOpen ? disconnectedPad : pad}
               layout={layout}
               onLayoutChange={setLayout}
               bindings={bindings}
@@ -200,6 +254,18 @@ export function DemoApp() {
               rightMapping={rightMapping}
               onCaptureChange={setCapturing}
               onResetDefaults={reset}
+              onOpenControllerSetup={
+                realPad ? () => setSetupId(pad.id) : undefined
+              }
+            />
+          )}
+          {(page === "practice" || page === "test" || page === "compare") && (
+            <ControllerHud
+              pad={pad}
+              leftMapping={leftMapping}
+              rightMapping={rightMapping}
+              bindings={bindings}
+              visualButtons={profile?.visualButtons}
             />
           )}
         </div>
@@ -226,6 +292,7 @@ export function DemoApp() {
                   <span>{actionLabels[action]}</span>
                   {bindings[action] !== null && (
                     <GamepadButtonLabel
+                      pad={pad}
                       gamepadId={pad.id}
                       buttonIndex={bindings[action]!}
                     />
@@ -251,6 +318,19 @@ export function DemoApp() {
           </details>
         </aside>
       </div>
+      {setupOpen && realPad && (
+        <ControllerSetup
+          key={pad.id}
+          pad={rawPad}
+          initial={profileBase()}
+          newController={!profile?.accepted}
+          onSave={(next) => {
+            updateProfile(next);
+            setSetupId(null);
+          }}
+          onClose={() => setSetupId(null)}
+        />
+      )}
     </InputSettingsContext.Provider>
   );
 }

@@ -1,0 +1,175 @@
+.controller-hud {
+  --ink: #343b30;
+  --muted: #77796a;
+  --line: #d4cebf;
+  --accent: #a74428;
+  width: min(100%, 500px);
+  margin: 16px auto 0;
+  color: var(--ink);
+}
+
+.controller-hud__caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.controller-hud__caption span,
+.controller-hud__raw {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.controller-hud__stage {
+  padding: 5px 18px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #faf7ef;
+}
+
+.controller-hud svg {
+  display: block;
+  width: min(100%, 330px);
+  height: auto;
+  margin: auto;
+  overflow: visible;
+}
+
+.controller-hud__art {
+  opacity: 0.63;
+}
+
+.controller-hud__button {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 7;
+  transition:
+    fill 100ms ease,
+    stroke 100ms ease;
+}
+
+.controller-hud__button.is-active {
+  fill: #71564388;
+  stroke: #715643;
+}
+
+.controller-hud__stick {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 6;
+  transition:
+    cx 70ms linear,
+    cy 70ms linear;
+}
+
+.controller-hud__stick.is-active {
+  fill: #71564388;
+  stroke: #715643;
+}
+
+.controller-hud__target {
+  fill: #a7442844;
+  stroke: var(--accent);
+  stroke-width: 9;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hud-target-pulse 1.25s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.controller-hud__target.is-complete {
+  fill: #5e826a88;
+  stroke: #5e826a;
+  animation: hud-target-done 450ms ease-out both;
+}
+.controller-hud__orbit {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 8;
+}
+.controller-hud__orbit-dot {
+  fill: var(--accent);
+}
+.controller-hud__orbit.is-complete {
+  stroke: #5e826a;
+  animation: none;
+}
+.controller-hud__orbit.is-complete .controller-hud__orbit-dot {
+  fill: #5e826a;
+}
+.controller-hud__key {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.controller-hud__key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.controller-hud__key i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.controller-hud__key .is-active {
+  background: #715643;
+}
+.controller-hud__key .is-done {
+  background: #5e826a;
+}
+.controller-hud__key .is-unmapped {
+  background: #c58b3f;
+}
+
+.controller-hud__raw {
+  display: block;
+  min-height: 1.5em;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.controller-hud--compact {
+  width: min(100%, 570px);
+  margin: 8px auto 16px;
+}
+
+.controller-hud--compact svg {
+  width: min(100%, 400px);
+}
+
+@keyframes hud-target-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes hud-target-done {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.75;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .controller-hud__target,
+  .controller-hud__target.is-complete {
+    animation: none;
+  }
+  .controller-hud__orbit-dot {
+    display: none;
+  }
+}

@@ -6,8 +6,9 @@
   vertical-align: middle;
 }
 
-.gamepad-button-label img {
+.gamepad-button-label svg {
   width: 24px;
   height: 24px;
-  object-fit: contain;
+  flex: none;
+  color: var(--accent, #9cf3d0);
 }

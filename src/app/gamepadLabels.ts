@@ -9,18 +9,6 @@ type ControllerInfo = Readonly<{
 
 type GamepadHelperApi = Readonly<{
   getGamepadInfo: (gamepadId: string | null) => ControllerInfo;
-  getButtonName: (
-    controllerType: ControllerType,
-    buttonIndex: number,
-  ) => string;
-  getAxisName: (controllerType: ControllerType, axisIndex: number) => string;
-  getButtonImagePath: (
-    controllerType: ControllerType,
-    buttonIndex: number,
-    basePath?: string,
-    color?: string,
-    style?: string,
-  ) => string | null;
 }>;
 
 type GamepadHelperConstructor = new () => GamepadHelperApi;
@@ -32,64 +20,40 @@ declare global {
 }
 
 const helper = new window.GamepadHelper();
-const imageBasePath = "/assets/img/gamepads/";
+
+const buttonNames = [
+  "Bottom face button",
+  "Right face button",
+  "Left face button",
+  "Top face button",
+  "Left shoulder button",
+  "Right shoulder button",
+  "Left trigger",
+  "Right trigger",
+  "Left center button",
+  "Right center button",
+  "Left stick click",
+  "Right stick click",
+  "D-pad up",
+  "D-pad down",
+  "D-pad left",
+  "D-pad right",
+] as const;
 
 export function getControllerInfo(gamepadId: string): ControllerInfo {
   return helper.getGamepadInfo(gamepadId);
 }
 
 export function getControllerButtonName(
-  gamepadId: string,
+  _gamepadId: string,
   buttonIndex: number,
 ): string {
-  const { type } = helper.getGamepadInfo(gamepadId);
-  const visualType = type === "standard" ? "xbox" : type;
-  if (buttonIndex === 10 || buttonIndex === 11) {
-    const side = buttonIndex === 10 ? "Left" : "Right";
-    return `${side} stick click`;
-  }
-  return helper.getButtonName(
-    visualType,
-    getVisualButtonIndex(visualType, buttonIndex),
-  );
+  return buttonNames[buttonIndex] ?? `Button ${buttonIndex}`;
 }
 
 export function getControllerAxisName(
-  gamepadId: string,
+  _gamepadId: string,
   axisIndex: number,
 ): string {
-  const { type } = helper.getGamepadInfo(gamepadId);
-  return helper.getAxisName(type, axisIndex);
-}
-
-export function getControllerButtonIcon(
-  gamepadId: string,
-  buttonIndex: number,
-  color: "Black" | "White" = "White",
-): string | null {
-  const { type } = helper.getGamepadInfo(gamepadId);
-  const visualType = type === "standard" ? "xbox" : type;
-  const icon = helper.getButtonImagePath(
-    visualType,
-    getVisualButtonIndex(visualType, buttonIndex),
-    imageBasePath,
-    color,
-    "Outline",
-  );
-  if (icon === null) return null;
-  if (buttonIndex === 10)
-    return icon.replace("Left Stick.svg", "Left Stick Click.svg");
-  if (buttonIndex === 11)
-    return icon.replace("Right Stick.svg", "Right Stick Click.svg");
-  return icon;
-}
-
-function getVisualButtonIndex(
-  type: ControllerType,
-  buttonIndex: number,
-): number {
-  if (type !== "xbox") return buttonIndex;
-  if (buttonIndex === 2) return 3;
-  if (buttonIndex === 3) return 2;
-  return buttonIndex;
+  return `Axis ${axisIndex}`;
 }

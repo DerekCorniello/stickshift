@@ -655,9 +655,6 @@
   color: var(--ink);
   background: var(--panel-raised);
 }
-.variant-app .config-page .gamepad-button-label img {
-  filter: none;
-}
 .fieldnotes {
   --bg: #eee9de;
   --panel: #faf7ef;
@@ -713,9 +710,6 @@
 }
 .fieldnotes .controller-dials__layers {
   justify-content: flex-start;
-}
-.fieldnotes .config-page .gamepad-button-label img {
-  filter: invert(1);
 }
 
 @media (min-width: 1100px) and (max-height: 800px) {
@@ -920,12 +914,9 @@
   min-height: 18px;
   font-size: 9px;
 }
-.quick-controls .gamepad-button-label img {
+.quick-controls .gamepad-button-label svg {
   width: 18px;
   height: 18px;
-}
-.fieldnotes .quick-controls img {
-  filter: invert(1);
 }
 .preview-note {
   padding: 8px 10px;
@@ -1157,7 +1148,7 @@
 .fieldnotes .quick-controls .gamepad-button-label {
   font-size: 12px;
 }
-.fieldnotes .quick-controls .gamepad-button-label img {
+.fieldnotes .quick-controls .gamepad-button-label svg {
   width: 24px;
   height: 24px;
 }

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -14,12 +15,25 @@ ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist-desktop"
 
 
+def profile_path(platform: str | None = None) -> Path:
+    platform = sys.platform if platform is None else platform
+    if platform == "win32":
+        base = Path(os.environ.get("APPDATA", str(Path.home() / "AppData" / "Roaming")))
+    elif platform == "darwin":
+        base = Path.home() / "Library" / "Application Support"
+    else:
+        base = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+    return base / "StickShift" / "controllers.json"
+
+
 def device_classes(platform: str | None = None):
     platform = sys.platform if platform is None else platform
     if platform == "linux":
         from .linux_devices import GamepadReader, VirtualKeyboard
     elif platform == "win32":
         from .windows_devices import GamepadReader, VirtualKeyboard
+    elif platform == "darwin":
+        from .mac_devices import GamepadReader, VirtualKeyboard
     else:
         raise RuntimeError(f"Unsupported desktop platform: {platform}")
     return GamepadReader, VirtualKeyboard
@@ -40,6 +54,13 @@ class DesktopService:
             self.engine.set_word_trie(WordTrie(str(dictionary)))
         self.stop_event = threading.Event()
         self.keyboard_error = ""
+        self.profiles_path = profile_path()
+        try:
+            self.profiles = json.loads(self.profiles_path.read_text(encoding="utf-8"))
+            if not isinstance(self.profiles, dict):
+                self.profiles = {}
+        except (OSError, ValueError):
+            self.profiles = {}
         try:
             self.engine.set_keyboard((keyboard_factory or default_keyboard)())
         except OSError as error:
@@ -68,11 +89,23 @@ class DesktopService:
                 "gamepads": {"0": pad} if pad is not None else {},
                 "keyboardError": self.keyboard_error,
                 "autocomplete": self.engine.autocomplete_status(),
+                "profiles": self.profiles.copy(),
             }
 
     def configure(self, config: dict) -> None:
         with self.lock:
             self.engine.configure(config)
+
+    def save_profile(self, controller_id: str, profile: dict) -> None:
+        if not controller_id or len(controller_id) > 500 or not isinstance(profile, dict):
+            raise ValueError("Invalid controller profile")
+        with self.lock:
+            next_profiles = {**self.profiles, controller_id: profile}
+            self.profiles_path.parent.mkdir(parents=True, exist_ok=True)
+            temp = self.profiles_path.with_suffix(".tmp")
+            temp.write_text(json.dumps(next_profiles), encoding="utf-8")
+            temp.replace(self.profiles_path)
+            self.profiles = next_profiles
 
 def handler_for(service: DesktopService) -> type[SimpleHTTPRequestHandler]:
     class Handler(SimpleHTTPRequestHandler):
@@ -95,7 +128,7 @@ def handler_for(service: DesktopService) -> type[SimpleHTTPRequestHandler]:
                 super().do_GET()
 
         def do_POST(self) -> None:
-            if self.path != "/api/desktop/config":
+            if self.path not in ("/api/desktop/config", "/api/desktop/profile"):
                 self._json(404, {"error": "Unknown endpoint"})
                 return
             if self.headers.get("Content-Type", "").split(";")[0] != "application/json":
@@ -108,7 +141,10 @@ def handler_for(service: DesktopService) -> type[SimpleHTTPRequestHandler]:
                 payload = json.loads(self.rfile.read(size))
                 if not isinstance(payload, dict):
                     raise ValueError("Expected an object")
-                service.configure(payload)
+                if self.path == "/api/desktop/profile":
+                    service.save_profile(payload.get("id", ""), payload.get("profile"))
+                else:
+                    service.configure(payload)
                 self._json(200, {"ok": True})
             except (ValueError, OSError) as error:
                 self._json(400, {"error": str(error)})
@@ -120,8 +156,8 @@ def handler_for(service: DesktopService) -> type[SimpleHTTPRequestHandler]:
 
 
 def main() -> int:
-    if sys.platform not in ("linux", "win32"):
-        print("The desktop keyboard backend supports Linux and Windows.", file=sys.stderr)
+    if sys.platform not in ("linux", "win32", "darwin"):
+        print("The desktop keyboard backend supports Linux, Windows, and macOS.", file=sys.stderr)
         return 1
     if not (DIST / "desktop.html").exists():
         print("Build the desktop interface first: npm run build:desktop", file=sys.stderr)

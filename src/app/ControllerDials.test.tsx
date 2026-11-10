@@ -286,7 +286,7 @@ describe("controller dial input", () => {
     ).toBe("e");
     expect(
       container.querySelector(".controller-dials__events")?.textContent,
-    ).toContain("LT (6) press: Previous layer");
+    ).toContain("Left trigger (6) press: Previous layer");
   });
 
   it("keeps the confirmed character through boundary wobble and return", () => {

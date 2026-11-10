@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 2048 2048" aria-label="Controller wireframe" role="img">
+  <g id="Layer_x0020_1">
+    <path id="Right_x0020_Shoulder" d="M1209.5 573.5c152.119,-51.86 134.466,-33.154 287,22 28.5,12.5 44.326,37.262 56.146,60.955 -72.715,-15.652 -145.431,-31.303 -218.146,-46.955 -19.656,-3.415 -46.619,26.113 -71.781,47.527 -9.74,-23.509 -19.479,-47.018 -29.219,-70.527 -8,-4.333 -16,-8.667 -24,-13z" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    <path id="Right_x0020_Trigger" d="M1408.16 561.291c6.835,-13.267 13.71,-27.035 19.34,-24.791 23.442,-2.47 51.739,13.529 82,37 12.07,15.464 19.594,33.672 25.149,53.071 -7.978,-13.824 -18.397,-24.499 -34.987,-30.019 -23.27,-9.871 -55.968,-19.759 -91.502,-35.261z" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    <path id="Left_x0020_Shoulder" d="M845.501 573.5c-152.12,-51.86 -134.467,-33.154 -287.001,22 -28.5,12.5 -44.325,37.262 -56.146,60.955 72.715,-15.652 145.431,-31.303 218.146,-46.955 19.657,-3.415 46.619,26.113 71.781,47.527 9.74,-23.509 19.48,-47.018 29.22,-70.527 8,-4.333 15.999,-8.667 24,-13z" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    <path id="Left_x0020_Trigger" d="M646.841 561.291c-6.836,-13.267 -13.71,-27.035 -19.341,-24.791 -23.442,-2.47 -51.738,13.529 -82,37 -12.07,15.464 -19.594,33.672 -25.148,53.071 7.977,-13.824 18.396,-24.499 34.986,-30.019 23.271,-9.871 55.969,-19.759 91.503,-35.261z" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    <g id="Body">
+      <path d="M1169.5 737.5c45.667,-38.333 83.333,-72.667 129,-111 17.721,-16.292 27.764,-18.325 36,-17 74.333,16 148.667,32 223,48 21.544,7.396 34.369,31.51 47,56 60.416,193.717 127.677,383.857 149,598 5.803,175.234 -49.643,275.848 -158,312 -54.36,-4.982 -121.818,-41.476 -272,-277 -4.5,-7 -11.5,-18.5 -33,-18 -176.565,-2.708 -349.435,-2.708 -525.999,0 -21.501,-0.5 -28.5,11 -33,18 -150.183,235.524 -217.641,272.018 -272.001,277 -108.356,-36.152 -163.803,-136.766 -158,-312 21.324,-214.143 88.585,-404.283 149,-598 12.631,-24.49 25.457,-48.604 47,-56 74.334,-16 148.667,-32 223,-48 8.236,-1.325 18.28,0.708 36,17 45.667,38.333 83.334,72.667 129,111 26.447,18.978 257.553,18.978 284,0z" stroke-width="12" fill="none" stroke="#77796a" stroke-linejoin="round" stroke-linecap="round" />
+      <path d="M1169.5 737.5c31.073,-26.824 62.146,-53.649 93.219,-80.473 -9.74,-23.509 -19.479,-47.018 -29.219,-70.527 -8,-4.333 -16,-8.667 -24,-13 -122.218,1.91 -241.781,1.91 -363.999,0 -8.001,4.333 -16,8.667 -24,13 -9.74,23.509 -19.48,47.018 -29.22,70.527 31.073,26.824 62.146,53.649 93.219,80.473 30.017,19.994 253.983,19.994 284,0z" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="Right_x0020_Stick">
+      <circle cx="1210.5" cy="1125.5" r="106" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+      <circle cx="1210.5" cy="1125.5" r="76" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="Left_x0020_Stick">
+      <circle cx="653.501" cy="837.5" r="106" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+      <circle cx="653.501" cy="837.5" r="76" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <polygon id="D-pad" points="724.5,1146.5 802.5,1146.5 802.5,1224.5 866.5,1224.5 866.5,1146.5 944.5,1146.5 944.5,1082.5 866.5,1082.5 866.5,1004.5 802.5,1004.5 802.5,1082.5 724.5,1082.5 " fill="none" stroke="#77796a" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" />
+    <g id="center-left">
+      <circle cx="923.5" cy="835.5" r="37" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="center-right">
+      <circle cx="1137.5" cy="837.5" r="37" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="face-bottom">
+      <ellipse cx="1408.5" cy="940.5" rx="50" ry="49" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="face-right">
+      <ellipse cx="1512.5" cy="837.5" rx="50" ry="49" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="face-top">
+      <ellipse cx="1408.5" cy="738.5" rx="50" ry="49" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+    <g id="face-left">
+      <ellipse cx="1304.5" cy="837.5" rx="50" ry="49" fill="none" stroke="#77796a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+    </g>
+  </g>
+</svg>

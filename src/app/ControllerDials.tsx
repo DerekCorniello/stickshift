@@ -23,6 +23,7 @@ import {
 } from "./axisMapping";
 import type { AxisMapping } from "./axisMapping";
 import { getControllerButtonName } from "./gamepadLabels";
+import { inputName } from "./controllerSetup";
 import "./controllerDials.css";
 
 type ControllerDialsProps = Readonly<{
@@ -56,6 +57,12 @@ function AxisControls({
   mapping,
   onChange,
 }: AxisControlsProps) {
+  if (mapping.directions)
+    return (
+      <p>
+        {side} stick uses learned directions. Relearn them in Controller setup.
+      </p>
+    );
   const axisOptions = Array.from({ length: axisCount }, (_, index) => index);
   const id = side.toLowerCase();
 
@@ -114,10 +121,13 @@ function AxisControls({
   );
 }
 
-function describeEvent(event: ControllerEvent, gamepadId: string): string {
+function describeEvent(event: ControllerEvent, pad: GamepadSnapshot): string {
   if (event.kind === "button") {
     const action = event.action ? actionLabels[event.action] : "Unassigned";
-    const button = getControllerButtonName(gamepadId, event.buttonIndex);
+    const button =
+      event.buttonIndex < 16
+        ? getControllerButtonName(pad.id, event.buttonIndex)
+        : inputName(pad, event.buttonIndex);
     return `${button} (${event.buttonIndex}) ${event.phase}: ${action}`;
   }
   if (event.kind === "character") {
@@ -251,7 +261,7 @@ export function ControllerDials({
       if (event.kind === "character" && cancelled.current[event.side]) return;
       reportEvent(event);
       setRecentEvents((current) =>
-        [describeEvent(event, pad.id), ...current].slice(0, 8),
+        [describeEvent(event, pad), ...current].slice(0, 8),
       );
       if (event.kind !== "button" || event.phase !== "press") {
         return;

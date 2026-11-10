@@ -14,6 +14,7 @@ from desktop.windows_devices import (
     XInputState,
     gamepad_snapshot,
     generic_gamepad_snapshot,
+    append_raw_controls,
 )
 
 
@@ -32,7 +33,7 @@ class WindowsDeviceTests(unittest.TestCase):
         state.gamepad.buttons = 0x1000 | 0x0010 | 0x0001
         state.gamepad.left_trigger = 128
         pad = gamepad_snapshot(state, 0)
-        self.assertEqual(pad["axes"], [-1.0, -1.0, 1.0, 1.0])
+        self.assertEqual(pad["axes"], [-1.0, -1.0, 1.0, 1.0, 128 / 255, 0])
         self.assertEqual(
             [index for index, button in enumerate(pad["buttons"]) if button["pressed"]],
             [0, 6, 9, 12],
@@ -45,10 +46,10 @@ class WindowsDeviceTests(unittest.TestCase):
             [True, False, True, False, True, True],
             (1, -1),
         )
-        self.assertEqual(pad["axes"], [-1.0, 0.5, 0.25, -0.75])
+        self.assertEqual(pad["axes"], [-1.0, 0.5, 0.25, -0.75, 1.0, -1.0])
         self.assertEqual(
             [index for index, button in enumerate(pad["buttons"]) if button["pressed"]],
-            [0, 2, 4, 5, 6, 13, 15],
+            [0, 2, 4, 5, 13, 15, 16, 18, 20, 21, 23, 25],
         )
 
     def test_generic_bumpers_use_backspace_and_space_bindings(self):
@@ -79,6 +80,22 @@ class WindowsDeviceTests(unittest.TestCase):
         )
         self.assertTrue(pad["buttons"][12]["pressed"])
         self.assertTrue(pad["buttons"][15]["pressed"])
+
+    def test_sdl_snapshot_keeps_extra_raw_controls(self):
+        class RawJoystick:
+            def get_numaxes(self): return 2
+            def get_axis(self, index): return [0.25, -1.0][index]
+            def get_numbuttons(self): return 2
+            def get_button(self, index): return index == 1
+            def get_numhats(self): return 1
+            def get_hat(self, index): return (1, 0)
+
+        pad = generic_gamepad_snapshot("SDL", [0, 0, 0, 0, 0, 0], [False] * 16)
+        append_raw_controls(pad, RawJoystick())
+        self.assertEqual(pad["axes"][-2:], [0.25, -1.0])
+        self.assertEqual(pad["availableAxes"], list(range(8)))
+        self.assertTrue(pad["buttons"][17]["pressed"])
+        self.assertTrue(pad["buttons"][21]["pressed"])
 
     def test_reader_falls_back_to_generic_controller(self):
         class FakeGeneric:

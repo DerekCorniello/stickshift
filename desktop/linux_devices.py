@@ -46,6 +46,9 @@ class GamepadReader:
         self.axes = [0.0, 0.0, 0.0, 0.0]
         self.buttons = [False] * 16
         self.next_scan = 0.0
+        self.axis_codes: dict[int, int] = dict(AXIS_CODES)
+        self.button_codes: dict[int, int] = dict(BUTTON_CODES)
+        self.available_axes = list(range(4))
 
     def close(self) -> None:
         if self.device is not None:
@@ -64,11 +67,19 @@ class GamepadReader:
                 caps = device.capabilities(absinfo=False)
                 keys = set(caps.get(ecodes.EV_KEY, []))
                 axes = set(caps.get(ecodes.EV_ABS, []))
-                if (
-                    ecodes.BTN_SOUTH in keys
-                    and ecodes.ABS_X in axes
-                    and ecodes.ABS_Y in axes
-                ):
+                if len(axes) >= 2 and any(code >= ecodes.BTN_JOYSTICK for code in keys):
+                    self.axis_codes = dict(AXIS_CODES)
+                    for code in sorted(axes - set(AXIS_CODES)):
+                        self.axis_codes[code] = len(self.axis_codes)
+                    self.available_axes = sorted(self.axis_codes[code] for code in axes if code in self.axis_codes)
+                    self.button_codes = dict(BUTTON_CODES)
+                    for code in sorted(keys - set(BUTTON_CODES)):
+                        self.button_codes[code] = len(self.button_codes)
+                    self.axes = [0.0] * len(self.axis_codes)
+                    for code in axes:
+                        info = device.absinfo(code)
+                        self.axes[self.axis_codes[code]] = normalize_axis(info.value, info.min, info.max)
+                    self.buttons = [False] * len(self.button_codes)
                     self.device = device
                     return
                 device.close()
@@ -84,19 +95,15 @@ class GamepadReader:
             if not select.select([self.device.fd], [], [], 0)[0]:
                 return
             for event in self.device.read():
-                if event.type == ecodes.EV_KEY and event.code in BUTTON_CODES:
-                    self.buttons[BUTTON_CODES[event.code]] = event.value != 0
+                if event.type == ecodes.EV_KEY and event.code in self.button_codes:
+                    self.buttons[self.button_codes[event.code]] = event.value != 0
                 elif event.type == ecodes.EV_ABS:
-                    if event.code in AXIS_CODES:
+                    if event.code in self.axis_codes:
                         info = self.device.absinfo(event.code)
-                        self.axes[AXIS_CODES[event.code]] = normalize_axis(
+                        self.axes[self.axis_codes[event.code]] = normalize_axis(
                             event.value, info.min, info.max
                         )
-                    elif event.code in (ecodes.ABS_Z, ecodes.ABS_RZ):
-                        info = self.device.absinfo(event.code)
-                        value = (event.value - info.min) / max(1, info.max - info.min)
-                        self.buttons[6 if event.code == ecodes.ABS_Z else 7] = value >= 0.5
-                    elif event.code == ecodes.ABS_HAT0X:
+                    if event.code == ecodes.ABS_HAT0X:
                         self.buttons[14] = event.value < 0
                         self.buttons[15] = event.value > 0
                     elif event.code == ecodes.ABS_HAT0Y:
@@ -114,6 +121,7 @@ class GamepadReader:
             "connected": True,
             "mapping": "standard",
             "axes": self.axes.copy(),
+            "availableAxes": self.available_axes.copy(),
             "buttons": [
                 {"pressed": pressed, "value": int(pressed)}
                 for pressed in self.buttons

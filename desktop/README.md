@@ -1,6 +1,6 @@
 # Desktop app
 
-This version opens the StickShift dials in a compact desktop window. On Linux, Python reads a controller through `evdev` and creates a virtual keyboard through `uinput`. On Windows, it reads an XInput controller and sends keys through the Windows `SendInput` API. Both send characters to the application with keyboard focus. The website still uses the browser Gamepad API.
+This version opens the StickShift dials in a compact desktop window. Linux uses `evdev` and `uinput`; Windows uses XInput or pygame and `SendInput`; macOS uses pygame and Quartz keyboard events. All send characters to the application with keyboard focus. The website still uses the browser Gamepad API.
 
 ## Linux setup
 
@@ -34,11 +34,25 @@ The window uses pywebview's Windows backend. Install the WebView2 Runtime if the
 
 ## Using it
 
-Connect a controller and open the app. The Dials page shows the two dials, layer controls, and word suggestions. System typing starts automatically. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Suggestions for text typed with the sticks stay visible. Press the autocomplete button to enter selection mode, use the D-pad to choose a word, then press the Enter button to replace the current word and add a space. Press the autocomplete button again to leave selection mode. The right face button (button 1) accepts the first suggestion directly without entering selection mode.
+Connect a controller and open the app. A new controller opens a live diagram. Choose Set up for an animated walk through each control. Setup compares inputs with an opening snapshot, asks you to hold buttons for about a second, and identifies sticks from a resting position, guided right and up movements, then checks them with a circle. Sticks can use any exposed axis pair, and controls that report both button and axis signals keep both. Setup flags observed inputs without a diagram position during final review. At the end, test the live diagram and choose Good, save controller or Redo setup. Individual mappings and extra inputs can be edited before saving. Profiles are saved at the platform's user-data location in `StickShift/controllers.json` and reused after restart. The Dials page shows the two dials, layer controls, word suggestions, and a smaller live diagram. Focus a text field in another application; stick selections, Space, Backspace, Enter, and D-pad cursor movement go there. Suggestions for text typed with the sticks stay visible. Press the autocomplete button to enter selection mode, use the D-pad to choose a word, then press the Enter button to replace the current word and add a space. Press the autocomplete button again to leave selection mode. The right face button (button 1) accepts the first suggestion directly without entering selection mode.
 
 Open Config from the top of the window, or press Start to switch between Dials and Config. Config has the same dial, slice, and button editor as the website. Changes are saved in the desktop window and sent to the keyboard service. System typing pauses while Config is open and resumes when you return to Dials. Close StickShift to stop keyboard output. Practice, tests, and diagnostics remain on the website.
 
-On Linux, the virtual keyboard maps printable ASCII to a US keyboard layout. This version reads common Linux gamepad axes and buttons; raw controllers with different kernel mappings may need an adapter in `desktop/linux_devices.py`. On Windows, printable characters use Unicode keyboard events, while Backspace, Enter, and arrow keys use virtual keys. Controller vibration is browser-only. The Linux keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
+On Linux, the virtual keyboard maps printable ASCII to a US keyboard layout. On Windows and macOS, printable characters use Unicode keyboard events. Controller vibration is browser-only. The Linux keyboard backend cannot be exercised in an environment without `/dev/input` and `/dev/uinput`.
+
+## macOS setup
+
+Use Python 3.11 or newer and Node.js. From the repository root:
+
+```sh
+npm install
+npm run build:desktop
+python3 -m venv .venv
+.venv/bin/python -m pip install -r desktop/requirements-macos.txt
+.venv/bin/python -m desktop.app
+```
+
+Grant the Python app Accessibility permission in System Settings so it can send keys to other applications. The macOS backend has unit tests, but it has not yet been run on a Mac with a controller.
 
 After a character is entered, the desktop keyboard waits for the stick to move
 20 percentage points beyond the deadzone before arming another selection. This

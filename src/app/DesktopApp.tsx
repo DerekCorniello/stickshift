@@ -5,6 +5,15 @@ import { ControllerDials } from "./ControllerDials";
 import { useInputPreferences } from "./useInputPreferences";
 import { loadSavedConfig, saveConfig } from "./savedConfig";
 import { ConfigPage } from "./ConfigPage";
+import { ControllerSetup } from "./ControllerSetup";
+import { ControllerHud } from "./ControllerHud";
+import {
+  isControllerProfile,
+  loadProfile,
+  saveProfile,
+  withAxisButtons,
+} from "./controllerSetup";
+import type { ControllerProfile } from "./controllerSetup";
 
 const disconnectedPad: GamepadSnapshot = {
   id: "No controller connected",
@@ -18,6 +27,9 @@ const disconnectedPad: GamepadSnapshot = {
 function useDesktopPad() {
   const [pad, setPad] = useState<GamepadSnapshot | null>(null);
   const [keyboardError, setKeyboardError] = useState("");
+  const [profiles, setProfiles] = useState<Record<string, ControllerProfile>>(
+    {},
+  );
   const [autocomplete, setAutocomplete] = useState({
     active: false,
     word: "",
@@ -41,11 +53,16 @@ function useDesktopPad() {
             suggestions: string[];
             selectedIndex: number;
           };
+          profiles: Record<string, ControllerProfile>;
         };
         if (active) {
           setPad(Object.values(status.gamepads)[0] ?? null);
           setKeyboardError(status.keyboardError);
           setAutocomplete(status.autocomplete);
+          setProfiles((current) => ({
+            ...(status.profiles ?? {}),
+            ...current,
+          }));
         }
       } catch (error) {
         if (active) console.error("Could not read desktop controller", error);
@@ -60,33 +77,89 @@ function useDesktopPad() {
     };
   }, []);
 
-  return { pad, keyboardError, autocomplete };
+  return { pad, keyboardError, autocomplete, profiles, setProfiles };
 }
 
 export function DesktopApp() {
-  const { pad: connectedPad, keyboardError, autocomplete } = useDesktopPad();
-  const pad = connectedPad ?? disconnectedPad;
+  const {
+    pad: connectedPad,
+    keyboardError,
+    autocomplete,
+    profiles,
+    setProfiles,
+  } = useDesktopPad();
+  const rawPad = connectedPad ?? disconnectedPad;
   const [saved] = useState(loadSavedConfig);
   const [layout, setLayout] = useState(
     saved?.layout ?? { left: leftDialConfig, right: rightDialConfig },
   );
-  const [bindings, setBindings] = useState(saved?.bindings ?? defaultBindings);
+  const [legacyBindings, setLegacyBindings] = useState(
+    saved?.bindings ?? defaultBindings,
+  );
+  const profile = isControllerProfile(profiles[rawPad.id])
+    ? profiles[rawPad.id]
+    : loadProfile(rawPad.id);
+  const pad = withAxisButtons(rawPad, profile?.axisRest);
+  const bindings = profile?.bindings ?? legacyBindings;
   const [activeLayerId, setActiveLayerId] = useState(layout.left.layers[0].id);
   const [page, setPage] = useState<"dials" | "config">("dials");
   const [capturing, setCapturing] = useState(false);
   const previousStart = useRef(false);
-  const { leftMapping, rightMapping, deadzone, setDeadzone } =
-    useInputPreferences(pad.id);
+  const preferences = useInputPreferences(pad.id);
+  const leftMapping = profile?.leftMapping ?? preferences.leftMapping;
+  const rightMapping = profile?.rightMapping ?? preferences.rightMapping;
+  const deadzone = profile?.deadzone ?? preferences.deadzone;
+  const [setupId, setSetupId] = useState<string | null>(null);
+  const setupOpen = Boolean(
+    connectedPad && (setupId === pad.id || !profile?.accepted),
+  );
+  const profileBase = (): ControllerProfile =>
+    profile ?? {
+      accepted: false,
+      bindings,
+      leftMapping,
+      rightMapping,
+      deadzone,
+      discovered: [],
+    };
+  const updateProfile = (next: ControllerProfile) => {
+    saveProfile(pad.id, next);
+    setProfiles((current) => ({ ...current, [pad.id]: next }));
+    void fetch("/api/desktop/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: pad.id, profile: next }),
+    })
+      .then((response) => {
+        if (!response.ok)
+          throw new Error(`Could not save controller: ${response.status}`);
+      })
+      .catch((reason: unknown) => setError(String(reason)));
+  };
+  const setBindings = (next: typeof bindings) => {
+    setLegacyBindings(next);
+    if (connectedPad)
+      updateProfile({ ...profileBase(), accepted: true, bindings: next });
+  };
+  const setDeadzone = (next: number) => {
+    preferences.setDeadzone(next);
+    if (connectedPad) updateProfile({ ...profileBase(), deadzone: next });
+  };
   const [error, setError] = useState("");
-  const startPressed = pad.buttons[9]?.pressed ?? false;
+  const startIndex = bindings.submit;
+  const startPressed =
+    startIndex === null ? false : (pad.buttons[startIndex]?.pressed ?? false);
 
-  useEffect(() => saveConfig({ layout, bindings }), [layout, bindings]);
+  useEffect(
+    () => saveConfig({ layout, bindings: legacyBindings }),
+    [layout, legacyBindings],
+  );
   useEffect(() => {
-    if (startPressed && !previousStart.current && !capturing) {
+    if (startPressed && !previousStart.current && !capturing && !setupOpen) {
       setPage((current) => (current === "dials" ? "config" : "dials"));
     }
     previousStart.current = startPressed;
-  }, [startPressed, capturing]);
+  }, [startPressed, capturing, setupOpen]);
 
   const reset = () => {
     setLayout({ left: leftDialConfig, right: rightDialConfig });
@@ -105,9 +178,15 @@ export function DesktopApp() {
         leftMapping,
         rightMapping,
         deadzone,
-        typingEnabled: page === "dials",
+        axisRest: profile?.axisRest,
+        typingEnabled:
+          page === "dials" && profile?.accepted === true && !setupOpen,
       }),
-    }).catch((reason: unknown) => setError(String(reason)));
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Desktop config: ${response.status}`);
+      })
+      .catch((reason: unknown) => setError(String(reason)));
   }, [
     layout,
     bindings,
@@ -116,6 +195,9 @@ export function DesktopApp() {
     rightMapping,
     deadzone,
     page,
+    profile?.accepted,
+    profile?.axisRest,
+    setupOpen,
   ]);
 
   return (
@@ -170,21 +252,30 @@ export function DesktopApp() {
       )}
       <main>
         {page === "dials" ? (
-          <ControllerDials
-            pad={pad}
-            leftConfig={layout.left}
-            rightConfig={layout.right}
-            activeLayerId={activeLayerId}
-            onActiveLayerChange={setActiveLayerId}
-            leftMapping={leftMapping}
-            rightMapping={rightMapping}
-            bindings={bindings}
-            deadzone={deadzone}
-            showDiagnostics={false}
-          />
+          <>
+            <ControllerDials
+              pad={setupOpen ? disconnectedPad : pad}
+              leftConfig={layout.left}
+              rightConfig={layout.right}
+              activeLayerId={activeLayerId}
+              onActiveLayerChange={setActiveLayerId}
+              leftMapping={leftMapping}
+              rightMapping={rightMapping}
+              bindings={bindings}
+              deadzone={deadzone}
+              showDiagnostics={false}
+            />
+            <ControllerHud
+              pad={pad}
+              leftMapping={leftMapping}
+              rightMapping={rightMapping}
+              bindings={bindings}
+              visualButtons={profile?.visualButtons}
+            />
+          </>
         ) : (
           <ConfigPage
-            pad={pad}
+            pad={setupOpen ? disconnectedPad : pad}
             layout={layout}
             onLayoutChange={setLayout}
             bindings={bindings}
@@ -195,6 +286,9 @@ export function DesktopApp() {
             rightMapping={rightMapping}
             onCaptureChange={setCapturing}
             onResetDefaults={reset}
+            onOpenControllerSetup={
+              connectedPad ? () => setSetupId(pad.id) : undefined
+            }
           />
         )}
       </main>
@@ -215,6 +309,19 @@ export function DesktopApp() {
           <span role="alert">{error || keyboardError}</span>
         )}
       </footer>
+      {setupOpen && connectedPad && (
+        <ControllerSetup
+          key={pad.id}
+          pad={rawPad}
+          initial={profileBase()}
+          newController={!profile?.accepted}
+          onSave={(next) => {
+            updateProfile(next);
+            setSetupId(null);
+          }}
+          onClose={() => setSetupId(null)}
+        />
+      )}
     </div>
   );
 }
