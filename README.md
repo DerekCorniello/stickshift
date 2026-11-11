@@ -15,7 +15,9 @@ npm run dev
 
 Open the address printed by Vite, then connect a controller. Its name appears at the top of the page. If you connect more than one, use the controller selector there to choose one. The dials remain visible when no controller is connected.
 
-Use the Theme menu in the header to choose StickShift, Xbox, PlayStation, or Switch colors in light or dark mode. The menu changes colors; controller labels and icons still refer to physical positions. Your choice is saved in this browser.
+Use the Theme menu in the sidebar to choose StickShift, Xbox, PlayStation, or Switch colors in light or dark mode. The menu changes colors; controller labels and icons still refer to physical positions. Your choice is saved in this browser.
+
+The console themes use the manufacturers' published colors: [Xbox green `#107C10` and light green `#9BF00B`](https://retrocdn.net/images/c/c0/Xbox_BrandGuidelines_2019-04-15.pdf), [PlayStation blue `#00439C` and light blue `#0070CC`](https://www.100x100playstation.it/assets/download/2145), and [Nintendo Switch red `#E60012`](https://repo.mariocube.com/Marketing/Europe/GUIDELINES/NintendoSwitch_BrandGuide_EU-2_external_05092017_v3.pdf). Dark mode lightens the PlayStation and Switch accents where the published colors would be hard to read against dark panels. These are StickShift color themes, not replicas of the consoles' menus.
 
 ## Set up a controller
 

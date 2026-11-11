@@ -203,7 +203,6 @@ export function DemoApp() {
           <a className="variant-brand" href="/">
             <span aria-hidden="true">((s))</span> StickShift
           </a>
-          <ThemePicker theme={theme} onChange={changeTheme} />
           <div className="variant-status">
             {realPad ? (
               <>
@@ -324,6 +323,9 @@ export function DemoApp() {
               />
             </label>
           </details>
+          <section className="sidebar-section sidebar-theme">
+            <ThemePicker theme={theme} onChange={changeTheme} />
+          </section>
         </aside>
       </div>
       {setupOpen && realPad && (

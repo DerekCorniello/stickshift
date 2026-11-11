@@ -66,6 +66,10 @@ describe("desktop configuration", () => {
     try {
       await act(async () => root.render(<DesktopApp />));
       expect(container.querySelector(".controller-dials")).not.toBeNull();
+      expect(
+        container.querySelector('.desktop-footer select[aria-label="Theme"]'),
+      ).not.toBeNull();
+      expect(container.querySelector(".desktop-nav .theme-picker")).toBeNull();
       const configButton = container.querySelector<HTMLButtonElement>(
         ".desktop-nav button:nth-child(2)",
       );

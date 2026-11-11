@@ -2,7 +2,7 @@
 
 The desktop app shows the two typing dials in a small window and sends controller typing to the application with keyboard focus. It runs on Linux, Windows, and macOS. The [web app](../README.md) has Practice, Speed test, Head to head, and Diagnostics.
 
-The Theme menu in the window header offers StickShift, Xbox, PlayStation, and Switch colors in light and dark mode. It saves your choice for the next launch.
+The Theme menu in the window footer offers StickShift, Xbox, PlayStation, and Switch colors in light and dark mode. It saves your choice for the next launch.
 
 ## Install and start
 

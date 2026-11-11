@@ -1,12 +1,12 @@
 export const themes = [
-  { id: "stickshift-light", label: "StickShift light" },
-  { id: "stickshift-dark", label: "StickShift dark" },
-  { id: "xbox-light", label: "Xbox light" },
-  { id: "xbox-dark", label: "Xbox dark" },
-  { id: "playstation-light", label: "PlayStation light" },
-  { id: "playstation-dark", label: "PlayStation dark" },
-  { id: "switch-light", label: "Switch light" },
-  { id: "switch-dark", label: "Switch dark" },
+  { id: "stickshift-light", label: "StickShift Light" },
+  { id: "stickshift-dark", label: "StickShift Dark" },
+  { id: "xbox-light", label: "Xbox Light" },
+  { id: "xbox-dark", label: "Xbox Dark" },
+  { id: "playstation-light", label: "PlayStation Light" },
+  { id: "playstation-dark", label: "PlayStation Dark" },
+  { id: "switch-light", label: "Switch Light" },
+  { id: "switch-dark", label: "Switch Dark" },
 ] as const;
 
 export type ThemeId = (typeof themes)[number]["id"];

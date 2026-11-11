@@ -25,8 +25,8 @@
   --ink: #eee9de;
   --muted: #aeb7a8;
   --line: #465246;
-  --accent: #d48a68;
-  --accent-ink: #211912;
+  --accent: #a74428;
+  --accent-ink: #fff9ed;
   --input-active: #e0ad83;
   --input-captured: #8bb99a;
   --input-unmapped: #ddb16a;
@@ -36,16 +36,16 @@
 
 .variant-app.fieldnotes[data-theme="xbox-light"],
 .desktop-app[data-theme="xbox-light"] {
-  --bg: #edf3eb;
-  --panel: #fafcf8;
-  --panel-raised: #dfeadc;
-  --ink: #243b2b;
-  --muted: #586b5b;
-  --line: #c3d4c4;
-  --accent: #267a40;
+  --bg: #e6e6e6;
+  --panel: #fff;
+  --panel-raised: #e6e6e6;
+  --ink: #101010;
+  --muted: #505050;
+  --line: #737373;
+  --accent: #107c10;
   --accent-ink: #fff;
-  --input-active: #3d8e55;
-  --input-captured: #268c74;
+  --input-active: #054b16;
+  --input-captured: #277568;
   --input-unmapped: #b27830;
   --danger: #b94140;
   --warning: #a4671f;
@@ -54,15 +54,15 @@
 .variant-app.fieldnotes[data-theme="xbox-dark"],
 .desktop-app[data-theme="xbox-dark"] {
   color-scheme: dark;
-  --bg: #111d16;
-  --panel: #1c2a20;
-  --panel-raised: #27382c;
-  --ink: #edf6eb;
-  --muted: #acc7ae;
-  --line: #3b5340;
-  --accent: #73d18b;
-  --accent-ink: #102115;
-  --input-active: #9ce4ab;
+  --bg: #101010;
+  --panel: #202020;
+  --panel-raised: #333;
+  --ink: #fff;
+  --muted: #c3c3c3;
+  --line: #737373;
+  --accent: #9bf00b;
+  --accent-ink: #101010;
+  --input-active: #9bf00b;
   --input-captured: #74c6aa;
   --input-unmapped: #e8b96e;
   --danger: #ef908b;
@@ -71,15 +71,15 @@
 
 .variant-app.fieldnotes[data-theme="playstation-light"],
 .desktop-app[data-theme="playstation-light"] {
-  --bg: #eef1f8;
-  --panel: #fbfcff;
-  --panel-raised: #e2e8f3;
-  --ink: #24314c;
-  --muted: #5c6b85;
-  --line: #c7d1e4;
-  --accent: #315cb6;
+  --bg: #ededed;
+  --panel: #fff;
+  --panel-raised: #d8e8fa;
+  --ink: #000;
+  --muted: #6c6c6c;
+  --line: #adadad;
+  --accent: #00439c;
   --accent-ink: #fff;
-  --input-active: #4d73c5;
+  --input-active: #0070cc;
   --input-captured: #4f918a;
   --input-unmapped: #b98035;
   --danger: #bf4950;
@@ -89,15 +89,15 @@
 .variant-app.fieldnotes[data-theme="playstation-dark"],
 .desktop-app[data-theme="playstation-dark"] {
   color-scheme: dark;
-  --bg: #121925;
-  --panel: #1e283a;
-  --panel-raised: #28364d;
-  --ink: #eef3ff;
-  --muted: #aebbd0;
-  --line: #42536e;
-  --accent: #8badfb;
-  --accent-ink: #111b30;
-  --input-active: #b3c9ff;
+  --bg: #000;
+  --panel: #171717;
+  --panel-raised: #292929;
+  --ink: #fff;
+  --muted: #adadad;
+  --line: #6c6c6c;
+  --accent: #78bdff;
+  --accent-ink: #000;
+  --input-active: #78bdff;
   --input-captured: #8dc8c0;
   --input-unmapped: #e6b977;
   --danger: #f28c95;
@@ -106,16 +106,16 @@
 
 .variant-app.fieldnotes[data-theme="switch-light"],
 .desktop-app[data-theme="switch-light"] {
-  --bg: #f7f1ef;
-  --panel: #fffaf7;
-  --panel-raised: #eee2df;
-  --ink: #3d2b2a;
-  --muted: #74615f;
-  --line: #dfc9c4;
-  --accent: #b7443f;
+  --bg: #f1f1f1;
+  --panel: #fff;
+  --panel-raised: #e6e6e6;
+  --ink: #3c3c3c;
+  --muted: #646464;
+  --line: #8c8c8c;
+  --accent: #e60012;
   --accent-ink: #fff;
-  --input-active: #c75b51;
-  --input-captured: #368d9c;
+  --input-active: #e60012;
+  --input-captured: #21816d;
   --input-unmapped: #b47a39;
   --danger: #b53643;
   --warning: #99611f;
@@ -124,16 +124,16 @@
 .variant-app.fieldnotes[data-theme="switch-dark"],
 .desktop-app[data-theme="switch-dark"] {
   color-scheme: dark;
-  --bg: #241e20;
-  --panel: #30272a;
-  --panel-raised: #413337;
-  --ink: #f8ece8;
-  --muted: #c9b0ae;
-  --line: #5d464b;
-  --accent: #fa7d70;
-  --accent-ink: #27191b;
-  --input-active: #f99a88;
-  --input-captured: #74c1cf;
+  --bg: #202020;
+  --panel: #3c3c3c;
+  --panel-raised: #4d4d4d;
+  --ink: #fff;
+  --muted: #d0d0d0;
+  --line: #8c8c8c;
+  --accent: #ff7b84;
+  --accent-ink: #202020;
+  --input-active: #ff7b84;
+  --input-captured: #3eb6a0;
   --input-unmapped: #eabc80;
   --danger: #f4939b;
   --warning: #e6b374;
@@ -155,6 +155,19 @@
   color: var(--ink);
   background: var(--panel);
   font: inherit;
+}
+
+.sidebar-theme .theme-picker {
+  width: 100%;
+  flex-wrap: nowrap;
+  font-size: 10px;
+}
+
+.sidebar-theme .theme-picker select {
+  min-width: 0;
+  max-width: 100%;
+  flex: 1;
+  font-size: 10px;
 }
 
 .theme-picker select:focus-visible {

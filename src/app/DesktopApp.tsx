@@ -230,7 +230,6 @@ export function DesktopApp() {
           >
             Config
           </button>
-          <ThemePicker theme={theme} onChange={changeTheme} />
         </nav>
       </header>
       {page === "dials" && (
@@ -303,6 +302,7 @@ export function DesktopApp() {
       </main>
       <footer className="desktop-footer">
         <span>Focus another app to type with the controller.</span>
+        <ThemePicker theme={theme} onChange={changeTheme} />
         <label>
           Deadzone {Math.round(deadzone * 100)}%
           <input

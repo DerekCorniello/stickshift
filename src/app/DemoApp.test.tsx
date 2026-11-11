@@ -83,6 +83,11 @@ describe("demo interface", () => {
       'select[aria-label="Theme"]',
     )!;
     expect(select.options).toHaveLength(8);
+    expect(select.options[0]?.textContent).toBe("StickShift Light");
+    expect(
+      container.querySelector('.variant-sidebar select[aria-label="Theme"]'),
+    ).toBe(select);
+    expect(container.querySelector(".variant-header .theme-picker")).toBeNull();
     await act(async () => {
       select.value = "playstation-dark";
       select.dispatchEvent(new Event("change", { bubbles: true }));
